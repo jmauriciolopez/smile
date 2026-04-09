@@ -1,4 +1,4 @@
-const URL_BASE = 'http://localhost:3000/api';
+const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export async function clienteApi<T>(ruta: string, opciones?: RequestInit): Promise<T> {
   const token = localStorage.getItem('token');
