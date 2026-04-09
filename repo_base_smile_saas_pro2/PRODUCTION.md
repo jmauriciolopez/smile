@@ -64,12 +64,17 @@ Esta guía detalla los pasos técnicos para desplegar el ecosistema completo uti
 
 ---
 
-## 4. Inicialización de Datos (Seed)
+## 5. Automatización (GitHub Actions)
 
-Una vez que el backend esté corriendo en Render:
-1. Conéctate a la consola de Render o utiliza una terminal local apuntando a la DB de producción.
-2. Ejecuta:
-   ```bash
-   npm run prisma:seed
-   ```
-   *Nota: Asegúrate de que las variables de entorno de producción estén configuradas en tu terminal local si lo haces desde fuera.*
+El proyecto incluye flujos de CI/CD automatizados. Para que funcionen, debes configurar los siguientes **Repository Secrets** en GitHub (Settings > Secrets and variables > Actions):
+
+| Secret | Descripción |
+| :--- | :--- |
+| `VITE_API_URL` | La URL de tu backend en Render. |
+| `AWS_ACCESS_KEY_ID` | Tu ID de acceso de AWS. |
+| `AWS_SECRET_ACCESS_KEY` | Tu clave secreta de AWS. |
+| `AWS_REGION` | `sa-east-1` |
+| `CLOUDFRONT_DISTRIBUTION_ID` | Obtenido tras el despliegue de Terraform. |
+
+- **Backend CI**: Valida compilación y tests en cada Push/PR.
+- **Frontend CD**: Despliega automáticamente a AWS en cada Push a `main`.
