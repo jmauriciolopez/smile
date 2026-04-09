@@ -1,16 +1,23 @@
+import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Card } from '../../../componentes/ui/Card';
 import { BadgeEstado } from '../../../componentes/ui/BadgeEstado';
 import { useCasoDetalle } from '../../../hooks/useCasoDetalle';
+import { ModalSubirFoto } from '../componentes/ModalSubirFoto';
+import { SeccionNotasClinicas } from '../componentes/SeccionNotasClinicas';
 
 export function DetalleCasoClinicoPage() {
   const { id } = useParams();
-  const { caso, cargando, error } = useCasoDetalle(id);
+  const { caso, cargando, error, refrescar } = useCasoDetalle(id);
+  const [modalFotoAbierto, setModalFotoAbierto] = React.useState(false);
 
   if (cargando) {
     return (
       <div className="flex min-h-[400px] items-center justify-center italic text-textoSecundario">
-        Cargando detalles del caso...
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primario border-t-transparent" />
+          <span>Cargando detalles del caso...</span>
+        </div>
       </div>
     );
   }
@@ -30,12 +37,14 @@ export function DetalleCasoClinicoPage() {
 
   const presupuestos = (caso as any).presupuestos || [];
   const primerPresupuesto = presupuestos[0];
+  const fotos = (caso as any).fotos || [];
+  const notas = (caso as any).notas || [];
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">{caso.titulo}</h1>
+          <h1 className="text-3xl font-semibold text-slate-900 leading-tight">{caso.titulo}</h1>
           <p className="mt-1 text-textoSecundario">
             Paciente: <Link to={`/pacientes/${caso.paciente_id}`} className="font-medium text-primario hover:underline">
               {caso.paciente?.nombre_completo}
@@ -52,78 +61,102 @@ export function DetalleCasoClinicoPage() {
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card titulo="Resumen del caso">
-          <div className="space-y-4 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-textoSecundario">Estado actual:</span>
-              <BadgeEstado texto={caso.estado_caso} />
-            </div>
-            <div className="space-y-1">
-              <span className="text-textoSecundario">Motivo de consulta / Objetivos:</span>
-              <p className="rounded-lg bg-slate-50 p-3 text-slate-700 leading-relaxed">
-                {caso.motivo_consulta || 'No se registraron notas de consulta.'}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card titulo="Herramientas de Diseño">
-          <div className="space-y-4 text-sm">
-            <div className="flex justify-between border-b border-slate-100 pb-2">
-              <span className="text-textoSecundario">Estado del diseño:</span>
-              <BadgeEstado texto="Pendiente" />
-            </div>
-            <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/50 p-8 text-center text-textoSecundario">
-              <div className="mx-auto mb-2 h-10 w-10 text-slate-300">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              </div>
-              El comparador visual estará disponible al procesar el diseño.
-            </div>
-          </div>
-        </Card>
-
-        <Card titulo="Documentación Fotográfica">
-          {((caso as any).fotos || []).length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
-              {((caso as any).fotos || []).map((foto: any) => (
-                <div key={foto.id} className="group relative aspect-video cursor-pointer overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition-all hover:ring-primario/30">
-                  <img src={foto.url_foto} alt={foto.tipo} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white">{foto.tipo}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center text-sm text-textoSecundario italic bg-slate-50 rounded-xl">
-              No hay documentación fotográfica cargada aún.
-            </div>
-          )}
-        </Card>
-
-        <Card titulo="Gestión Comercial">
-          {primerPresupuesto ? (
-            <Link to={`/presupuestos/${primerPresupuesto.id}`} className="group block rounded-xl border border-slate-200 p-5 hover:border-primario/40 hover:bg-primario/[0.02] transition-all">
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Columna Izquierda: Resumen y Notas */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card titulo="Resumen del caso">
+            <div className="space-y-4 text-sm">
               <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-slate-400">Presupuesto Activo</div>
-                  <div className="mt-1 text-2xl font-bold text-slate-900 group-hover:text-primario">USD {primerPresupuesto.monto_total_estimado}</div>
-                </div>
-                <BadgeEstado texto={primerPresupuesto.estado_presupuesto} />
+                <span className="text-textoSecundario">Estado actual:</span>
+                <BadgeEstado texto={caso.estado_caso} />
               </div>
-              <div className="mt-4 flex items-center gap-2 text-sm font-medium text-primario">
-                Ver propuesta comercial detallada 
-                <span className="transition-transform group-hover:translate-x-1">→</span>
+              <div className="space-y-1">
+                <span className="text-textoSecundario">Motivo de consulta / Objetivos:</span>
+                <p className="rounded-lg bg-slate-50 p-3 text-slate-700 leading-relaxed italic border border-slate-100">
+                  {caso.motivo_consulta || 'No se registraron notas de consulta.'}
+                </p>
               </div>
-            </Link>
-          ) : (
-            <div className="py-8 text-center text-sm text-textoSecundario italic bg-slate-50 rounded-xl">
-              No hay presupuestos asociados a este caso.
             </div>
-          )}
-        </Card>
+          </Card>
+
+          <SeccionNotasClinicas 
+            casoId={caso.id} 
+            notasIniciales={notas} 
+            alActualizar={refrescar} 
+          />
+        </div>
+
+        {/* Columna Derecha: Fotos y Comercial */}
+        <div className="space-y-6">
+          <Card titulo="Documentación Fotográfica">
+            <div className="space-y-4">
+              <button 
+                onClick={() => setModalFotoAbierto(true)}
+                className="w-full rounded-xl border-2 border-dashed border-slate-200 p-4 text-center text-sm font-medium text-textoSecundario hover:border-primario/50 hover:bg-primario/[0.02] hover:text-primario transition-all"
+              >
+                + Añadir registro fotográfico
+              </button>
+
+              {fotos.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {fotos.map((foto: any) => (
+                    <div key={foto.id} className="group relative aspect-video cursor-pointer overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition-all hover:ring-primario/50 shadow-sm">
+                      <img src={foto.url_foto} alt={foto.tipo} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white">{foto.tipo}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-6 text-center text-xs text-textoSecundario italic bg-slate-50 rounded-xl border border-slate-100">
+                  Sin fotos registradas.
+                </div>
+              )}
+            </div>
+          </Card>
+
+          <Card titulo="Gestión Comercial">
+            {primerPresupuesto ? (
+              <Link to={`/presupuestos/${primerPresupuesto.id}`} className="group block rounded-xl border border-slate-200 p-5 hover:border-primario/40 hover:bg-primario/[0.02] transition-all shadow-sm bg-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Presupuesto Activo</div>
+                    <div className="mt-1 text-2xl font-bold text-slate-900 group-hover:text-primario">USD {primerPresupuesto.monto_total_estimado}</div>
+                  </div>
+                  <BadgeEstado texto={primerPresupuesto.estado_presupuesto} />
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-sm font-medium text-primario">
+                  Ver detalle completo 
+                  <span className="transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </Link>
+            ) : (
+              <div className="py-8 text-center text-sm text-textoSecundario italic bg-slate-50 rounded-xl border border-slate-100">
+                No hay presupuestos activos.
+              </div>
+            )}
+          </Card>
+
+          <Card titulo="Estado del Diseño">
+              <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-center">
+                <div className="mx-auto mb-3 h-10 w-10 text-slate-300">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+                </div>
+                <p className="text-xs text-textoSecundario leading-relaxed">
+                  Utiliza el Editor de Sonrisa para procesar el diseño comparativo.
+                </p>
+              </div>
+          </Card>
+        </div>
       </div>
+
+      <ModalSubirFoto 
+        abierto={modalFotoAbierto} 
+        alCerrar={() => setModalFotoAbierto(false)} 
+        casoId={caso.id} 
+        alTerminar={refrescar} 
+      />
     </div>
   );
 }

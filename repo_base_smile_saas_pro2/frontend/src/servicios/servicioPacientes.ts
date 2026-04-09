@@ -18,3 +18,17 @@ export async function obtenerPacientes() {
 export async function obtenerPacientePorId(id: string) {
   return clienteApi<PacienteApi>(`/pacientes/${id}`);
 }
+
+export async function crearPaciente(paciente: Omit<PacienteApi, 'id'>) {
+  return clienteApi<PacienteApi>('/pacientes', {
+    method: 'POST',
+    body: JSON.stringify(paciente),
+  });
+}
+
+export async function actualizarPaciente(id: string, paciente: Partial<PacienteApi>) {
+  return clienteApi<PacienteApi>(`/pacientes/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(paciente),
+  });
+}

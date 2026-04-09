@@ -1,20 +1,34 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../../componentes/ui/Card';
 import { BadgeEstado } from '../../../componentes/ui/BadgeEstado';
 import { usePacientes } from '../../../hooks/usePacientes';
+import { ModalNuevoPaciente } from '../componentes/ModalNuevoPaciente';
 
 export function PacientesPage() {
-  const { pacientes, cargando, error } = usePacientes();
+  const { pacientes, cargando, error, refrescar } = usePacientes();
+  const [modalAbierto, setModalAbierto] = React.useState(false);
 
   return (
     <div className="space-y-6">
       <header className="flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">Pacientes</h1>
+          <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Pacientes</h1>
           <p className="mt-1 text-textoSecundario">Listado de pacientes sincronizado con el sistema.</p>
         </div>
-        <button className="rounded-xl bg-primario px-4 py-2 text-sm font-medium text-white">Nuevo paciente</button>
+        <button 
+          onClick={() => setModalAbierto(true)}
+          className="rounded-xl bg-primario px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primario/25 hover:bg-primario/90 hover:-translate-y-0.5 transition-all"
+        >
+          Nuevo paciente
+        </button>
       </header>
+
+      <ModalNuevoPaciente 
+        abierto={modalAbierto} 
+        alCerrar={() => setModalAbierto(false)} 
+        alGuardar={refrescar} 
+      />
 
       <Card titulo="Listado de pacientes">
         {cargando && (

@@ -6,24 +6,23 @@ export function usePacientes() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let vivo = true;
+  const cargarDatos = () => {
     setCargando(true);
     obtenerPacientes()
       .then((datos) => {
-        if (vivo) setPacientes(datos);
+        setPacientes(datos);
       })
       .catch(() => {
-        if (vivo) setError('No se pudieron cargar los pacientes.');
+        setError('No se pudieron cargar los pacientes.');
       })
       .finally(() => {
-        if (vivo) setCargando(false);
+        setCargando(false);
       });
+  };
 
-    return () => {
-      vivo = false;
-    };
+  useEffect(() => {
+    cargarDatos();
   }, []);
 
-  return { pacientes, cargando, error };
+  return { pacientes, cargando, error, refrescar: cargarDatos };
 }

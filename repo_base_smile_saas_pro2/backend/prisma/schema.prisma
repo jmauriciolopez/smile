@@ -87,6 +87,7 @@ model CasoClinico {
   presupuestos            Presupuesto[]
   disenos                 DisenoSonrisa[]
   fotos                   FotoClinica[]
+  notas                   NotaClinica[]
 }
 
 model Presupuesto {
@@ -100,6 +101,45 @@ model Presupuesto {
   fecha_actualizacion   DateTime           @updatedAt
   paciente              Paciente           @relation(fields: [paciente_id], references: [id])
   caso_clinico          CasoClinico?       @relation(fields: [caso_clinico_id], references: [id])
+  opciones              OpcionTratamiento[]
+  seguimientos          SeguimientoComercial[]
+}
+
+model OpcionTratamiento {
+  id               String       @id @default(uuid())
+  presupuesto_id   String
+  titulo           String
+  descripcion      String?
+  monto            Float
+  recomendada      Boolean      @default(false)
+  presupuesto      Presupuesto  @relation(fields: [presupuesto_id], references: [id])
+}
+
+model SeguimientoComercial {
+  id               String       @id @default(uuid())
+  presupuesto_id   String
+  comentario       String
+  proxima_accion   String?
+  fecha_accion     DateTime?
+  fecha_creacion   DateTime     @default(now())
+  presupuesto      Presupuesto  @relation(fields: [presupuesto_id], references: [id])
+}
+
+model NotaClinica {
+  id               String       @id @default(uuid())
+  caso_clinico_id  String
+  contenido        String
+  fecha_creacion   DateTime     @default(now())
+  caso_clinico     CasoClinico  @relation(fields: [caso_clinico_id], references: [id])
+}
+
+model TareaInterna {
+  id               String       @id @default(uuid())
+  titulo           String
+  descripcion      String?
+  completada       Boolean      @default(false)
+  fecha_vencimiento DateTime?
+  fecha_creacion   DateTime     @default(now())
 }
 
 model DisenoSonrisa {

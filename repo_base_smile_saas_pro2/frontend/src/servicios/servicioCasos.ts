@@ -11,6 +11,18 @@ export type CasoClinicoApi = {
   paciente?: {
     nombre_completo: string;
   };
+  fotos?: Array<{
+    id: string;
+    url_foto: string;
+    tipo: string;
+    fecha_creacion: string;
+  }>;
+  notas?: Array<{
+    id: string;
+    contenido: string;
+    fecha_creacion: string;
+  }>;
+  presupuestos?: any[];
 };
 
 export async function obtenerCasos() {
@@ -19,4 +31,18 @@ export async function obtenerCasos() {
 
 export async function obtenerCasoPorId(id: string) {
   return clienteApi<CasoClinicoApi>(`/casos/${id}`);
+}
+
+export async function crearCaso(caso: Partial<CasoClinicoApi>) {
+  return clienteApi<CasoClinicoApi>('/casos', {
+    method: 'POST',
+    body: JSON.stringify(caso),
+  });
+}
+
+export async function actualizarCaso(id: string, caso: Partial<CasoClinicoApi>) {
+  return clienteApi<CasoClinicoApi>(`/casos/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(caso),
+  });
 }

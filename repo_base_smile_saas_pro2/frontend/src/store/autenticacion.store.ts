@@ -10,27 +10,25 @@ type EstadoAutenticacion = {
   autenticado: boolean;
   token: string | null;
   usuario: UsuarioSesion | null;
-  iniciarSesionDemo: () => void;
+  iniciarSesion: (token: string, usuario: UsuarioSesion) => void;
   cerrarSesion: () => void;
 };
 
+const tokenInicial = localStorage.getItem('token');
+const usuarioInicial = localStorage.getItem('usuario') ? JSON.parse(localStorage.getItem('usuario')!) : null;
+
 export const useAutenticacionStore = create<EstadoAutenticacion>((set) => ({
-  autenticado: true,
-  token: 'token-demo',
-  usuario: {
-    nombre_completo: 'Administrador Demo',
-    email: 'admin@smilesaas.local',
-    rol: 'administrador',
+  autenticado: !!tokenInicial,
+  token: tokenInicial,
+  usuario: usuarioInicial,
+  iniciarSesion: (token, usuario) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+    set({ autenticado: true, token, usuario });
   },
-  iniciarSesionDemo: () =>
-    set({
-      autenticado: true,
-      token: 'token-demo',
-      usuario: { 
-        nombre_completo: 'Administrador Demo',
-        email: 'admin@smilesaas.local', 
-        rol: 'administrador' 
-      },
-    }),
-  cerrarSesion: () => set({ autenticado: false, token: null, usuario: null }),
+  cerrarSesion: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    set({ autenticado: false, token: null, usuario: null });
+  },
 }));

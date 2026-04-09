@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CasosService } from './casos.service';
 import { CrearCasoClinicoDto } from './dto/crear_caso_clinico.dto';
 import { ActualizarCasoClinicoDto } from './dto/actualizar_caso_clinico.dto';
+import { JwtAuthGuard } from '../autenticacion/guards/jwt-auth.guard';
 
 @Controller('casos')
+@UseGuards(JwtAuthGuard)
 export class CasosController {
   constructor(private readonly casosService: CasosService) {}
 

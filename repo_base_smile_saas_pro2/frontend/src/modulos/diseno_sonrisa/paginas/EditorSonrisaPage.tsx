@@ -15,10 +15,20 @@ export function EditorSonrisaPage() {
     setIntensidad, 
     aplicarPreset, 
     manejarGuardar,
+    caso,
     cargando,
     guardando,
     error 
   } = useEditorSonrisa(casoId);
+
+  const urlFotoBase = useMemo(() => {
+    if (caso?.fotos && caso.fotos.length > 0) {
+      // Priorizamos frontal o sonrisa, si no la primera
+      const prioritaria = caso.fotos.find((f: any) => f.tipo === 'frontal' || f.tipo === 'sonrisa');
+      return prioritaria ? prioritaria.url_foto : caso.fotos[0].url_foto;
+    }
+    return 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000'; // Fallback mockup
+  }, [caso]);
 
   const [modoComparacion, setModoComparacion] = useState(false);
   const [mensajeExito, setMensajeExito] = useState(false);
@@ -93,8 +103,11 @@ export function EditorSonrisaPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <Card titulo="Lienzo de Trabajo">
           <div className="relative aspect-video max-h-[600px] w-full overflow-hidden rounded-2xl bg-slate-900 shadow-inner">
-            {/* Simulación de foto base */}
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000')] bg-cover bg-center grayscale-[0.3] brightness-75" />
+            {/* Foto base real del caso */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-all duration-700" 
+              style={{ backgroundImage: `url(${urlFotoBase})` }}
+            />
             
             {!modoComparacion && (
               <div

@@ -20,14 +20,19 @@ export function useEditorSonrisa(casoId: string | undefined) {
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [caso, setCaso] = useState<any>(null);
 
-  // Cargar diseño previo si existe
+  // Cargar diseño y caso
   useEffect(() => {
     if (!casoId) return;
 
     setCargando(true);
-    obtenerDisenoPorCaso(casoId)
-      .then((diseno) => {
+    Promise.all([
+      obtenerDisenoPorCaso(casoId),
+      import('../servicios/servicioCasos').then(m => m.obtenerCasoPorId(casoId))
+    ])
+      .then(([diseno, datosCaso]) => {
+        setCaso(datosCaso);
         if (diseno) {
           try {
             const ajustes = JSON.parse(diseno.ajustes_json);
@@ -42,7 +47,7 @@ export function useEditorSonrisa(casoId: string | undefined) {
           }
         }
       })
-      .catch(() => setError('No se pudo recuperar el diseño previo.'))
+      .catch(() => setError('No se pudo recuperar la información del caso o el diseño previo.'))
       .finally(() => setCargando(false));
   }, [casoId]);
 
@@ -92,6 +97,7 @@ export function useEditorSonrisa(casoId: string | undefined) {
     setIntensidad,
     aplicarPreset,
     manejarGuardar,
+    caso,
     cargando,
     guardando,
     error

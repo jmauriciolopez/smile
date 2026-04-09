@@ -1,14 +1,18 @@
 import { Card } from '../../../componentes/ui/Card';
 import { useDashboard } from '../../../hooks/useDashboard';
+import { useAutenticacionStore } from '../../../store/autenticacion.store';
 
 export function DashboardPage() {
   const { resumen, cargando, error } = useDashboard();
+  const usuario = useAutenticacionStore((s) => s.usuario);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-700">
       <header className="flex items-end justify-between">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">Bienvenido, Dr. Lopez</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            {usuario?.rol === 'odontologo' || usuario?.rol === 'administrador' ? '¡Hola Doc!' : '¡Hola!'} {usuario?.nombre_completo}
+          </h1>
           <p className="mt-2 text-lg text-textoSecundario font-medium">Este es el resumen operativo de tu clínica hoy.</p>
         </div>
         <div className="hidden pb-1 text-sm font-bold text-primario md:block">

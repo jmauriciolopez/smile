@@ -6,26 +6,24 @@ export function useCasoDetalle(id: string | undefined) {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const cargarDatos = () => {
     if (!id) return;
-
-    let vivo = true;
     setCargando(true);
     obtenerCasoPorId(id)
       .then((datos) => {
-        if (vivo) setCaso(datos);
+        setCaso(datos);
       })
       .catch(() => {
-        if (vivo) setError('No se pudo cargar el detalle del caso clínico.');
+        setError('No se pudo cargar el detalle del caso clínico.');
       })
       .finally(() => {
-        if (vivo) setCargando(false);
+        setCargando(false);
       });
+  };
 
-    return () => {
-      vivo = false;
-    };
+  useEffect(() => {
+    cargarDatos();
   }, [id]);
 
-  return { caso, cargando, error };
+  return { caso, cargando, error, refrescar: cargarDatos };
 }

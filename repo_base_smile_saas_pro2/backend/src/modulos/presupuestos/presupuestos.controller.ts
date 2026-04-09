@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { PresupuestosService } from './presupuestos.service';
 import { CrearPresupuestoDto } from './dto/crear_presupuesto.dto';
 import { ActualizarPresupuestoDto } from './dto/actualizar_presupuesto.dto';
+import { JwtAuthGuard } from '../autenticacion/guards/jwt-auth.guard';
 
 @Controller('presupuestos')
+@UseGuards(JwtAuthGuard)
 export class PresupuestosController {
   constructor(private readonly presupuestosService: PresupuestosService) {}
 
