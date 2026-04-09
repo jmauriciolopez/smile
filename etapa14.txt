@@ -1,0 +1,46 @@
+Quiero integrar el módulo de casos clínicos del frontend con el backend real en el MVP PRO de un SaaS odontológico premium.
+
+Objetivo:
+reemplazar el mockup del módulo de casos clínicos por datos reales, manteniendo la UI premium ya aprobada y una arquitectura limpia.
+
+Necesito integrar:
+- listado de casos si existe
+- DetalleCasoClinicoPage
+- crear caso clínico
+- editar caso clínico
+- relación con paciente
+- fotos clínicas asociadas
+- diseño asociado
+- presupuesto asociado
+
+Quiero:
+- servicioCasos
+- servicioFotosClinicas
+- servicioDisenos
+- servicioPresupuestos
+- hooks como useCasos, useCasoClinico, useCrearCasoClinico y useActualizarCasoClinico
+- manejo de loading, vacío, error y guardado
+- componentes visuales desacoplados de la lógica de fetch
+- tipos claros y consistentes en español
+
+Restricciones:
+- React + TypeScript + Tailwind en frontend
+- NestJS en backend
+- nombres en español
+- no mezclar mocks con datos reales
+- no romper la UI premium existente
+- no poner fetch dentro de componentes presentacionales
+- integrar de forma progresiva por bloques
+- si algún bloque relacionado todavía no está listo en backend, dejar placeholder elegante y explícito
+
+Entrega:
+- detalle de caso clínico conectado a API real
+- listado de casos conectado si corresponde
+- formularios de crear y editar funcionando
+- arquitectura limpia con servicios y hooks
+- eliminación de mocks que ya no se usen en este módulo
+
+Al finalizar:
+ejecutar npm run build y npm run lint en frontend
+ejecutar npm run build y npm run test en backend
+reportar errores encontrados, correcciones aplicadas y pendientes reales

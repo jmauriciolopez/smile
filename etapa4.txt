@@ -1,0 +1,32 @@
+Quiero construir el mockup premium del dashboard principal de un SaaS odontológico enfocado en diseño de sonrisa y cierre comercial.
+
+Objetivo:
+crear un dashboard visualmente premium, claro y accionable.
+
+Debe incluir:
+- cards resumen con indicadores clave
+- actividad reciente
+- casos prioritarios
+- embudo comercial simple
+- próximas acciones
+- badges o estados visuales consistentes
+
+Restricciones:
+- React + TypeScript + Tailwind
+- nombres en español
+- usar datos mock centralizados en archivos separados
+- no conectar backend
+- no saturar la pantalla
+- evitar charts complejos innecesarios
+- mantener estética clínica, moderna y premium
+- debe verse como producto real, no como wireframe ni template genérico
+
+Quiero:
+- componentes reutilizables
+- layout limpio y jerárquico
+- página DashboardPage montada dentro del shell existente
+- código modular y prolijo
+
+Al finalizar:
+ejecutar npm run build y npm run lint
+reportar errores y correcciones aplicadas

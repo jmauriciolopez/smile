@@ -1,0 +1,47 @@
+Quiero diseñar el modelo de datos real del MVP PRO de un SaaS odontológico premium orientado a diseño de sonrisa y cierre comercial.
+
+Objetivo:
+definir las entidades, relaciones, enums, tablas y columnas necesarias para soportar el flujo principal del producto de forma clara y mantenible.
+
+Stack:
+- backend NestJS
+- PostgreSQL
+- Prisma opcional pero recomendado
+
+Reglas obligatorias:
+- nombres de tablas, columnas, enums, DTOs y módulos en español
+- no sobrediseñar
+- contemplar evolución futura sin meter features enterprise
+- alinear el modelo con el flujo real: paciente → caso clínico → fotos/diseño → presupuesto → seguimiento
+
+Entidades mínimas a contemplar:
+- usuarios
+- pacientes
+- casos_clinicos
+- fotos_clinicas
+- disenos_sonrisa
+- versiones_diseno
+- presupuestos
+- opciones_tratamiento
+- seguimientos_comerciales
+- notas_clinicas
+- tareas_internas
+
+Necesito:
+1. definición de entidades
+2. relaciones entre entidades
+3. campos por entidad
+4. enums necesarios
+5. decisiones de modelado importantes
+6. propuesta en Prisma o SQL
+7. timestamps y claves foráneas
+8. criterio de crecimiento futuro sin sobrecargar el MVP
+
+Entrega:
+- modelo claro y estructurado
+- consistente con los nombres en español del proyecto
+- listo para pasar a módulos backend reales
+
+Al finalizar:
+si usás Prisma, ejecutar npx prisma format, npx prisma validate y luego npm run build
+reportar errores encontrados, correcciones aplicadas y puntos a revisar

@@ -1,0 +1,33 @@
+Quiero construir el mockup premium del módulo de pacientes para un SaaS odontológico enfocado en diseño de sonrisa y cierre comercial.
+
+Objetivo:
+crear un módulo de pacientes claro, premium y accionable, con listado y detalle.
+
+Necesito:
+- pantalla de listado de pacientes
+- buscador
+- filtros visuales
+- tabla o grilla premium
+- ficha resumida del paciente
+- pantalla de detalle del paciente
+- pestañas o bloques para casos, fotos, presupuestos, seguimiento y notas
+
+Restricciones:
+- React + TypeScript + Tailwind
+- nombres en español
+- usar datos mock centralizados en archivos separados
+- no conectar backend
+- mantener una UI premium, clínica, moderna y limpia
+- evitar una tabla genérica pesada
+- priorizar claridad, navegación y jerarquía visual
+- dejar la arquitectura lista para futura integración
+
+Quiero:
+- componentes reutilizables
+- páginas navegables dentro del shell existente
+- estructura modular prolija
+- código tipado y consistente
+
+Al finalizar:
+ejecutar npm run build y npm run lint
+reportar errores encontrados y correcciones aplicadas

@@ -1,0 +1,47 @@
+Quiero construir el shell principal y la navegación base de una aplicación odontológica premium.
+
+Objetivo:
+hacer que el sistema ya se sienta como un producto real, con layout consistente y navegación clara.
+
+Necesito:
+- ShellAplicacion
+- SidebarPrincipal
+- TopbarPrincipal
+- ContenedorPagina
+- EncabezadoPagina
+- BreadcrumbsPagina
+- EstadoVacio
+- EstadoCarga
+- EstadoErrorVisual
+- rutas base entre módulos
+- menú principal reutilizable
+
+Módulos visibles en navegación:
+- Dashboard
+- Pacientes
+- Casos clínicos
+- Diseños
+- Presupuestos
+- Seguimientos
+- Configuración
+
+Restricciones:
+- React + TypeScript + Tailwind
+- nombres en español
+- UI premium, clínica, moderna y limpia
+- no conectar backend
+- no meter lógica de negocio
+- layout reusable y consistente
+- responsive razonable
+- no usar un template genérico de admin
+
+Entrega:
+- shell completo
+- navegación funcional
+- estructura modular
+- rutas ordenadas
+- estados base reutilizables
+
+Al finalizar:
+ejecutar npm run build y npm run lint
+reportar errores encontrados y correcciones aplicadas

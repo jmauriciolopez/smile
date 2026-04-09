@@ -1,0 +1,30 @@
+Quiero definir el MVP PRO de un SaaS odontológico premium orientado a diseño de sonrisa y cierre comercial.
+
+Objetivo:
+cerrar alcance, módulos, flujo principal, entidades base, convenciones de nombres y estructura inicial del proyecto.
+
+Stack:
+- frontend React + TypeScript + Tailwind
+- backend NestJS + PostgreSQL
+
+Reglas obligatorias:
+- nombres de variables, métodos, componentes, DTOs, tablas y endpoints en español
+- UI premium, clínica, moderna y limpia
+- no sobrediseñar
+- separar claramente mockup, limpieza, mapeo, integración y QA
+- pensar como producto vendible, no como software enterprise gigante
+
+Necesito que me entregues:
+1. módulos exactos del MVP PRO
+2. funcionalidades incluidas y excluidas
+3. actores del sistema
+4. flujo principal del negocio
+5. lista preliminar de entidades
+6. convenciones de nomenclatura en español
+7. estructura inicial de carpetas frontend y backend
+8. criterios de aceptación de la etapa
+
+Entrega:
+- respuesta clara y estructurada
+- sin código innecesario
+- lista para usar como documento rector del proyecto

@@ -1,0 +1,34 @@
+Quiero construir el mockup premium de la pantalla de detalle de caso clínico para un SaaS odontológico enfocado en diseño de sonrisa y cierre comercial.
+
+Objetivo:
+crear el centro operativo del sistema, donde se vea con claridad el estado del caso, su material clínico, el diseño asociado y el presupuesto.
+
+Necesito:
+- encabezado del caso clínico
+- resumen operativo del caso
+- galería de fotos clínicas
+- bloque de diseño de sonrisa asociado
+- bloque de presupuesto asociado
+- timeline de actividad del caso
+- bloque de notas clínicas
+- acciones rápidas del profesional
+
+Restricciones:
+- React + TypeScript + Tailwind
+- nombres en español
+- usar datos mock centralizados en archivos separados
+- no conectar backend
+- mantener UI premium, clínica, moderna y limpia
+- evitar saturación visual
+- priorizar jerarquía, claridad y sensación de producto real
+- dejar la arquitectura lista para integración futura
+
+Quiero:
+- componentes reutilizables
+- pantalla montada dentro del shell existente
+- layout ordenado y consistente
+- código modular, tipado y prolijo
+
+Al finalizar:
+ejecutar npm run build y npm run lint
+reportar errores encontrados y correcciones aplicadas

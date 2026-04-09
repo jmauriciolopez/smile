@@ -1,0 +1,52 @@
+Quiero implementar la autenticación, permisos básicos y endurecimiento inicial del MVP PRO de un SaaS odontológico premium.
+
+Objetivo:
+agregar una base de seguridad clara, mantenible y suficiente para uso real, sin sobrediseñar ni romper los módulos ya integrados.
+
+Necesito implementar:
+- login con email y contraseña
+- JWT o sesión equivalente
+- usuario autenticado en frontend
+- protección de rutas privadas
+- roles básicos
+- guards backend
+- validaciones consistentes
+- manejo homogéneo de errores
+- logout
+
+Roles mínimos:
+- administrador
+- odontologo
+- asistente
+- ventas
+
+Quiero:
+- modulo autenticacion en NestJS
+- servicioAutenticacion en frontend
+- useAutenticacion
+- RutaPrivada
+- contraseñas con hash
+- arquitectura clara y desacoplada
+- nombres en español en DTOs, servicios, métodos, guards y módulos
+
+Restricciones:
+- React + TypeScript + Tailwind en frontend
+- NestJS en backend
+- nombres en español
+- no meter permisos enterprise complejos todavía
+- no romper la UI premium existente
+- no mezclar autenticación con lógica de negocio de otros módulos
+- mantener manejo de errores claro y consistente
+
+Entrega:
+- login funcional
+- rutas privadas protegidas
+- roles básicos funcionando
+- guards backend aplicados
+- frontend y backend compilables
+- QA ejecutado y reportado
+
+Al finalizar:
+ejecutar npm run build, npm run lint y npm run test en frontend
+ejecutar npm run build y npm run test en backend
+reportar errores encontrados, correcciones aplicadas y pendientes reales

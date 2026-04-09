@@ -1,0 +1,35 @@
+Quiero construir el mockup premium del Editor de Sonrisa para un SaaS odontológico enfocado en estética dental y cierre comercial.
+
+Objetivo:
+crear la pantalla más importante del producto, con foco en UX visual premium y claridad de uso.
+
+Necesito:
+- encabezado del editor
+- lienzo principal con foto del paciente y overlay visual mock
+- panel lateral de controles
+- presets de sonrisa
+- controles visuales para ancho, alto, posición, forma e intensidad
+- comparador antes/después
+- acciones guardar borrador, duplicar versión, aprobar diseño y volver al caso
+- resumen de la versión actual
+
+Restricciones:
+- React + TypeScript + Tailwind
+- nombres en español
+- usar datos mock centralizados en archivos separados
+- no conectar backend
+- no implementar IA ni procesamiento real de imagen todavía
+- mantener una UI premium, moderna, clínica y enfocada
+- el lienzo debe ser protagonista absoluto
+- evitar saturación visual
+- dejar la arquitectura lista para volver este módulo funcional después
+
+Quiero:
+- componentes reutilizables
+- pantalla montada dentro del shell existente
+- layout claro y jerárquico
+- código modular, tipado y prolijo
+
+Al finalizar:
+ejecutar npm run build y npm run lint
+reportar errores encontrados y correcciones aplicadas
