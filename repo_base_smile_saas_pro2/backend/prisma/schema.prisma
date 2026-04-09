@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RolUsuario {
+  administrador
+  odontologo
+  asistente
+  ventas
+}
+
+enum EstadoPaciente {
+  nuevo
+  en_evaluacion
+  con_diseno
+  con_presupuesto
+  en_seguimiento
+  cerrado
+  perdido
+}
+
+enum EstadoCaso {
+  nuevo
+  en_evaluacion
+  con_fotos_cargadas
+  con_diseno_borrador
+  con_diseno_aprobado
+  con_presupuesto_emitido
+  en_negociacion
+  cerrado
+  pausado
+}
+
+enum EstadoPresupuesto {
+  borrador
+  listo_para_presentar
+  presentado
+  en_seguimiento
+  en_negociacion
+  aprobado
+  rechazado
+  vencido
+}
+
+model Usuario {
+  id                  String     @id @default(uuid())
+  nombre_completo     String
+  email               String     @unique
+  contrasena_hash     String
+  rol                 RolUsuario
+  activo              Boolean    @default(true)
+  fecha_creacion      DateTime   @default(now())
+  fecha_actualizacion DateTime   @updatedAt
+  casos               CasoClinico[] @relation("UsuarioResponsableCasos")
+}
+
+model Paciente {
+  id                       String            @id @default(uuid())
+  nombre_completo          String
+  telefono                 String?
+  email                    String?
+  ciudad                   String?
+  observaciones_generales  String?
+  estado_paciente          EstadoPaciente    @default(nuevo)
+  fecha_creacion           DateTime          @default(now())
+  fecha_actualizacion      DateTime          @updatedAt
+  casos_clinicos           CasoClinico[]
+  presupuestos             Presupuesto[]
+}
+
+model CasoClinico {
+  id                      String      @id @default(uuid())
+  paciente_id             String
+  usuario_responsable_id  String?
+  titulo                  String
+  motivo_consulta         String?
+  estado_caso             EstadoCaso  @default(nuevo)
+  fecha_creacion          DateTime    @default(now())
+  fecha_actualizacion     DateTime    @updatedAt
+  paciente                Paciente    @relation(fields: [paciente_id], references: [id])
+  usuario_responsable     Usuario?    @relation("UsuarioResponsableCasos", fields: [usuario_responsable_id], references: [id])
+  presupuestos            Presupuesto[]
+}
+
+model Presupuesto {
+  id                    String             @id @default(uuid())
+  paciente_id           String
+  caso_clinico_id       String?
+  estado_presupuesto    EstadoPresupuesto  @default(borrador)
+  monto_total_estimado  Float
+  cantidad_cuotas       Int                @default(1)
+  fecha_creacion        DateTime           @default(now())
+  fecha_actualizacion   DateTime           @updatedAt
+  paciente              Paciente           @relation(fields: [paciente_id], references: [id])
+  caso_clinico          CasoClinico?       @relation(fields: [caso_clinico_id], references: [id])
+}
