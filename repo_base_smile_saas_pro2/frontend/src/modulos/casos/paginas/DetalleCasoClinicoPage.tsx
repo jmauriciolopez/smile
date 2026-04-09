@@ -84,14 +84,22 @@ export function DetalleCasoClinicoPage() {
         </Card>
 
         <Card titulo="Documentación Fotográfica">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="group relative aspect-video cursor-pointer overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition-all hover:ring-primario/30">
-              <div className="flex h-full items-center justify-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Foto Frontal</div>
+          {((caso as any).fotos || []).length > 0 ? (
+            <div className="grid grid-cols-2 gap-4">
+              {((caso as any).fotos || []).map((foto: any) => (
+                <div key={foto.id} className="group relative aspect-video cursor-pointer overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition-all hover:ring-primario/30">
+                  <img src={foto.url_foto} alt={foto.tipo} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white">{foto.tipo}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="group relative aspect-video cursor-pointer overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition-all hover:ring-primario/30">
-              <div className="flex h-full items-center justify-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Foto Perfil</div>
+          ) : (
+            <div className="py-8 text-center text-sm text-textoSecundario italic bg-slate-50 rounded-xl">
+              No hay documentación fotográfica cargada aún.
             </div>
-          </div>
+          )}
         </Card>
 
         <Card titulo="Gestión Comercial">

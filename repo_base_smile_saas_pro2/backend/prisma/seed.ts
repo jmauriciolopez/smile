@@ -69,7 +69,7 @@ async function main() {
     },
   });
 
-  await prisma.presupuesto.upsert({
+  const presupuestoLaura = await prisma.presupuesto.upsert({
     where: { id: 'pr1-demo' },
     update: {},
     create: {
@@ -81,6 +81,40 @@ async function main() {
       cantidad_cuotas: 6,
     },
   });
+
+  // Fotos Clínicas Demo para Laura
+  await prisma.fotoClinica.createMany({
+    data: [
+      {
+        caso_clinico_id: casoLaura.id,
+        url_foto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800',
+        tipo: 'frontal'
+      },
+      {
+        caso_clinico_id: casoLaura.id,
+        url_foto: 'https://images.unsplash.com/photo-1554151228-14d9def656ec?auto=format&fit=crop&q=80&w=800',
+        tipo: 'perfil'
+      }
+    ]
+  });
+
+  // Diseño de Sonrisa Demo para Laura
+  await prisma.disenoSonrisa.create({
+    data: {
+      caso_clinico_id: casoLaura.id,
+      ajustes_json: JSON.stringify({
+        ancho: 58,
+        alto: 20,
+        posicionX: 0,
+        posicionY: -2,
+        intensidad: 85,
+        preset: 'premium'
+      }),
+      activo: true
+    }
+  });
+
+  console.log('✅ Base de datos poblada con datos premium');
 }
 
 main()

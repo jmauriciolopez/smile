@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 type UsuarioSesion = {
+  nombre_completo: string;
   email: string;
   rol: string;
 };
@@ -17,6 +18,7 @@ export const useAutenticacionStore = create<EstadoAutenticacion>((set) => ({
   autenticado: true,
   token: 'token-demo',
   usuario: {
+    nombre_completo: 'Administrador Demo',
     email: 'admin@smilesaas.local',
     rol: 'administrador',
   },
@@ -24,7 +26,11 @@ export const useAutenticacionStore = create<EstadoAutenticacion>((set) => ({
     set({
       autenticado: true,
       token: 'token-demo',
-      usuario: { email: 'admin@smilesaas.local', rol: 'administrador' },
+      usuario: { 
+        nombre_completo: 'Administrador Demo',
+        email: 'admin@smilesaas.local', 
+        rol: 'administrador' 
+      },
     }),
   cerrarSesion: () => set({ autenticado: false, token: null, usuario: null }),
 }));
