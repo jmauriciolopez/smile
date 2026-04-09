@@ -85,6 +85,8 @@ model CasoClinico {
   paciente                Paciente    @relation(fields: [paciente_id], references: [id])
   usuario_responsable     Usuario?    @relation("UsuarioResponsableCasos", fields: [usuario_responsable_id], references: [id])
   presupuestos            Presupuesto[]
+  disenos                 DisenoSonrisa[]
+  fotos                   FotoClinica[]
 }
 
 model Presupuesto {
@@ -98,4 +100,24 @@ model Presupuesto {
   fecha_actualizacion   DateTime           @updatedAt
   paciente              Paciente           @relation(fields: [paciente_id], references: [id])
   caso_clinico          CasoClinico?       @relation(fields: [caso_clinico_id], references: [id])
+}
+
+model DisenoSonrisa {
+  id                    String      @id @default(uuid())
+  caso_clinico_id       String
+  ajustes_json          String      // Guardamos ancho, alto, etc como string JSON
+  url_imagen_resultado  String?
+  activo                Boolean     @default(true)
+  fecha_creacion        DateTime    @default(now())
+  fecha_actualizacion   DateTime    @updatedAt
+  caso_clinico          CasoClinico @relation(fields: [caso_clinico_id], references: [id])
+}
+
+model FotoClinica {
+  id               String      @id @default(uuid())
+  caso_clinico_id  String
+  url_foto         String
+  tipo             String      // frontal, lateral, etc
+  fecha_creacion   DateTime    @default(now())
+  caso_clinico     CasoClinico @relation(fields: [caso_clinico_id], references: [id])
 }
