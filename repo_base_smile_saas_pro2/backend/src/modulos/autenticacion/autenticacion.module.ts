@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AutenticacionController } from './autenticacion.controller';
 import { AutenticacionService } from './autenticacion.service';
 
+@Global()
 @Module({
   imports: [
     JwtModule.register({

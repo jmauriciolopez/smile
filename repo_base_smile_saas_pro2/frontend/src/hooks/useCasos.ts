@@ -32,7 +32,7 @@ export function useCasos() {
     cargarDatos();
   }, [cargarDatos]);
 
-  const crear = async (datos: Partial<CasoClinicoApi>) => {
+  const crear = async (datos: import('../servicios/servicioCasos').CrearCasoData) => {
     try {
       const nuevo = await crearCaso(datos);
       setCasos((prev) => [nuevo, ...prev]);
@@ -45,4 +45,5 @@ export function useCasos() {
 
   return { casos, cargando, error, crear, refrescar: cargarDatos };
 }
+
 

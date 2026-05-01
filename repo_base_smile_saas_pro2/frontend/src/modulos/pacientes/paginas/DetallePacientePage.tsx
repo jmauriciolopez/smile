@@ -19,6 +19,11 @@ export function DetallePacientePage() {
   });
   const [enviando, setEnviando] = useState(false);
 
+  // Estados para Nuevo Caso
+  const [mostrarModalCaso, setMostrarModalCaso] = useState(false);
+  const [formCaso, setFormCaso] = useState({ titulo: '', motivo_consulta: '' });
+  const [creandoCaso, setCreandoCaso] = useState(false);
+
   // Sincronizar form con paciente al abrir modal
   const abrirEdicion = () => {
     if (paciente) {
@@ -53,8 +58,7 @@ export function DetallePacientePage() {
       await crearCaso({
         paciente_id: id,
         titulo: formCaso.titulo,
-        motivo_consulta: formCaso.motivo_consulta,
-        estado_caso: 'en_estudio'
+        motivo_consulta: formCaso.motivo_consulta
       });
       setMostrarModalCaso(false);
       setFormCaso({ titulo: '', motivo_consulta: '' });
@@ -65,6 +69,7 @@ export function DetallePacientePage() {
       setCreandoCaso(false);
     }
   };
+
 
   if (cargando && !paciente) {
     return (

@@ -32,7 +32,9 @@ export type CrearCasoData = {
   usuario_responsable_id?: string;
 };
 
-export type ActualizarCasoData = Partial<CrearCasoData>;
+export type ActualizarCasoData = Partial<CrearCasoData> & {
+  estado_caso?: string;
+};
 
 export async function obtenerCasos() {
   return clienteApi<CasoClinicoApi[]>('/casos');

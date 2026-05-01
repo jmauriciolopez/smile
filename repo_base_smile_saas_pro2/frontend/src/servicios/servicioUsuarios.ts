@@ -1,4 +1,4 @@
-import { clienteApi } from '../api/clienteApi';
+import { clienteApi } from './clienteApi';
 
 export type UsuarioPerfil = {
   id: string;

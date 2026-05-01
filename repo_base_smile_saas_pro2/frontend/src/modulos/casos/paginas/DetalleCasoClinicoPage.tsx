@@ -66,9 +66,9 @@ export function DetalleCasoClinicoPage() {
         paciente_id: caso.paciente_id,
         caso_clinico_id: caso.id,
         monto_total_estimado: Number(formPresupuesto.monto_total_estimado),
-        cantidad_cuotas: Number(formPresupuesto.cantidad_cuotas),
-        estado_presupuesto: 'borrador'
+        cantidad_cuotas: Number(formPresupuesto.cantidad_cuotas)
       });
+
       setModalNuevoPresupuestoAbierto(false);
       refrescarCaso();
     } catch (err) {
