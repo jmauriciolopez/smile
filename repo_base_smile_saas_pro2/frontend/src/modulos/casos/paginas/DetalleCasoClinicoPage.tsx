@@ -3,13 +3,80 @@ import { Link, useParams } from 'react-router-dom';
 import { Card } from '../../../componentes/ui/Card';
 import { BadgeEstado } from '../../../componentes/ui/BadgeEstado';
 import { useCasoDetalle } from '../../../hooks/useCasoDetalle';
+import { useFotos } from '../../../hooks/useFotos';
+import { useNotas } from '../../../hooks/useNotas';
+import { crearPresupuesto } from '../../../servicios/servicioPresupuestos';
 import { ModalSubirFoto } from '../componentes/ModalSubirFoto';
 import { SeccionNotasClinicas } from '../componentes/SeccionNotasClinicas';
+import { Modal } from '../../../componentes/ui/Modal';
 
 export function DetalleCasoClinicoPage() {
   const { id } = useParams();
-  const { caso, cargando, error, refrescar } = useCasoDetalle(id);
+  const { caso, cargando, error, actualizar: actualizarCasoDatos, refrescar: refrescarCaso } = useCasoDetalle(id);
+  const { fotos, eliminar: eliminarFoto, cargando: cargandoFotos } = useFotos(id);
   const [modalFotoAbierto, setModalFotoAbierto] = React.useState(false);
+
+  // Estados para edición de caso
+  const [modalEditCasoAbierto, setModalEditCasoAbierto] = React.useState(false);
+  const [formEditCaso, setFormEditCaso] = React.useState({
+    titulo: '',
+    motivo_consulta: '',
+    estado_caso: ''
+  });
+  const [enviandoEditCaso, setEnviandoEditCaso] = React.useState(false);
+
+  // Estados para nuevo presupuesto
+  const [modalNuevoPresupuestoAbierto, setModalNuevoPresupuestoAbierto] = React.useState(false);
+  const [formPresupuesto, setFormPresupuesto] = React.useState({
+    monto_total_estimado: 0,
+    cantidad_cuotas: 12
+  });
+  const [enviandoPresupuesto, setEnviandoPresupuesto] = React.useState(false);
+
+  const abrirEdicionCaso = () => {
+    if (caso) {
+      setFormEditCaso({
+        titulo: caso.titulo,
+        motivo_consulta: caso.motivo_consulta || '',
+        estado_caso: caso.estado_caso
+      });
+      setModalEditCasoAbierto(true);
+    }
+  };
+
+  const handleGuardarEdicionCaso = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEnviandoEditCaso(true);
+    try {
+      await actualizarCasoDatos(formEditCaso);
+      setModalEditCasoAbierto(false);
+    } catch (err) {
+      alert('Error al actualizar el caso.');
+    } finally {
+      setEnviandoEditCaso(false);
+    }
+  };
+
+  const handleCrearPresupuesto = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!caso) return;
+    setEnviandoPresupuesto(true);
+    try {
+      await crearPresupuesto({
+        paciente_id: caso.paciente_id,
+        caso_clinico_id: caso.id,
+        monto_total_estimado: Number(formPresupuesto.monto_total_estimado),
+        cantidad_cuotas: Number(formPresupuesto.cantidad_cuotas),
+        estado_presupuesto: 'borrador'
+      });
+      setModalNuevoPresupuestoAbierto(false);
+      refrescarCaso();
+    } catch (err) {
+      alert('Error al crear el presupuesto.');
+    } finally {
+      setEnviandoPresupuesto(false);
+    }
+  };
 
   if (cargando) {
     return (
@@ -37,8 +104,15 @@ export function DetalleCasoClinicoPage() {
 
   const presupuestos = (caso as any).presupuestos || [];
   const primerPresupuesto = presupuestos[0];
-  const fotos = (caso as any).fotos || [];
-  const notas = (caso as any).notas || [];
+
+  const handleEliminarFoto = async (id: string) => {
+    if (!confirm('¿Eliminar esta fotografía clínica?')) return;
+    try {
+      await eliminarFoto(id);
+    } catch (err) {
+      alert('Error al eliminar la foto.');
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -52,9 +126,12 @@ export function DetalleCasoClinicoPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Link to="/casos" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-textoSecundario hover:bg-slate-50 transition-colors">
-            Volver
-          </Link>
+          <button 
+            onClick={abrirEdicionCaso}
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-textoSecundario hover:bg-slate-50 transition-colors"
+          >
+            Editar Detalles
+          </button>
           <Link className="rounded-xl bg-primario px-4 py-2 text-sm font-medium text-white shadow-lg shadow-primario/20 hover:scale-[1.02] active:scale-[0.98] transition-all" to={`/disenos/editor/${caso.id}`}>
             Abrir editor de sonrisa
           </Link>
@@ -81,8 +158,6 @@ export function DetalleCasoClinicoPage() {
 
           <SeccionNotasClinicas 
             casoId={caso.id} 
-            notasIniciales={notas} 
-            alActualizar={refrescar} 
           />
         </div>
 
@@ -97,12 +172,22 @@ export function DetalleCasoClinicoPage() {
                 + Añadir registro fotográfico
               </button>
 
-              {fotos.length > 0 ? (
+              {cargandoFotos && fotos.length === 0 ? (
+                <p className="text-center text-xs text-slate-400 animate-pulse">Cargando fotos...</p>
+              ) : fotos.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3">
                   {fotos.map((foto: any) => (
                     <div key={foto.id} className="group relative aspect-video cursor-pointer overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 transition-all hover:ring-primario/50 shadow-sm">
                       <img src={foto.url_foto} alt={foto.tipo} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+                        <div className="flex justify-end">
+                          <button 
+                            onClick={(e) => { e.preventDefault(); handleEliminarFoto(foto.id); }}
+                            className="rounded-lg bg-red-500/80 p-1 text-white hover:bg-red-600 transition-colors"
+                          >
+                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          </button>
+                        </div>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white">{foto.tipo}</span>
                       </div>
                     </div>
@@ -132,8 +217,16 @@ export function DetalleCasoClinicoPage() {
                 </div>
               </Link>
             ) : (
-              <div className="py-8 text-center text-sm text-textoSecundario italic bg-slate-50 rounded-xl border border-slate-100">
-                No hay presupuestos activos.
+              <div className="space-y-4">
+                <div className="py-6 text-center text-sm text-textoSecundario italic bg-slate-50 rounded-xl border border-slate-100">
+                  No hay presupuestos activos.
+                </div>
+                <button 
+                  onClick={() => setModalNuevoPresupuestoAbierto(true)}
+                  className="w-full rounded-xl bg-primario/10 p-3 text-center text-xs font-bold uppercase tracking-wider text-primario hover:bg-primario/20 transition-all"
+                >
+                  + Crear Presupuesto
+                </button>
               </div>
             )}
           </Card>
@@ -155,8 +248,86 @@ export function DetalleCasoClinicoPage() {
         abierto={modalFotoAbierto} 
         alCerrar={() => setModalFotoAbierto(false)} 
         casoId={caso.id} 
-        alTerminar={refrescar} 
       />
+
+      {/* Modal Editar Caso */}
+      <Modal abierto={modalEditCasoAbierto} alCerrar={() => setModalEditCasoAbierto(false)} titulo="Editar Detalles del Caso">
+        <form onSubmit={handleGuardarEdicionCaso} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Título</label>
+            <input 
+              required
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formEditCaso.titulo}
+              onChange={e => setFormEditCaso({...formEditCaso, titulo: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Estado</label>
+            <select 
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formEditCaso.estado_caso}
+              onChange={e => setFormEditCaso({...formEditCaso, estado_caso: e.target.value})}
+            >
+              <option value="en_estudio">En Estudio</option>
+              <option value="presupuestado">Presupuestado</option>
+              <option value="en_proceso">En Proceso</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Motivo de Consulta</label>
+            <textarea 
+              rows={3}
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formEditCaso.motivo_consulta}
+              onChange={e => setFormEditCaso({...formEditCaso, motivo_consulta: e.target.value})}
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={() => setModalEditCasoAbierto(false)} className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100">Cancelar</button>
+            <button type="submit" disabled={enviandoEditCaso} className="rounded-xl bg-primario px-6 py-2 text-sm font-bold text-white shadow-lg shadow-primario/20 disabled:opacity-50">
+              {enviandoEditCaso ? 'Guardando...' : 'Guardar Cambios'}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal Nuevo Presupuesto */}
+      <Modal abierto={modalNuevoPresupuestoAbierto} alCerrar={() => setModalNuevoPresupuestoAbierto(false)} titulo="Nuevo Presupuesto">
+        <form onSubmit={handleCrearPresupuesto} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Monto Total Estimado (USD)</label>
+            <input 
+              required
+              type="number"
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formPresupuesto.monto_total_estimado}
+              onChange={e => setFormPresupuesto({...formPresupuesto, monto_total_estimado: Number(e.target.value)})}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Cantidad de Cuotas</label>
+            <select 
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formPresupuesto.cantidad_cuotas}
+              onChange={e => setFormPresupuesto({...formPresupuesto, cantidad_cuotas: Number(e.target.value)})}
+            >
+              <option value={1}>Pago Único</option>
+              <option value={3}>3 Cuotas</option>
+              <option value={6}>6 Cuotas</option>
+              <option value={12}>12 Cuotas</option>
+              <option value={18}>18 Cuotas</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={() => setModalNuevoPresupuestoAbierto(false)} className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100">Cancelar</button>
+            <button type="submit" disabled={enviandoPresupuesto} className="rounded-xl bg-primario px-6 py-2 text-sm font-bold text-white shadow-lg shadow-primario/20 disabled:opacity-50">
+              {enviandoPresupuesto ? 'Creando...' : 'Crear Presupuesto'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

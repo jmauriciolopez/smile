@@ -1,0 +1,1850 @@
+{
+  "v2": {
+    "repo": "local/repo_base_smile_saas_pro2-c807c883",
+    "dead_symbols": [
+      {
+        "id": "backend/prisma/seed.ts::main#function",
+        "name": "main",
+        "kind": "function",
+        "file": "backend/prisma/seed.ts",
+        "line": 6,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/main.ts::bootstrap#function",
+        "name": "bootstrap",
+        "kind": "function",
+        "file": "backend/src/main.ts",
+        "line": 5,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/autenticacion.controller.ts::AutenticacionController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/autenticacion.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/autenticacion.controller.ts::AutenticacionController.iniciarSesion#method",
+        "name": "iniciarSesion",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/autenticacion.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/autenticacion.service.ts::AutenticacionService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/autenticacion.service.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/autenticacion.service.ts::AutenticacionService.iniciarSesion#method",
+        "name": "iniciarSesion",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/autenticacion.service.ts",
+        "line": 14,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/guards/jwt-auth.guard.ts::JwtAuthGuard.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/guards/jwt-auth.guard.ts",
+        "line": 12,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/guards/jwt-auth.guard.ts::JwtAuthGuard.canActivate#method",
+        "name": "canActivate",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/guards/jwt-auth.guard.ts",
+        "line": 14,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/autenticacion/guards/jwt-auth.guard.ts::JwtAuthGuard.extractTokenFromHeader#method",
+        "name": "extractTokenFromHeader",
+        "kind": "method",
+        "file": "backend/src/modulos/autenticacion/guards/jwt-auth.guard.ts",
+        "line": 35,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.controller.ts::CasosController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.controller.ts::CasosController.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.controller.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.controller.ts::CasosController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.controller.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.controller.ts::CasosController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.controller.ts",
+        "line": 28,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.service.ts::CasosService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.service.ts",
+        "line": 8,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.service.ts::CasosService.obtenerTodos#method",
+        "name": "obtenerTodos",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.service.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.service.ts::CasosService.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.service.ts",
+        "line": 17,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.service.ts::CasosService.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.service.ts",
+        "line": 35,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/casos/casos.service.ts::CasosService.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/casos/casos.service.ts",
+        "line": 41,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/dashboard/dashboard.controller.ts::DashboardController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/dashboard/dashboard.controller.ts",
+        "line": 8,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/dashboard/dashboard.service.ts::DashboardService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/dashboard/dashboard.service.ts",
+        "line": 6,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/dashboard/dashboard.service.ts::DashboardService.obtenerResumen#method",
+        "name": "obtenerResumen",
+        "kind": "method",
+        "file": "backend/src/modulos/dashboard/dashboard.service.ts",
+        "line": 8,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/disenos/disenos.controller.ts::DisenosController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/disenos/disenos.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/disenos/disenos.controller.ts::DisenosController.guardar#method",
+        "name": "guardar",
+        "kind": "method",
+        "file": "backend/src/modulos/disenos/disenos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/disenos/disenos.controller.ts::DisenosController.obtenerPorCaso#method",
+        "name": "obtenerPorCaso",
+        "kind": "method",
+        "file": "backend/src/modulos/disenos/disenos.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/disenos/disenos.service.ts::DisenosService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/disenos/disenos.service.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/disenos/disenos.service.ts::DisenosService.guardarDiseno#method",
+        "name": "guardarDiseno",
+        "kind": "method",
+        "file": "backend/src/modulos/disenos/disenos.service.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/disenos/disenos.service.ts::DisenosService.obtenerPorCaso#method",
+        "name": "obtenerPorCaso",
+        "kind": "method",
+        "file": "backend/src/modulos/disenos/disenos.service.ts",
+        "line": 26,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.controller.ts::FotosController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.controller.ts::FotosController.registrar#method",
+        "name": "registrar",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.controller.ts::FotosController.porCaso#method",
+        "name": "porCaso",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.controller.ts::FotosController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.service.ts::FotosService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.service.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.service.ts::FotosService.registrar#method",
+        "name": "registrar",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.service.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.service.ts::FotosService.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.service.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/fotos/fotos.service.ts::FotosService.porCaso#method",
+        "name": "porCaso",
+        "kind": "method",
+        "file": "backend/src/modulos/fotos/fotos.service.ts",
+        "line": 21,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.controller.ts::NotasController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.controller.ts::NotasController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.controller.ts::NotasController.porCaso#method",
+        "name": "porCaso",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.controller.ts::NotasController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.service.ts::NotasService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.service.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.service.ts::NotasService.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.service.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.service.ts::NotasService.porCaso#method",
+        "name": "porCaso",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.service.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/notas/notas.service.ts::NotasService.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/notas/notas.service.ts",
+        "line": 25,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 28,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.service.ts::PacientesService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.service.ts",
+        "line": 8,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.service.ts::PacientesService.obtenerTodos#method",
+        "name": "obtenerTodos",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.service.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.service.ts::PacientesService.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.service.ts",
+        "line": 16,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.service.ts::PacientesService.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.service.ts",
+        "line": 30,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/pacientes/pacientes.service.ts::PacientesService.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/pacientes/pacientes.service.ts",
+        "line": 34,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 28,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.service.ts::PresupuestosService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.service.ts",
+        "line": 8,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.service.ts::PresupuestosService.obtenerTodos#method",
+        "name": "obtenerTodos",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.service.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.service.ts::PresupuestosService.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.service.ts",
+        "line": 17,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.service.ts::PresupuestosService.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.service.ts",
+        "line": 37,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/presupuestos/presupuestos.service.ts::PresupuestosService.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/presupuestos/presupuestos.service.ts",
+        "line": 43,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.porPresupuesto#method",
+        "name": "porPresupuesto",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.service.ts::SeguimientosService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.service.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.service.ts::SeguimientosService.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.service.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.service.ts::SeguimientosService.porPresupuesto#method",
+        "name": "porPresupuesto",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.service.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/seguimientos/seguimientos.service.ts::SeguimientosService.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/seguimientos/seguimientos.service.ts",
+        "line": 27,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.controller.ts::TareasController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.controller.ts::TareasController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.controller.ts::TareasController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.controller.ts::TareasController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 25,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.service.ts::TareasService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.service.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.service.ts::TareasService.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.service.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.service.ts::TareasService.todos#method",
+        "name": "todos",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.service.ts",
+        "line": 19,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.service.ts::TareasService.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.service.ts",
+        "line": 25,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/modulos/tareas/tareas.service.ts::TareasService.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "backend/src/modulos/tareas/tareas.service.ts",
+        "line": 35,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "backend/src/prisma/prisma.service.ts::PrismaService.onModuleInit#method",
+        "name": "onModuleInit",
+        "kind": "method",
+        "file": "backend/src/prisma/prisma.service.ts",
+        "line": 6,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/App.tsx::App#function",
+        "name": "App",
+        "kind": "function",
+        "file": "frontend/src/App.tsx",
+        "line": 3,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/componentes/ui/BadgeEstado.tsx::BadgeEstado#function",
+        "name": "BadgeEstado",
+        "kind": "function",
+        "file": "frontend/src/componentes/ui/BadgeEstado.tsx",
+        "line": 5,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/componentes/ui/Card.tsx::Card#function",
+        "name": "Card",
+        "kind": "function",
+        "file": "frontend/src/componentes/ui/Card.tsx",
+        "line": 8,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/componentes/ui/Modal.tsx::Modal#function",
+        "name": "Modal",
+        "kind": "function",
+        "file": "frontend/src/componentes/ui/Modal.tsx",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useCasoDetalle.ts::useCasoDetalle.cargarDatos#method",
+        "name": "cargarDatos",
+        "kind": "method",
+        "file": "frontend/src/hooks/useCasoDetalle.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/usePacientes.ts::usePacientes.cargarDatos#method",
+        "name": "cargarDatos",
+        "kind": "method",
+        "file": "frontend/src/hooks/usePacientes.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/usePresupuestoDetalle.ts::usePresupuestoDetalle.cargarDatos#method",
+        "name": "cargarDatos",
+        "kind": "method",
+        "file": "frontend/src/hooks/usePresupuestoDetalle.ts",
+        "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/autenticacion/paginas/LoginPage.tsx::LoginPage.handleLogin#method",
+        "name": "handleLogin",
+        "kind": "method",
+        "file": "frontend/src/modulos/autenticacion/paginas/LoginPage.tsx",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/casos/componentes/ModalSubirFoto.tsx::ModalSubirFoto#function",
+        "name": "ModalSubirFoto",
+        "kind": "function",
+        "file": "frontend/src/modulos/casos/componentes/ModalSubirFoto.tsx",
+        "line": 12,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/casos/componentes/ModalSubirFoto.tsx::ModalSubirFoto.handleSubmit#method",
+        "name": "handleSubmit",
+        "kind": "method",
+        "file": "frontend/src/modulos/casos/componentes/ModalSubirFoto.tsx",
+        "line": 19,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/casos/componentes/SeccionNotasClinicas.tsx::SeccionNotasClinicas#function",
+        "name": "SeccionNotasClinicas",
+        "kind": "function",
+        "file": "frontend/src/modulos/casos/componentes/SeccionNotasClinicas.tsx",
+        "line": 11,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/casos/componentes/SeccionNotasClinicas.tsx::SeccionNotasClinicas.handleGuardarNota#method",
+        "name": "handleGuardarNota",
+        "kind": "method",
+        "file": "frontend/src/modulos/casos/componentes/SeccionNotasClinicas.tsx",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/diseno_sonrisa/paginas/EditorSonrisaPage.tsx::EditorSonrisaPage.onGuardar#method",
+        "name": "onGuardar",
+        "kind": "method",
+        "file": "frontend/src/modulos/diseno_sonrisa/paginas/EditorSonrisaPage.tsx",
+        "line": 45,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/pacientes/componentes/ModalNuevoPaciente.tsx::ModalNuevoPaciente#function",
+        "name": "ModalNuevoPaciente",
+        "kind": "function",
+        "file": "frontend/src/modulos/pacientes/componentes/ModalNuevoPaciente.tsx",
+        "line": 11,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/pacientes/componentes/ModalNuevoPaciente.tsx::ModalNuevoPaciente.handleSubmit#method",
+        "name": "handleSubmit",
+        "kind": "method",
+        "file": "frontend/src/modulos/pacientes/componentes/ModalNuevoPaciente.tsx",
+        "line": 21,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/presupuestos/componentes/TimelineSeguimiento.tsx::TimelineSeguimiento#function",
+        "name": "TimelineSeguimiento",
+        "kind": "function",
+        "file": "frontend/src/modulos/presupuestos/componentes/TimelineSeguimiento.tsx",
+        "line": 11,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/presupuestos/componentes/TimelineSeguimiento.tsx::TimelineSeguimiento.handleGuardar#method",
+        "name": "handleGuardar",
+        "kind": "method",
+        "file": "frontend/src/modulos/presupuestos/componentes/TimelineSeguimiento.tsx",
+        "line": 17,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioCasos.ts::crearCaso#function",
+        "name": "crearCaso",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioCasos.ts",
+        "line": 36,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioCasos.ts::actualizarCaso#function",
+        "name": "actualizarCaso",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioCasos.ts",
+        "line": 43,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioFotos.ts::eliminarFoto#function",
+        "name": "eliminarFoto",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioFotos.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioFotos.ts::obtenerFotosPorCaso#function",
+        "name": "obtenerFotosPorCaso",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioFotos.ts",
+        "line": 24,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioNotas.ts::eliminarNota#function",
+        "name": "eliminarNota",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioNotas.ts",
+        "line": 17,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioNotas.ts::obtenerNotasPorCaso#function",
+        "name": "obtenerNotasPorCaso",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioNotas.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPacientes.ts::actualizarPaciente#function",
+        "name": "actualizarPaciente",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPacientes.ts",
+        "line": 29,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPresupuestos.ts::crearPresupuesto#function",
+        "name": "crearPresupuesto",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPresupuestos.ts",
+        "line": 35,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPresupuestos.ts::actualizarPresupuesto#function",
+        "name": "actualizarPresupuesto",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPresupuestos.ts",
+        "line": 42,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioSeguimientos.ts::obtenerSeguimientosPorPresupuesto#function",
+        "name": "obtenerSeguimientosPorPresupuesto",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioSeguimientos.ts",
+        "line": 19,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioSeguimientos.ts::eliminarSeguimiento#function",
+        "name": "eliminarSeguimiento",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioSeguimientos.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/componentes/layout/ShellAplicacion.tsx::ShellAplicacion#function",
+        "name": "ShellAplicacion",
+        "kind": "function",
+        "file": "frontend/src/componentes/layout/ShellAplicacion.tsx",
+        "line": 11,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useCasoDetalle.ts::useCasoDetalle#function",
+        "name": "useCasoDetalle",
+        "kind": "function",
+        "file": "frontend/src/hooks/useCasoDetalle.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useCasos.ts::useCasos#function",
+        "name": "useCasos",
+        "kind": "function",
+        "file": "frontend/src/hooks/useCasos.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useDashboard.ts::useDashboard#function",
+        "name": "useDashboard",
+        "kind": "function",
+        "file": "frontend/src/hooks/useDashboard.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useEditorSonrisa.ts::useEditorSonrisa#function",
+        "name": "useEditorSonrisa",
+        "kind": "function",
+        "file": "frontend/src/hooks/useEditorSonrisa.ts",
+        "line": 12,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useEditorSonrisa.ts::useEditorSonrisa.aplicarPreset#method",
+        "name": "aplicarPreset",
+        "kind": "method",
+        "file": "frontend/src/hooks/useEditorSonrisa.ts",
+        "line": 54,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/useEditorSonrisa.ts::useEditorSonrisa.manejarGuardar#method",
+        "name": "manejarGuardar",
+        "kind": "method",
+        "file": "frontend/src/hooks/useEditorSonrisa.ts",
+        "line": 64,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/usePacienteDetalle.ts::usePacienteDetalle#function",
+        "name": "usePacienteDetalle",
+        "kind": "function",
+        "file": "frontend/src/hooks/usePacienteDetalle.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/usePacientes.ts::usePacientes#function",
+        "name": "usePacientes",
+        "kind": "function",
+        "file": "frontend/src/hooks/usePacientes.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/usePresupuestoDetalle.ts::usePresupuestoDetalle#function",
+        "name": "usePresupuestoDetalle",
+        "kind": "function",
+        "file": "frontend/src/hooks/usePresupuestoDetalle.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/hooks/usePresupuestos.ts::usePresupuestos#function",
+        "name": "usePresupuestos",
+        "kind": "function",
+        "file": "frontend/src/hooks/usePresupuestos.ts",
+        "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/autenticacion/paginas/LoginPage.tsx::LoginPage#function",
+        "name": "LoginPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/autenticacion/paginas/LoginPage.tsx",
+        "line": 6,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/casos/paginas/CasosPage.tsx::CasosPage#function",
+        "name": "CasosPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/casos/paginas/CasosPage.tsx",
+        "line": 6,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/casos/paginas/DetalleCasoClinicoPage.tsx::DetalleCasoClinicoPage#function",
+        "name": "DetalleCasoClinicoPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/casos/paginas/DetalleCasoClinicoPage.tsx",
+        "line": 9,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/dashboard/paginas/DashboardPage.tsx::DashboardPage#function",
+        "name": "DashboardPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/dashboard/paginas/DashboardPage.tsx",
+        "line": 5,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/diseno_sonrisa/paginas/EditorSonrisaPage.tsx::EditorSonrisaPage#function",
+        "name": "EditorSonrisaPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/diseno_sonrisa/paginas/EditorSonrisaPage.tsx",
+        "line": 6,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/pacientes/paginas/DetallePacientePage.tsx::DetallePacientePage#function",
+        "name": "DetallePacientePage",
+        "kind": "function",
+        "file": "frontend/src/modulos/pacientes/paginas/DetallePacientePage.tsx",
+        "line": 6,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/pacientes/paginas/PacientesPage.tsx::PacientesPage#function",
+        "name": "PacientesPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/pacientes/paginas/PacientesPage.tsx",
+        "line": 8,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/presupuestos/paginas/DetallePresupuestoPage.tsx::DetallePresupuestoPage#function",
+        "name": "DetallePresupuestoPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/presupuestos/paginas/DetallePresupuestoPage.tsx",
+        "line": 7,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/presupuestos/paginas/PresupuestosPage.tsx::PresupuestosPage#function",
+        "name": "PresupuestosPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/presupuestos/paginas/PresupuestosPage.tsx",
+        "line": 6,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/modulos/seguimientos/paginas/SeguimientosPage.tsx::SeguimientosPage#function",
+        "name": "SeguimientosPage",
+        "kind": "function",
+        "file": "frontend/src/modulos/seguimientos/paginas/SeguimientosPage.tsx",
+        "line": 3,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/rutas/index.tsx::RutaPrivada#function",
+        "name": "RutaPrivada",
+        "kind": "function",
+        "file": "frontend/src/rutas/index.tsx",
+        "line": 15,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/rutas/index.tsx::AppRoutes#function",
+        "name": "AppRoutes",
+        "kind": "function",
+        "file": "frontend/src/rutas/index.tsx",
+        "line": 20,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "no_callers"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/clienteApi.ts::clienteApi#function",
+        "name": "clienteApi",
+        "kind": "function",
+        "file": "frontend/src/servicios/clienteApi.ts",
+        "line": 3,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioCasos.ts::obtenerCasos#function",
+        "name": "obtenerCasos",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioCasos.ts",
+        "line": 28,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioCasos.ts::obtenerCasoPorId#function",
+        "name": "obtenerCasoPorId",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioCasos.ts",
+        "line": 32,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioDashboard.ts::obtenerResumenDashboard#function",
+        "name": "obtenerResumenDashboard",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioDashboard.ts",
+        "line": 10,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioDisenos.ts::guardarDiseno#function",
+        "name": "guardarDiseno",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioDisenos.ts",
+        "line": 11,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioDisenos.ts::obtenerDisenoPorCaso#function",
+        "name": "obtenerDisenoPorCaso",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioDisenos.ts",
+        "line": 22,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioFotos.ts::registrarFoto#function",
+        "name": "registrarFoto",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioFotos.ts",
+        "line": 11,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioNotas.ts::crearNota#function",
+        "name": "crearNota",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioNotas.ts",
+        "line": 10,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPacientes.ts::obtenerPacientes#function",
+        "name": "obtenerPacientes",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPacientes.ts",
+        "line": 14,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPacientes.ts::obtenerPacientePorId#function",
+        "name": "obtenerPacientePorId",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPacientes.ts",
+        "line": 18,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPacientes.ts::crearPaciente#function",
+        "name": "crearPaciente",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPacientes.ts",
+        "line": 22,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPresupuestos.ts::obtenerPresupuestos#function",
+        "name": "obtenerPresupuestos",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPresupuestos.ts",
+        "line": 27,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioPresupuestos.ts::obtenerPresupuestoPorId#function",
+        "name": "obtenerPresupuestoPorId",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioPresupuestos.ts",
+        "line": 31,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "frontend/src/servicios/servicioSeguimientos.ts::crearSeguimiento#function",
+        "name": "crearSeguimiento",
+        "kind": "function",
+        "file": "frontend/src/servicios/servicioSeguimientos.ts",
+        "line": 12,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      }
+    ],
+    "total_analysed": 150,
+    "min_confidence": 0.5,
+    "_meta": {
+      "timing_ms": 31.0,
+      "methodology": "multi_signal",
+      "confidence_level": "medium"
+    },
+    "framework_warning": "No standard entry points detected (e.g. main.py, app.py, __main__.py). Signal 1 (unreachable_file) fires for every symbol, inflating dead code counts. Pass entry_point_patterns to identify framework-specific roots (e.g. handler functions for AWS Lambda, route modules for FastAPI)."
+  }
+}

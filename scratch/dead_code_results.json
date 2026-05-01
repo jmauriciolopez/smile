@@ -42,6 +42,19 @@
         ]
       },
       {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.controller.ts::AutenticacionController.iniciarSesion#method",
+        "name": "iniciarSesion",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
         "id": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.service.ts::AutenticacionService.constructor#method",
         "name": "constructor",
         "kind": "method",
@@ -112,6 +125,45 @@
         "kind": "method",
         "file": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts",
         "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts::CasosController.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts::CasosController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts::CasosController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/casos/casos.controller.ts",
+        "line": 28,
         "confidence": 1.0,
         "signals": [
           "unreachable_file",
@@ -237,6 +289,32 @@
         ]
       },
       {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/disenos/disenos.controller.ts::DisenosController.guardar#method",
+        "name": "guardar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/disenos/disenos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/disenos/disenos.controller.ts::DisenosController.obtenerPorCaso#method",
+        "name": "obtenerPorCaso",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/disenos/disenos.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
         "id": "repo_base_smile_saas_pro2/backend/src/modulos/disenos/disenos.service.ts::DisenosService.constructor#method",
         "name": "constructor",
         "kind": "method",
@@ -281,6 +359,45 @@
         "kind": "method",
         "file": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts",
         "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts::FotosController.registrar#method",
+        "name": "registrar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts::FotosController.porCaso#method",
+        "name": "porCaso",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts::FotosController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/fotos/fotos.controller.ts",
+        "line": 20,
         "confidence": 1.0,
         "signals": [
           "unreachable_file",
@@ -354,6 +471,45 @@
         ]
       },
       {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.controller.ts::NotasController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.controller.ts::NotasController.porCaso#method",
+        "name": "porCaso",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.controller.ts::NotasController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
         "id": "repo_base_smile_saas_pro2/backend/src/modulos/notas/notas.service.ts::NotasService.constructor#method",
         "name": "constructor",
         "kind": "method",
@@ -411,6 +567,45 @@
         "kind": "method",
         "file": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts",
         "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts::PacientesController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/pacientes/pacientes.controller.ts",
+        "line": 28,
         "confidence": 1.0,
         "signals": [
           "unreachable_file",
@@ -497,6 +692,45 @@
         ]
       },
       {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.obtenerPorId#method",
+        "name": "obtenerPorId",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 18,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 23,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.controller.ts::PresupuestosController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.controller.ts",
+        "line": 28,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
         "id": "repo_base_smile_saas_pro2/backend/src/modulos/presupuestos/presupuestos.service.ts::PresupuestosService.constructor#method",
         "name": "constructor",
         "kind": "method",
@@ -575,6 +809,45 @@
         ]
       },
       {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.porPresupuesto#method",
+        "name": "porPresupuesto",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 15,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.controller.ts::SeguimientosController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
         "id": "repo_base_smile_saas_pro2/backend/src/modulos/seguimientos/seguimientos.service.ts::SeguimientosService.constructor#method",
         "name": "constructor",
         "kind": "method",
@@ -640,6 +913,45 @@
         ]
       },
       {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts::TareasController.crear#method",
+        "name": "crear",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 10,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts::TareasController.actualizar#method",
+        "name": "actualizar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 20,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts::TareasController.eliminar#method",
+        "name": "eliminar",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts",
+        "line": 25,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
         "id": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.service.ts::TareasService.constructor#method",
         "name": "constructor",
         "kind": "method",
@@ -697,6 +1009,58 @@
         "kind": "method",
         "file": "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.service.ts",
         "line": 35,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts",
+        "line": 7,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController.obtenerPerfil#method",
+        "name": "obtenerPerfil",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts",
+        "line": 11,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService.constructor#method",
+        "name": "constructor",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts",
+        "line": 6,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService.obtenerPerfil#method",
+        "name": "obtenerPerfil",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts",
+        "line": 8,
         "confidence": 1.0,
         "signals": [
           "unreachable_file",
@@ -788,6 +1152,19 @@
         "kind": "method",
         "file": "repo_base_smile_saas_pro2/frontend/src/hooks/usePacientes.ts",
         "line": 9,
+        "confidence": 1.0,
+        "signals": [
+          "unreachable_file",
+          "no_callers",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts::usePerfil.cargarPerfil#method",
+        "name": "cargarPerfil",
+        "kind": "method",
+        "file": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts",
+        "line": 12,
         "confidence": 1.0,
         "signals": [
           "unreachable_file",
@@ -1086,7 +1463,7 @@
         "name": "ShellAplicacion",
         "kind": "function",
         "file": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx",
-        "line": 11,
+        "line": 12,
         "confidence": 0.67,
         "signals": [
           "unreachable_file",
@@ -1183,6 +1560,18 @@
         "kind": "function",
         "file": "repo_base_smile_saas_pro2/frontend/src/hooks/usePacientes.ts",
         "line": 4,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts::usePerfil#function",
+        "name": "usePerfil",
+        "kind": "function",
+        "file": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts",
+        "line": 5,
         "confidence": 0.67,
         "signals": [
           "unreachable_file",
@@ -1524,12 +1913,24 @@
           "unreachable_file",
           "not_barrel_exported"
         ]
+      },
+      {
+        "id": "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts::obtenerPerfil#function",
+        "name": "obtenerPerfil",
+        "kind": "function",
+        "file": "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts",
+        "line": 11,
+        "confidence": 0.67,
+        "signals": [
+          "unreachable_file",
+          "not_barrel_exported"
+        ]
       }
     ],
-    "total_analysed": 150,
+    "total_analysed": 157,
     "min_confidence": 0.5,
     "_meta": {
-      "timing_ms": 15.0,
+      "timing_ms": 0.0,
       "methodology": "multi_signal",
       "confidence_level": "medium"
     },

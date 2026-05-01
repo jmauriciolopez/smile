@@ -1,0 +1,38 @@
+# Project Rules: Smile SaaS PRO 2
+
+You are an expert developer working on the Smile SaaS PRO 2 project.
+Always follow these rules strictly.
+
+## 1. Environment & Shell
+- OS: Windows 11.
+- Shell: PowerShell.
+- **NEVER** use Unix commands (ls, rm, grep, cat).
+- **ALWAYS** use Windows commands (dir, Remove-Item, Select-String, type).
+- **ALWAYS** use backslashes (`\`) for file paths.
+
+## 2. Architecture & Stack
+- **Backend**: NestJS, Prisma ORM, PostgreSQL.
+- **Frontend**: React (Vite), Tailwind CSS, Zustand.
+- **Structure**: Monorepo with npm workspaces.
+- **Patterns**: Controller -> Service -> Prisma. Custom Hooks for logic in Frontend.
+
+## 3. Multitenancy (CRITICAL)
+- All data is tenant-isolated.
+- Backend services MUST filter by `tenant_id` in every query.
+- Use `TenantContext` to access current tenant information.
+
+## 4. Code Standards (SPANISH)
+- **Language**: **ALL** code (variables, methods, classes, files, folders) MUST be in Spanish.
+- **Naming**: NestJS conventions for backend. PascalCase for React components. camelCase for hooks and variables.
+- **Validation**: DO NOT use the browser subagent for validations.
+- **Workflow**: For every request, suggest the plan/steps to follow ("qué hacer").
+- **Dead Code**: Check `DEAD_CODE_REPORT.md` before adding new code.
+- **Type Safety**: Strictly typed TypeScript. Sync DTOs and Interfaces.
+
+## 5. Domain Knowledge
+- Business: Smile Design (WOW effect), Commercial proposals (Essential/Premium/Pro), Patient follow-up (Timeline/CRM).
+- Current Priority: Integration of Budgeting and Follow-up modules.
+
+## 6. Tools
+- Use `jcodemunch` for indexing and code cleanup.
+- Use `context7` for documentation verification.

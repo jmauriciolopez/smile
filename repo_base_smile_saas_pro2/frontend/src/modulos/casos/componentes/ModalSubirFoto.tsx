@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../componentes/ui/Modal';
-import { registrarFoto } from '../../../servicios/servicioFotos';
+import { useFotos } from '../../../hooks/useFotos';
 
 interface ModalSubirFotoProps {
   abierto: boolean;
   alCerrar: () => void;
   casoId: string;
-  alTerminar: () => void;
 }
 
-export function ModalSubirFoto({ abierto, alCerrar, casoId, alTerminar }: ModalSubirFotoProps) {
+export function ModalSubirFoto({ abierto, alCerrar, casoId }: ModalSubirFotoProps) {
+  const { subir } = useFotos(casoId);
   const [enviando, setEnviando] = useState(false);
   const [formData, setFormData] = useState({
     url_foto: '',
@@ -20,16 +20,10 @@ export function ModalSubirFoto({ abierto, alCerrar, casoId, alTerminar }: ModalS
     e.preventDefault();
     setEnviando(true);
     try {
-      await registrarFoto({
-        caso_clinico_id: casoId,
-        url_foto: formData.url_foto,
-        tipo: formData.tipo,
-      });
-      alTerminar();
+      await subir(formData.url_foto, formData.tipo);
       alCerrar();
       setFormData({ url_foto: '', tipo: 'frontal' });
     } catch (error) {
-      console.error(error);
       alert('Error al registrar la foto.');
     } finally {
       setEnviando(false);
@@ -89,3 +83,4 @@ export function ModalSubirFoto({ abierto, alCerrar, casoId, alTerminar }: ModalS
     </Modal>
   );
 }
+

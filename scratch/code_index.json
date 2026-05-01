@@ -1,6 +1,6 @@
 {
   "repo": "local/smile-5106204f",
-  "indexed_at": "2026-04-15T13:11:12.004125",
+  "indexed_at": "2026-05-01T09:40:44.783257",
   "source_files": [
     "repo_base_smile_saas_pro2/.github/workflows/backend-ci.yml",
     "repo_base_smile_saas_pro2/.github/workflows/frontend-cd.yml",
@@ -52,6 +52,9 @@
     "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.controller.ts",
     "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.module.ts",
     "repo_base_smile_saas_pro2/backend/src/modulos/tareas/tareas.service.ts",
+    "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts",
+    "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.module.ts",
+    "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts",
     "repo_base_smile_saas_pro2/backend/src/prisma/prisma.module.ts",
     "repo_base_smile_saas_pro2/backend/src/prisma/prisma.service.ts",
     "repo_base_smile_saas_pro2/backend/tsconfig.json",
@@ -68,6 +71,7 @@
     "repo_base_smile_saas_pro2/frontend/src/hooks/useEditorSonrisa.ts",
     "repo_base_smile_saas_pro2/frontend/src/hooks/usePacienteDetalle.ts",
     "repo_base_smile_saas_pro2/frontend/src/hooks/usePacientes.ts",
+    "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts",
     "repo_base_smile_saas_pro2/frontend/src/hooks/usePresupuestoDetalle.ts",
     "repo_base_smile_saas_pro2/frontend/src/hooks/usePresupuestos.ts",
     "repo_base_smile_saas_pro2/frontend/src/index.css",
@@ -100,27 +104,31 @@
     "repo_base_smile_saas_pro2/frontend/src/servicios/servicioPacientes.ts",
     "repo_base_smile_saas_pro2/frontend/src/servicios/servicioPresupuestos.ts",
     "repo_base_smile_saas_pro2/frontend/src/servicios/servicioSeguimientos.ts",
+    "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts",
     "repo_base_smile_saas_pro2/frontend/src/store/autenticacion.store.ts",
     "repo_base_smile_saas_pro2/frontend/tailwind.config.js",
     "repo_base_smile_saas_pro2/frontend/tsconfig.json",
     "repo_base_smile_saas_pro2/frontend/vite.config.ts",
     "repo_base_smile_saas_pro2/package.json",
     "repo_base_smile_saas_pro2/render.yaml",
+    "repo_base_smile_saas_pro2/scratch/code_index.json",
+    "repo_base_smile_saas_pro2/scratch/dead_code_results.json",
     "repo_base_smile_saas_pro2/terraform/main.tf",
     "repo_base_smile_saas_pro2/terraform/outputs.tf",
     "repo_base_smile_saas_pro2/terraform/variables.tf",
+    "scratch/code_index.json",
     "scratch/dead_code_results.json"
   ],
   "languages": {
     "css": 1,
     "hcl": 3,
     "javascript": 2,
-    "json": 7,
+    "json": 10,
     "tsx": 21,
-    "typescript": 71,
+    "typescript": 76,
     "yaml": 3
   },
-  "symbol_count": 346,
+  "symbol_count": 376,
   "symbols": [
     {
       "id": "repo_base_smile_saas_pro2/.github/workflows/backend-ci.yml::name#constant",
@@ -2180,35 +2188,6 @@
       ]
     },
     {
-      "id": "repo_base_smile_saas_pro2/backend/src/app.module.ts::AppModule#class",
-      "file": "repo_base_smile_saas_pro2/backend/src/app.module.ts",
-      "name": "AppModule",
-      "kind": "class",
-      "signature": "class AppModule",
-      "summary": "Class AppModule",
-      "docstring": "",
-      "qualified_name": "AppModule",
-      "language": "typescript",
-      "decorators": [
-        "@Module({\n  imports: [\n    PrismaModule,\n    AutenticacionModule,\n    PacientesModule,\n    CasosModule,\n    PresupuestosModule,\n    DisenosModule,\n    DashboardModule,\n    SeguimientosModule,\n    NotasModule,\n    TareasModule,\n    FotosModule,\n  ],\n})"
-      ],
-      "keywords": [
-        "last_author",
-        "last_modified"
-      ],
-      "parent": null,
-      "line": 29,
-      "end_line": 29,
-      "byte_offset": 1055,
-      "byte_length": 18,
-      "content_hash": "9ca975e9b67b1cf7eaf01a288188da5c1a89b7ff290d2a5e2e193141a4c9d11c",
-      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
-      "cyclomatic": 0,
-      "max_nesting": 0,
-      "param_count": 0,
-      "call_references": []
-    },
-    {
       "id": "repo_base_smile_saas_pro2/backend/src/main.ts::bootstrap#function",
       "file": "repo_base_smile_saas_pro2/backend/src/main.ts",
       "name": "bootstrap",
@@ -2321,35 +2300,6 @@
       "call_references": [
         "Body"
       ]
-    },
-    {
-      "id": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.module.ts::AutenticacionModule#class",
-      "file": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.module.ts",
-      "name": "AutenticacionModule",
-      "kind": "class",
-      "signature": "class AutenticacionModule",
-      "summary": "Class AutenticacionModule",
-      "docstring": "",
-      "qualified_name": "AutenticacionModule",
-      "language": "typescript",
-      "decorators": [
-        "@Module({\n  imports: [\n    JwtModule.register({\n      secret: process.env.JWT_SECRET || 'secreto-demo',\n      signOptions: { expiresIn: '1d' },\n    }),\n  ],\n  controllers: [AutenticacionController],\n  providers: [AutenticacionService],\n  exports: [AutenticacionService],\n})"
-      ],
-      "keywords": [
-        "last_author",
-        "last_modified"
-      ],
-      "parent": null,
-      "line": 17,
-      "end_line": 17,
-      "byte_offset": 498,
-      "byte_length": 28,
-      "content_hash": "4228a21ce6b965e2bd47d14d7c332a37e745414462f5d5a64125936e3a764b41",
-      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
-      "cyclomatic": 0,
-      "max_nesting": 0,
-      "param_count": 0,
-      "call_references": []
     },
     {
       "id": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.service.ts::AutenticacionService#class",
@@ -5988,64 +5938,6 @@
       "call_references": []
     },
     {
-      "id": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx::menu#constant",
-      "file": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx",
-      "name": "menu",
-      "kind": "constant",
-      "signature": "const menu = [\n  { to: '/dashboard', etiqueta: 'Dashboard', icono: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 ",
-      "summary": "Constant menu",
-      "docstring": "",
-      "qualified_name": "menu",
-      "language": "tsx",
-      "decorators": [],
-      "keywords": [
-        "last_author",
-        "last_modified"
-      ],
-      "parent": null,
-      "line": 4,
-      "end_line": 9,
-      "byte_offset": 139,
-      "byte_length": 852,
-      "content_hash": "f0d477e737b1d2f87e49bbd7a41d12a962780b99de59f8bcb1e70a025c9b8bb8",
-      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
-      "cyclomatic": 0,
-      "max_nesting": 0,
-      "param_count": 0,
-      "call_references": []
-    },
-    {
-      "id": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx::ShellAplicacion#function",
-      "file": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx",
-      "name": "ShellAplicacion",
-      "kind": "function",
-      "signature": "function ShellAplicacion()",
-      "summary": "function ShellAplicacion()",
-      "docstring": "",
-      "qualified_name": "ShellAplicacion",
-      "language": "",
-      "decorators": [],
-      "keywords": [],
-      "parent": null,
-      "line": 11,
-      "end_line": 87,
-      "byte_offset": 1000,
-      "byte_length": 3644,
-      "content_hash": "",
-      "ecosystem_context": "",
-      "cyclomatic": 7,
-      "max_nesting": 8,
-      "param_count": 0,
-      "call_references": [
-        "useNavigate",
-        "useAutenticacionStore",
-        "map",
-        "join",
-        "cerrarSesion",
-        "navigate"
-      ]
-    },
-    {
       "id": "repo_base_smile_saas_pro2/frontend/src/componentes/ui/BadgeEstado.tsx::Props#type",
       "file": "repo_base_smile_saas_pro2/frontend/src/componentes/ui/BadgeEstado.tsx",
       "name": "Props",
@@ -9639,14 +9531,911 @@
       "qualified_name": "v2",
       "language": "json",
       "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 2,
+      "end_line": 1849,
+      "byte_offset": 5,
+      "byte_length": 67207,
+      "content_hash": "23bb3c2a39a46c33619c990689d4c78709c4ee0b953aebd9b0de9a5541b78b47",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/app.module.ts::AppModule#class",
+      "file": "repo_base_smile_saas_pro2/backend/src/app.module.ts",
+      "name": "AppModule",
+      "kind": "class",
+      "signature": "class AppModule",
+      "summary": "Class AppModule",
+      "docstring": "",
+      "qualified_name": "AppModule",
+      "language": "typescript",
+      "decorators": [
+        "@Module({\n  imports: [\n    PrismaModule,\n    AutenticacionModule,\n    UsuariosModule,\n    PacientesModule,\n    CasosModule,\n    PresupuestosModule,\n    DisenosModule,\n    DashboardModule,\n    SeguimientosModule,\n    NotasModule,\n    TareasModule,\n    FotosModule,\n  ],\n})"
+      ],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 31,
+      "end_line": 31,
+      "byte_offset": 1144,
+      "byte_length": 18,
+      "content_hash": "9ca975e9b67b1cf7eaf01a288188da5c1a89b7ff290d2a5e2e193141a4c9d11c",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.module.ts::AutenticacionModule#class",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.module.ts",
+      "name": "AutenticacionModule",
+      "kind": "class",
+      "signature": "class AutenticacionModule",
+      "summary": "Class AutenticacionModule",
+      "docstring": "",
+      "qualified_name": "AutenticacionModule",
+      "language": "typescript",
+      "decorators": [
+        "@Module({\n  imports: [\n    JwtModule.register({\n      secret: process.env.JWT_SECRET || 'secreto-demo',\n      signOptions: { expiresIn: '1d' },\n    }),\n  ],\n  controllers: [AutenticacionController],\n  providers: [AutenticacionService],\n  exports: [AutenticacionService, JwtModule],\n})"
+      ],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 17,
+      "end_line": 17,
+      "byte_offset": 509,
+      "byte_length": 28,
+      "content_hash": "4228a21ce6b965e2bd47d14d7c332a37e745414462f5d5a64125936e3a764b41",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController#class",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts",
+      "name": "UsuariosController",
+      "kind": "class",
+      "signature": "class UsuariosController",
+      "summary": "Class UsuariosController",
+      "docstring": "",
+      "qualified_name": "UsuariosController",
+      "language": "typescript",
+      "decorators": [
+        "@Controller('usuarios')"
+      ],
+      "keywords": [],
+      "parent": null,
+      "line": 6,
+      "end_line": 15,
+      "byte_offset": 227,
+      "byte_length": 309,
+      "content_hash": "e11be5dbae44523ea341094013e8a3077117cc81fb86c8ce451baf78f9707ce9",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController.constructor#method",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts",
+      "name": "constructor",
+      "kind": "method",
+      "signature": "constructor(private readonly usuariosService: UsuariosService)",
+      "summary": "constructor(private readonly usuariosService: UsuariosService)",
+      "docstring": "",
+      "qualified_name": "UsuariosController.constructor",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController#class",
+      "line": 7,
+      "end_line": 7,
+      "byte_offset": 256,
+      "byte_length": 65,
+      "content_hash": "0fc1a7fe0a8acdc5325910bbb115492593c5cb91c21feae66ef7b277e000798a",
+      "ecosystem_context": "",
+      "cyclomatic": 1,
+      "max_nesting": 0,
+      "param_count": 1,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController.obtenerPerfil#method",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts",
+      "name": "obtenerPerfil",
+      "kind": "method",
+      "signature": "obtenerPerfil(@Request() req)",
+      "summary": "obtenerPerfil(@Request() req)",
+      "docstring": "",
+      "qualified_name": "UsuariosController.obtenerPerfil",
+      "language": "typescript",
+      "decorators": [
+        "@UseGuards(JwtAuthGuard)",
+        "@Get('perfil')"
+      ],
+      "keywords": [],
+      "parent": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts::UsuariosController#class",
+      "line": 11,
+      "end_line": 14,
+      "byte_offset": 369,
+      "byte_length": 165,
+      "content_hash": "a3752d6e51ff5b8b47b0709bac65253daa57a09a776f12b16ad34c891217754d",
+      "ecosystem_context": "",
+      "cyclomatic": 1,
+      "max_nesting": 1,
+      "param_count": 1,
+      "call_references": [
+        "Request"
+      ]
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.module.ts::UsuariosModule#class",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.module.ts",
+      "name": "UsuariosModule",
+      "kind": "class",
+      "signature": "class UsuariosModule",
+      "summary": "Class UsuariosModule",
+      "docstring": "",
+      "qualified_name": "UsuariosModule",
+      "language": "typescript",
+      "decorators": [
+        "@Module({\n  imports: [AutenticacionModule],\n  controllers: [UsuariosController],\n  providers: [UsuariosService],\n  exports: [UsuariosService],\n})"
+      ],
+      "keywords": [],
+      "parent": null,
+      "line": 12,
+      "end_line": 12,
+      "byte_offset": 386,
+      "byte_length": 23,
+      "content_hash": "35945056378b258d14646713f205124e04fff284562fc66a1a8d9f0b3bf6103f",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService#class",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts",
+      "name": "UsuariosService",
+      "kind": "class",
+      "signature": "class UsuariosService",
+      "summary": "Class UsuariosService",
+      "docstring": "",
+      "qualified_name": "UsuariosService",
+      "language": "typescript",
+      "decorators": [
+        "@Injectable()"
+      ],
+      "keywords": [],
+      "parent": null,
+      "line": 5,
+      "end_line": 26,
+      "byte_offset": 147,
+      "byte_length": 456,
+      "content_hash": "69f8e6b766f37f214bd06fdb2e1ffc0cb98d6b23adb819d805535049169ebcf0",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService.constructor#method",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts",
+      "name": "constructor",
+      "kind": "method",
+      "signature": "constructor(private readonly prisma: PrismaService)",
+      "summary": "constructor(private readonly prisma: PrismaService)",
+      "docstring": "",
+      "qualified_name": "UsuariosService.constructor",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService#class",
+      "line": 6,
+      "end_line": 6,
+      "byte_offset": 173,
+      "byte_length": 54,
+      "content_hash": "00720ee7b1993fb37d0286e06992e082f8bb7ce967b8b055caaa8055283acf41",
+      "ecosystem_context": "",
+      "cyclomatic": 1,
+      "max_nesting": 0,
+      "param_count": 1,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService.obtenerPerfil#method",
+      "file": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts",
+      "name": "obtenerPerfil",
+      "kind": "method",
+      "signature": "async obtenerPerfil(id: string)",
+      "summary": "async obtenerPerfil(id: string)",
+      "docstring": "",
+      "qualified_name": "UsuariosService.obtenerPerfil",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts::UsuariosService#class",
+      "line": 8,
+      "end_line": 25,
+      "byte_offset": 231,
+      "byte_length": 370,
+      "content_hash": "7c4aba5cf5ec8543117e99ada21f2f878e59732836f26fc67780477567c2144c",
+      "ecosystem_context": "",
+      "cyclomatic": 2,
+      "max_nesting": 3,
+      "param_count": 1,
+      "call_references": [
+        "findUnique",
+        "NotFoundException"
+      ]
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx::menu#constant",
+      "file": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx",
+      "name": "menu",
+      "kind": "constant",
+      "signature": "const menu = [\n  { to: '/dashboard', etiqueta: 'Dashboard', icono: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 ",
+      "summary": "Constant menu",
+      "docstring": "",
+      "qualified_name": "menu",
+      "language": "tsx",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 5,
+      "end_line": 10,
+      "byte_offset": 190,
+      "byte_length": 852,
+      "content_hash": "f0d477e737b1d2f87e49bbd7a41d12a962780b99de59f8bcb1e70a025c9b8bb8",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx::ShellAplicacion#function",
+      "file": "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx",
+      "name": "ShellAplicacion",
+      "kind": "function",
+      "signature": "function ShellAplicacion()",
+      "summary": "function ShellAplicacion()",
+      "docstring": "",
+      "qualified_name": "ShellAplicacion",
+      "language": "tsx",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 12,
+      "end_line": 95,
+      "byte_offset": 1051,
+      "byte_length": 4024,
+      "content_hash": "ae230abd5be8753d614e51bc1a4664b47fa979459298c33fbf7bdca43f23f14c",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-09)",
+      "cyclomatic": 13,
+      "max_nesting": 8,
+      "param_count": 0,
+      "call_references": [
+        "useNavigate",
+        "useAutenticacionStore",
+        "usePerfil",
+        "map",
+        "join",
+        "cerrarSesion",
+        "navigate"
+      ]
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts::usePerfil#function",
+      "file": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts",
+      "name": "usePerfil",
+      "kind": "function",
+      "signature": "function usePerfil()",
+      "summary": "function usePerfil()",
+      "docstring": "",
+      "qualified_name": "usePerfil",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 5,
+      "end_line": 33,
+      "byte_offset": 201,
+      "byte_length": 703,
+      "content_hash": "8a34a39c185e86e46329fceac6cd36f7e7dd46ac2fbcf795d3c36511720ff3a4",
+      "ecosystem_context": "",
+      "cyclomatic": 4,
+      "max_nesting": 5,
+      "param_count": 0,
+      "call_references": [
+        "useState",
+        "useAutenticacionStore",
+        "useEffect",
+        "cargarPerfil"
+      ]
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts::usePerfil.cargarPerfil#method",
+      "file": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts",
+      "name": "cargarPerfil",
+      "kind": "method",
+      "signature": "async function cargarPerfil()",
+      "summary": "async function cargarPerfil()",
+      "docstring": "",
+      "qualified_name": "usePerfil.cargarPerfil",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts::usePerfil#function",
+      "line": 12,
+      "end_line": 27,
+      "byte_offset": 481,
+      "byte_length": 346,
+      "content_hash": "290a15e875d87792794ea84a55b11939717ffc07e34e13738e9643df856e21bc",
+      "ecosystem_context": "",
+      "cyclomatic": 4,
+      "max_nesting": 2,
+      "param_count": 0,
+      "call_references": [
+        "setCargando",
+        "obtenerPerfil",
+        "setPerfil",
+        "setError",
+        "error"
+      ]
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts::UsuarioPerfil#type",
+      "file": "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts",
+      "name": "UsuarioPerfil",
+      "kind": "type",
+      "signature": "type UsuarioPerfil = {\n  id: string;\n  nombre_completo: string;\n  email: string;\n  rol: string;\n  activo: boolean;\n};",
+      "summary": "Type definition UsuarioPerfil",
+      "docstring": "",
+      "qualified_name": "UsuarioPerfil",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 3,
+      "end_line": 9,
+      "byte_offset": 56,
+      "byte_length": 117,
+      "content_hash": "3af62c91b5ef1c9905757b5d284427e2a5b592b281d11cb4c944c47579dadc08",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts::obtenerPerfil#function",
+      "file": "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts",
+      "name": "obtenerPerfil",
+      "kind": "function",
+      "signature": "async function obtenerPerfil()",
+      "summary": "async function obtenerPerfil()",
+      "docstring": "",
+      "qualified_name": "obtenerPerfil",
+      "language": "typescript",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 11,
+      "end_line": 13,
+      "byte_offset": 182,
+      "byte_length": 90,
+      "content_hash": "18cd2cd2d5b9c51aadc50485299de6da817c2b21039a15dfa1201ba70c723e52",
+      "ecosystem_context": "",
+      "cyclomatic": 1,
+      "max_nesting": 1,
+      "param_count": 0,
+      "call_references": [
+        "clienteApi"
+      ]
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::repo#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "repo",
+      "kind": "constant",
+      "signature": "\"repo\": \"local/repo_base_smile_saas_pro2-c807c883\"",
+      "summary": "Constant repo",
+      "docstring": "",
+      "qualified_name": "repo",
+      "language": "json",
+      "decorators": [],
       "keywords": [],
       "parent": null,
       "line": 2,
-      "end_line": 1537,
+      "end_line": 2,
       "byte_offset": 5,
-      "byte_length": 55764,
-      "content_hash": "89ac95f0c7a0b4bce7247c7382aa47f4b39b47a947bbf731e4301a6b53ad9c85",
+      "byte_length": 50,
+      "content_hash": "ac78c03e9a2a59ffb31bb7ed1981156916e4c41f766b9b9024b7c05493e58cb3",
       "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::indexed_at#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "indexed_at",
+      "kind": "constant",
+      "signature": "\"indexed_at\": \"2026-04-26T18:10:58.882726\"",
+      "summary": "Constant indexed_at",
+      "docstring": "",
+      "qualified_name": "indexed_at",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 3,
+      "end_line": 3,
+      "byte_offset": 60,
+      "byte_length": 42,
+      "content_hash": "7367b65ed4876881b822a1496d47184b6b460797d282a2078ef015e3056f77e5",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::source_files#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "source_files",
+      "kind": "constant",
+      "signature": "\"source_files\": [ \".github/workflows/backend-ci.yml\", \".github/workflows/frontend-cd.yml\", \"backe...",
+      "summary": "Constant source_files",
+      "docstring": "",
+      "qualified_name": "source_files",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 4,
+      "end_line": 112,
+      "byte_offset": 107,
+      "byte_length": 5620,
+      "content_hash": "321f09fd232e9a52f1a73bd1d02fd8f56da75eb0fb4597503dc5811a31a5fd24",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::languages#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "languages",
+      "kind": "constant",
+      "signature": "\"languages\": { \"yaml\": 3, \"json\": 6, \"typescript\": 71, \"javascript\": 2, \"tsx\": 21, \"css\": 1, \"hcl...",
+      "summary": "Constant languages",
+      "docstring": "",
+      "qualified_name": "languages",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 113,
+      "end_line": 121,
+      "byte_offset": 5732,
+      "byte_length": 141,
+      "content_hash": "978df5780f82f25a4623fff23adbb485c39b9b15d9eab50305f4c159c5253e83",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::symbol_count#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "symbol_count",
+      "kind": "constant",
+      "signature": "\"symbol_count\": 345",
+      "summary": "Constant symbol_count",
+      "docstring": "",
+      "qualified_name": "symbol_count",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 122,
+      "end_line": 122,
+      "byte_offset": 5878,
+      "byte_length": 19,
+      "content_hash": "b8ccd697818fe711d42460c3bbfb7574c72194d4a5f8a9a212decb85c2420b11",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::symbols#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "symbols",
+      "kind": "constant",
+      "signature": "\"symbols\": [ { \"id\": \".github/workflows/backend-ci.yml::name#constant\", \"file\": \".github/workflow...",
+      "summary": "Constant symbols",
+      "docstring": "",
+      "qualified_name": "symbols",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 123,
+      "end_line": 8660,
+      "byte_offset": 5902,
+      "byte_length": 301438,
+      "content_hash": "021f0729a63c9167ca90bc407d14cba664741adf18bc628909a420079a91a637",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::imports#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "imports",
+      "kind": "constant",
+      "signature": "\"imports\": { \"backend/prisma/seed.ts\": [ { \"specifier\": \"@prisma/client\", \"names\": [ \"PrismaClien...",
+      "summary": "Constant imports",
+      "docstring": "",
+      "qualified_name": "imports",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 8661,
+      "end_line": 10446,
+      "byte_offset": 307345,
+      "byte_length": 39227,
+      "content_hash": "9878030427e3efb7b5d8e5fdabffaff834be587edf17429e9c5c23045d715c53",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::git_head#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "git_head",
+      "kind": "constant",
+      "signature": "\"git_head\": \"df8dc7e43037acb96abdd68b2f23e75a1137ad4f\"",
+      "summary": "Constant git_head",
+      "docstring": "",
+      "qualified_name": "git_head",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 10447,
+      "end_line": 10447,
+      "byte_offset": 346577,
+      "byte_length": 54,
+      "content_hash": "03c8668966051d3f38726c8f4c82d3f872d53b6718bfae463a1e98992f992d48",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/code_index.json::source_root#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/code_index.json",
+      "name": "source_root",
+      "kind": "constant",
+      "signature": "\"source_root\": \"D:\\\\Code\\\\smile\\\\repo_base_smile_saas_pro2\"",
+      "summary": "Constant source_root",
+      "docstring": "",
+      "qualified_name": "source_root",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 10448,
+      "end_line": 10448,
+      "byte_offset": 346636,
+      "byte_length": 59,
+      "content_hash": "acf77e5639274a8a629f89e7bc69744781f3f2c5f980b168ea8f525977dbb856",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "repo_base_smile_saas_pro2/scratch/dead_code_results.json::v2#constant",
+      "file": "repo_base_smile_saas_pro2/scratch/dead_code_results.json",
+      "name": "v2",
+      "kind": "constant",
+      "signature": "\"v2\": { \"repo\": \"local/repo_base_smile_saas_pro2-c807c883\", \"dead_symbols\": [ { \"id\": \"backend/pr...",
+      "summary": "Constant v2",
+      "docstring": "",
+      "qualified_name": "v2",
+      "language": "json",
+      "decorators": [],
+      "keywords": [],
+      "parent": null,
+      "line": 2,
+      "end_line": 1849,
+      "byte_offset": 5,
+      "byte_length": 59739,
+      "content_hash": "412ed6f060daf37de2edd51c2960b1eb450c16e85c85a12b19b8599f06a4ebfb",
+      "ecosystem_context": "",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::repo#constant",
+      "file": "scratch/code_index.json",
+      "name": "repo",
+      "kind": "constant",
+      "signature": "\"repo\": \"local/smile-5106204f\"",
+      "summary": "Constant repo",
+      "docstring": "",
+      "qualified_name": "repo",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 2,
+      "end_line": 2,
+      "byte_offset": 5,
+      "byte_length": 30,
+      "content_hash": "85b6037230fd814b0ee6d23e6c9d97ae7e64ec51eecae1fb8130a41bcb8dfe5b",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::indexed_at#constant",
+      "file": "scratch/code_index.json",
+      "name": "indexed_at",
+      "kind": "constant",
+      "signature": "\"indexed_at\": \"2026-04-26T18:00:48.244660\"",
+      "summary": "Constant indexed_at",
+      "docstring": "",
+      "qualified_name": "indexed_at",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 3,
+      "end_line": 3,
+      "byte_offset": 40,
+      "byte_length": 42,
+      "content_hash": "6edff7c02077d7f8ef11aca967579c25b6ec2c33e9a15c747e11e2c3fa220538",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::source_files#constant",
+      "file": "scratch/code_index.json",
+      "name": "source_files",
+      "kind": "constant",
+      "signature": "\"source_files\": [ \"repo_base_smile_saas_pro2/.github/workflows/backend-ci.yml\", \"repo_base_smile_...",
+      "summary": "Constant source_files",
+      "docstring": "",
+      "qualified_name": "source_files",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 4,
+      "end_line": 114,
+      "byte_offset": 87,
+      "byte_length": 8473,
+      "content_hash": "70618cd078f8aaa61aaf2b4ba91674426b7fe675b8fa5d8ea525ca956e3207db",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::languages#constant",
+      "file": "scratch/code_index.json",
+      "name": "languages",
+      "kind": "constant",
+      "signature": "\"languages\": { \"css\": 1, \"hcl\": 3, \"javascript\": 2, \"json\": 8, \"tsx\": 21, \"typescript\": 71, \"yaml...",
+      "summary": "Constant languages",
+      "docstring": "",
+      "qualified_name": "languages",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 115,
+      "end_line": 123,
+      "byte_offset": 8565,
+      "byte_length": 141,
+      "content_hash": "5e3242931e878072b36579a55b69f6f0391b62a08521f6c1615bb96363436c89",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::symbol_count#constant",
+      "file": "scratch/code_index.json",
+      "name": "symbol_count",
+      "kind": "constant",
+      "signature": "\"symbol_count\": 355",
+      "summary": "Constant symbol_count",
+      "docstring": "",
+      "qualified_name": "symbol_count",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 124,
+      "end_line": 124,
+      "byte_offset": 8711,
+      "byte_length": 19,
+      "content_hash": "d71f0be6084e5988f5369f66881366a4a646ba0ddf021993047d485fa2070121",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::symbols#constant",
+      "file": "scratch/code_index.json",
+      "name": "symbols",
+      "kind": "constant",
+      "signature": "\"symbols\": [ { \"id\": \"repo_base_smile_saas_pro2/.github/workflows/backend-ci.yml::name#constant\",...",
+      "summary": "Constant symbols",
+      "docstring": "",
+      "qualified_name": "symbols",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 125,
+      "end_line": 9902,
+      "byte_offset": 8735,
+      "byte_length": 362036,
+      "content_hash": "14c4cfb3e1fbd108ea5aa524bcd1e116465f2015d05ba49f7f657137a8025138",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::imports#constant",
+      "file": "scratch/code_index.json",
+      "name": "imports",
+      "kind": "constant",
+      "signature": "\"imports\": { \"repo_base_smile_saas_pro2/backend/prisma/seed.ts\": [ { \"specifier\": \"@prisma/client...",
+      "summary": "Constant imports",
+      "docstring": "",
+      "qualified_name": "imports",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 9903,
+      "end_line": 11688,
+      "byte_offset": 370776,
+      "byte_length": 41515,
+      "content_hash": "2d186442ff7df722c17669bc4a73f2ae795418b239fef07fe55a1f383e82608b",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::git_head#constant",
+      "file": "scratch/code_index.json",
+      "name": "git_head",
+      "kind": "constant",
+      "signature": "\"git_head\": \"df8dc7e43037acb96abdd68b2f23e75a1137ad4f\"",
+      "summary": "Constant git_head",
+      "docstring": "",
+      "qualified_name": "git_head",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 11689,
+      "end_line": 11689,
+      "byte_offset": 412296,
+      "byte_length": 54,
+      "content_hash": "03c8668966051d3f38726c8f4c82d3f872d53b6718bfae463a1e98992f992d48",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
+      "cyclomatic": 0,
+      "max_nesting": 0,
+      "param_count": 0,
+      "call_references": []
+    },
+    {
+      "id": "scratch/code_index.json::source_root#constant",
+      "file": "scratch/code_index.json",
+      "name": "source_root",
+      "kind": "constant",
+      "signature": "\"source_root\": \"D:\\\\Code\\\\smile\"",
+      "summary": "Constant source_root",
+      "docstring": "",
+      "qualified_name": "source_root",
+      "language": "json",
+      "decorators": [],
+      "keywords": [
+        "last_author",
+        "last_modified"
+      ],
+      "parent": null,
+      "line": 11690,
+      "end_line": 11690,
+      "byte_offset": 412355,
+      "byte_length": 32,
+      "content_hash": "0cb74b210b0c687ee447486f85a89658af6046d4acdc46946f15f61150ebbcf5",
+      "ecosystem_context": "git_blame: Properties: last_author (MauricioLopez), last_modified (2026-04-18)",
       "cyclomatic": 0,
       "max_nesting": 0,
       "param_count": 0,
@@ -9668,80 +10457,6 @@
       {
         "specifier": "bcrypt",
         "names": []
-      }
-    ],
-    "repo_base_smile_saas_pro2/backend/src/app.module.ts": [
-      {
-        "specifier": "@nestjs/common",
-        "names": [
-          "Module"
-        ]
-      },
-      {
-        "specifier": "./prisma/prisma.module",
-        "names": [
-          "PrismaModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/autenticacion/autenticacion.module",
-        "names": [
-          "AutenticacionModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/pacientes/pacientes.module",
-        "names": [
-          "PacientesModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/casos/casos.module",
-        "names": [
-          "CasosModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/presupuestos/presupuestos.module",
-        "names": [
-          "PresupuestosModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/disenos/disenos.module",
-        "names": [
-          "DisenosModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/dashboard/dashboard.module",
-        "names": [
-          "DashboardModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/seguimientos/seguimientos.module",
-        "names": [
-          "SeguimientosModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/notas/notas.module",
-        "names": [
-          "NotasModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/tareas/tareas.module",
-        "names": [
-          "TareasModule"
-        ]
-      },
-      {
-        "specifier": "./modulos/fotos/fotos.module",
-        "names": [
-          "FotosModule"
-        ]
       }
     ],
     "repo_base_smile_saas_pro2/backend/src/main.ts": [
@@ -9783,32 +10498,6 @@
         "specifier": "./dto/iniciar_sesion.dto",
         "names": [
           "IniciarSesionDto"
-        ]
-      }
-    ],
-    "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.module.ts": [
-      {
-        "specifier": "@nestjs/common",
-        "names": [
-          "Module"
-        ]
-      },
-      {
-        "specifier": "@nestjs/jwt",
-        "names": [
-          "JwtModule"
-        ]
-      },
-      {
-        "specifier": "./autenticacion.controller",
-        "names": [
-          "AutenticacionController"
-        ]
-      },
-      {
-        "specifier": "./autenticacion.service",
-        "names": [
-          "AutenticacionService"
         ]
       }
     ],
@@ -10694,22 +11383,6 @@
         ]
       }
     ],
-    "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx": [
-      {
-        "specifier": "react-router-dom",
-        "names": [
-          "NavLink",
-          "Outlet",
-          "useNavigate"
-        ]
-      },
-      {
-        "specifier": "../../store/autenticacion.store",
-        "names": [
-          "useAutenticacionStore"
-        ]
-      }
-    ],
     "repo_base_smile_saas_pro2/frontend/src/componentes/ui/Card.tsx": [
       {
         "specifier": "react",
@@ -11437,8 +12110,230 @@
           "react"
         ]
       }
+    ],
+    "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.service.ts": [
+      {
+        "specifier": "@nestjs/common",
+        "names": [
+          "Injectable",
+          "NotFoundException"
+        ]
+      },
+      {
+        "specifier": "../../prisma/prisma.service",
+        "names": [
+          "PrismaService"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/frontend/src/servicios/servicioUsuarios.ts": [
+      {
+        "specifier": "../api/clienteApi",
+        "names": [
+          "clienteApi"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/frontend/src/componentes/layout/ShellAplicacion.tsx": [
+      {
+        "specifier": "react-router-dom",
+        "names": [
+          "NavLink",
+          "Outlet",
+          "useNavigate"
+        ]
+      },
+      {
+        "specifier": "../../store/autenticacion.store",
+        "names": [
+          "useAutenticacionStore"
+        ]
+      },
+      {
+        "specifier": "../../hooks/usePerfil",
+        "names": [
+          "usePerfil"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/backend/src/app.module.ts": [
+      {
+        "specifier": "@nestjs/common",
+        "names": [
+          "Module"
+        ]
+      },
+      {
+        "specifier": "./prisma/prisma.module",
+        "names": [
+          "PrismaModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/autenticacion/autenticacion.module",
+        "names": [
+          "AutenticacionModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/pacientes/pacientes.module",
+        "names": [
+          "PacientesModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/casos/casos.module",
+        "names": [
+          "CasosModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/presupuestos/presupuestos.module",
+        "names": [
+          "PresupuestosModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/disenos/disenos.module",
+        "names": [
+          "DisenosModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/dashboard/dashboard.module",
+        "names": [
+          "DashboardModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/seguimientos/seguimientos.module",
+        "names": [
+          "SeguimientosModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/notas/notas.module",
+        "names": [
+          "NotasModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/tareas/tareas.module",
+        "names": [
+          "TareasModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/fotos/fotos.module",
+        "names": [
+          "FotosModule"
+        ]
+      },
+      {
+        "specifier": "./modulos/usuarios/usuarios.module",
+        "names": [
+          "UsuariosModule"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/frontend/src/hooks/usePerfil.ts": [
+      {
+        "specifier": "react",
+        "names": [
+          "useState",
+          "useEffect"
+        ]
+      },
+      {
+        "specifier": "../servicios/servicioUsuarios",
+        "names": [
+          "obtenerPerfil",
+          "UsuarioPerfil"
+        ]
+      },
+      {
+        "specifier": "../store/autenticacion.store",
+        "names": [
+          "useAutenticacionStore"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/backend/src/modulos/autenticacion/autenticacion.module.ts": [
+      {
+        "specifier": "@nestjs/common",
+        "names": [
+          "Module"
+        ]
+      },
+      {
+        "specifier": "@nestjs/jwt",
+        "names": [
+          "JwtModule"
+        ]
+      },
+      {
+        "specifier": "./autenticacion.controller",
+        "names": [
+          "AutenticacionController"
+        ]
+      },
+      {
+        "specifier": "./autenticacion.service",
+        "names": [
+          "AutenticacionService"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.controller.ts": [
+      {
+        "specifier": "@nestjs/common",
+        "names": [
+          "Controller",
+          "Get",
+          "UseGuards",
+          "Request"
+        ]
+      },
+      {
+        "specifier": "./usuarios.service",
+        "names": [
+          "UsuariosService"
+        ]
+      },
+      {
+        "specifier": "../autenticacion/guards/jwt-auth.guard",
+        "names": [
+          "JwtAuthGuard"
+        ]
+      }
+    ],
+    "repo_base_smile_saas_pro2/backend/src/modulos/usuarios/usuarios.module.ts": [
+      {
+        "specifier": "@nestjs/common",
+        "names": [
+          "Module"
+        ]
+      },
+      {
+        "specifier": "./usuarios.controller",
+        "names": [
+          "UsuariosController"
+        ]
+      },
+      {
+        "specifier": "./usuarios.service",
+        "names": [
+          "UsuariosService"
+        ]
+      },
+      {
+        "specifier": "../autenticacion/autenticacion.module",
+        "names": [
+          "AutenticacionModule"
+        ]
+      }
     ]
   },
-  "git_head": "519041711b6a29a6fdc5a3daee5cac467814db27",
+  "git_head": "df8dc7e43037acb96abdd68b2f23e75a1137ad4f",
   "source_root": "D:\\Code\\smile"
 }

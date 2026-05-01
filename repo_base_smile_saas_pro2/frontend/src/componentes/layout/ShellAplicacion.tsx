@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAutenticacionStore } from '../../store/autenticacion.store';
+import { usePerfil } from '../../hooks/usePerfil';
 
 const menu = [
   { to: '/dashboard', etiqueta: 'Dashboard', icono: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -10,8 +11,11 @@ const menu = [
 
 export function ShellAplicacion() {
   const navigate = useNavigate();
-  const usuario = useAutenticacionStore((s) => s.usuario);
+  const usuarioLocal = useAutenticacionStore((s) => s.usuario);
   const cerrarSesion = useAutenticacionStore((s) => s.cerrarSesion);
+  const { perfil, cargando } = usePerfil();
+
+  const usuario = perfil || usuarioLocal;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-primario/10 selection:text-primario">
@@ -58,10 +62,14 @@ export function ShellAplicacion() {
           <div className="absolute bottom-6 left-6 right-6">
             <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all hover:border-primario/20">
                <div className="flex items-center gap-3">
-                 <div className="h-10 w-10 rounded-full bg-slate-200 ring-2 ring-white" />
+                 <div className={`h-10 w-10 rounded-full bg-slate-200 ring-2 ring-white ${cargando ? 'animate-pulse' : ''}`} />
                  <div className="overflow-hidden">
-                   <div className="truncate text-xs font-bold text-slate-800">{usuario?.nombre_completo || 'Dr. Usuario'}</div>
-                   <div className="truncate text-[10px] text-slate-400 font-medium capitalize">{usuario?.rol || 'Odontólogo'}</div>
+                   <div className={`truncate text-xs font-bold text-slate-800 ${cargando ? 'bg-slate-200 rounded h-3 w-24 animate-pulse' : ''}`}>
+                    {!cargando && (usuario?.nombre_completo || 'Dr. Usuario')}
+                   </div>
+                   <div className={`mt-1 truncate text-[10px] text-slate-400 font-medium capitalize ${cargando ? 'bg-slate-100 rounded h-2 w-16 animate-pulse' : ''}`}>
+                    {!cargando && (usuario?.rol || 'Odontólogo')}
+                   </div>
                  </div>
                </div>
                <button

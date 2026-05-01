@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Card } from '../../../componentes/ui/Card';
-import { crearNota } from '../../../servicios/servicioNotas';
+import { useNotas } from '../../../hooks/useNotas';
 
 interface SeccionNotasClinicasProps {
   casoId: string;
-  notasIniciales: any[];
-  alActualizar: () => void;
 }
 
-export function SeccionNotasClinicas({ casoId, notasIniciales, alActualizar }: SeccionNotasClinicasProps) {
+export function SeccionNotasClinicas({ casoId }: SeccionNotasClinicasProps) {
+  const { notas, agregar, eliminar, cargando } = useNotas(casoId);
   const [nuevaNota, setNuevaNota] = useState('');
   const [enviando, setEnviando] = useState(false);
 
@@ -16,17 +15,21 @@ export function SeccionNotasClinicas({ casoId, notasIniciales, alActualizar }: S
     if (!nuevaNota.trim()) return;
     setEnviando(true);
     try {
-      await crearNota({
-        caso_clinico_id: casoId,
-        contenido: nuevaNota,
-      });
+      await agregar(nuevaNota);
       setNuevaNota('');
-      alActualizar();
     } catch (error) {
-      console.error(error);
       alert('Error al guardar la nota.');
     } finally {
       setEnviando(false);
+    }
+  };
+
+  const handleEliminarNota = async (id: string) => {
+    if (!confirm('¿Eliminar esta nota clínica?')) return;
+    try {
+      await eliminar(id);
+    } catch (error) {
+      alert('Error al eliminar la nota.');
     }
   };
 
@@ -55,14 +58,21 @@ export function SeccionNotasClinicas({ casoId, notasIniciales, alActualizar }: S
 
         {/* Listado de notas */}
         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-          {notasIniciales.length > 0 ? (
-            notasIniciales.map((nota) => (
+          {cargando && notas.length === 0 ? (
+            <p className="text-center text-xs text-slate-400 animate-pulse">Cargando notas...</p>
+          ) : notas.length > 0 ? (
+            notas.map((nota) => (
               <div key={nota.id} className="group rounded-xl border border-slate-100 bg-white p-4 shadow-sm hover:border-slate-200 transition-all">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                     {new Date(nota.fecha_creacion).toLocaleDateString()}
                   </span>
-                  <div className="h-2 w-2 rounded-full bg-primario/40 group-hover:bg-primario transition-colors" />
+                  <button 
+                    onClick={() => handleEliminarNota(nota.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-300 hover:text-red-500"
+                  >
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
                 </div>
                 <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
                   {nota.contenido}
@@ -79,3 +89,4 @@ export function SeccionNotasClinicas({ casoId, notasIniciales, alActualizar }: S
     </Card>
   );
 }
+

@@ -10,11 +10,13 @@ import { SeguimientosModule } from './modulos/seguimientos/seguimientos.module';
 import { NotasModule } from './modulos/notas/notas.module';
 import { TareasModule } from './modulos/tareas/tareas.module';
 import { FotosModule } from './modulos/fotos/fotos.module';
+import { UsuariosModule } from './modulos/usuarios/usuarios.module';
 
 @Module({
   imports: [
     PrismaModule,
     AutenticacionModule,
+    UsuariosModule,
     PacientesModule,
     CasosModule,
     PresupuestosModule,

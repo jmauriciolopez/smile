@@ -1,31 +1,42 @@
-import { useEffect, useState } from 'react';
-import { obtenerPacientePorId, type PacienteApi } from '../servicios/servicioPacientes';
+import { useEffect, useState, useCallback } from 'react';
+import { obtenerPacientePorId, actualizarPaciente, type PacienteApi } from '../servicios/servicioPacientes';
 
 export function usePacienteDetalle(id: string | undefined) {
   const [paciente, setPaciente] = useState<PacienteApi | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const cargar = useCallback(() => {
     if (!id) return;
-
-    let vivo = true;
     setCargando(true);
     obtenerPacientePorId(id)
       .then((datos) => {
-        if (vivo) setPaciente(datos);
+        setPaciente(datos);
+        setError(null);
       })
       .catch(() => {
-        if (vivo) setError('No se pudo cargar el detalle del paciente.');
+        setError('No se pudo cargar el detalle del paciente.');
       })
       .finally(() => {
-        if (vivo) setCargando(false);
+        setCargando(false);
       });
-
-    return () => {
-      vivo = false;
-    };
   }, [id]);
 
-  return { paciente, cargando, error };
+  const actualizar = async (data: Partial<PacienteApi>) => {
+    if (!id) return;
+    try {
+      await actualizarPaciente(id, data);
+      await cargar();
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error al actualizar el paciente.');
+    }
+  };
+
+  useEffect(() => {
+    cargar();
+  }, [cargar]);
+
+  return { paciente, cargando, error, refrescar: cargar, actualizar };
 }
+

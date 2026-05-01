@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Card } from '../../../componentes/ui/Card';
-import { crearSeguimiento, type SeguimientoApi } from '../../../servicios/servicioSeguimientos';
+import { useSeguimientos } from '../../../hooks/useSeguimientos';
 
 interface TimelineSeguimientoProps {
   presupuestoId: string;
-  seguimientos: SeguimientoApi[];
-  alActualizar: () => void;
 }
 
-export function TimelineSeguimiento({ presupuestoId, seguimientos, alActualizar }: TimelineSeguimientoProps) {
+export function TimelineSeguimiento({ presupuestoId }: TimelineSeguimientoProps) {
+  const { seguimientos, registrar, eliminar, cargando } = useSeguimientos(presupuestoId);
   const [comentario, setComentario] = useState('');
   const [proximaAccion, setProximaAccion] = useState('');
   const [fechaAccion, setFechaAccion] = useState('');
@@ -20,8 +19,7 @@ export function TimelineSeguimiento({ presupuestoId, seguimientos, alActualizar 
     
     setEnviando(true);
     try {
-      await crearSeguimiento({
-        presupuesto_id: presupuestoId,
+      await registrar({
         comentario,
         proxima_accion: proximaAccion || undefined,
         fecha_accion: fechaAccion || undefined,
@@ -29,12 +27,19 @@ export function TimelineSeguimiento({ presupuestoId, seguimientos, alActualizar 
       setComentario('');
       setProximaAccion('');
       setFechaAccion('');
-      alActualizar();
     } catch (error) {
-      console.error(error);
       alert('Error al registrar seguimiento.');
     } finally {
       setEnviando(false);
+    }
+  };
+
+  const handleEliminar = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar este registro?')) return;
+    try {
+      await eliminar(id);
+    } catch (error) {
+      alert('No se pudo eliminar el registro.');
     }
   };
 
@@ -81,9 +86,11 @@ export function TimelineSeguimiento({ presupuestoId, seguimientos, alActualizar 
 
         {/* Listado Chronológico */}
         <div className="relative space-y-6 before:absolute before:left-[11px] before:top-2 before:h-[calc(100%-16px)] before:w-0.5 before:bg-slate-100">
-          {seguimientos.length > 0 ? (
+          {cargando && seguimientos.length === 0 ? (
+            <p className="text-center text-xs text-slate-400 animate-pulse py-4">Cargando historial...</p>
+          ) : seguimientos.length > 0 ? (
             seguimientos.map((s) => (
-              <div key={s.id} className="relative pl-8">
+              <div key={s.id} className="group relative pl-8">
                 {/* Punto en el timeline */}
                 <div className="absolute left-0 top-1.5 h-6 w-6 rounded-full border-4 border-white bg-primario shadow-sm" />
                 
@@ -92,6 +99,13 @@ export function TimelineSeguimiento({ presupuestoId, seguimientos, alActualizar 
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                       {new Date(s.fecha_creacion).toLocaleDateString()} · {new Date(s.fecha_creacion).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
+                    <button 
+                      onClick={() => handleEliminar(s.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-300 hover:text-red-500"
+                      title="Eliminar"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
                   </div>
                   <p className="text-sm font-medium text-slate-700 leading-relaxed">{s.comentario}</p>
                   
@@ -114,3 +128,4 @@ export function TimelineSeguimiento({ presupuestoId, seguimientos, alActualizar 
     </Card>
   );
 }
+

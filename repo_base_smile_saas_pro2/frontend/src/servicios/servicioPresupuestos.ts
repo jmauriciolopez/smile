@@ -24,6 +24,17 @@ export type PresupuestoApi = {
   seguimientos?: any[];
 };
 
+export type CrearPresupuestoData = {
+  paciente_id: string;
+  caso_clinico_id?: string;
+  monto_total_estimado: number;
+  cantidad_cuotas: number;
+};
+
+export type ActualizarPresupuestoData = Partial<CrearPresupuestoData> & {
+  estado_presupuesto?: string;
+};
+
 export async function obtenerPresupuestos() {
   return clienteApi<PresupuestoApi[]>('/presupuestos');
 }
@@ -32,16 +43,17 @@ export async function obtenerPresupuestoPorId(id: string) {
   return clienteApi<PresupuestoApi>(`/presupuestos/${id}`);
 }
 
-export async function crearPresupuesto(data: Partial<PresupuestoApi>) {
+export async function crearPresupuesto(data: CrearPresupuestoData) {
   return clienteApi<PresupuestoApi>('/presupuestos', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export async function actualizarPresupuesto(id: string, data: Partial<PresupuestoApi>) {
+export async function actualizarPresupuesto(id: string, data: ActualizarPresupuestoData) {
   return clienteApi<PresupuestoApi>(`/presupuestos/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
 }
+

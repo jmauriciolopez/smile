@@ -2,11 +2,47 @@ import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../../componentes/ui/Card';
 import { BadgeEstado } from '../../../componentes/ui/BadgeEstado';
 import { usePresupuestoDetalle } from '../../../hooks/usePresupuestoDetalle';
+import { useOpciones } from '../../../hooks/useOpciones';
 import { TimelineSeguimiento } from '../componentes/TimelineSeguimiento';
+import { Modal } from '../../../componentes/ui/Modal';
+import { useState, ReactNode } from 'react';
 
 export function DetallePresupuestoPage() {
   const { id } = useParams();
-  const { presupuesto, cargando, error, refrescar } = usePresupuestoDetalle(id);
+  const { presupuesto, cargando, error, refrescar, actualizar } = usePresupuestoDetalle(id);
+  const { seleccionarPlan, procesando } = useOpciones(id, refrescar);
+
+  const [modalEditAbierto, setModalEditAbierto] = useState(false);
+  const [formEdit, setFormEdit] = useState({
+    monto_total_estimado: 0,
+    cantidad_cuotas: 12,
+    estado_presupuesto: ''
+  });
+  const [enviando, setEnviando] = useState(false);
+
+  const abrirEdicion = () => {
+    if (presupuesto) {
+      setFormEdit({
+        monto_total_estimado: presupuesto.monto_total_estimado,
+        cantidad_cuotas: presupuesto.cantidad_cuotas,
+        estado_presupuesto: presupuesto.estado_presupuesto
+      });
+      setModalEditAbierto(true);
+    }
+  };
+
+  const handleGuardarEdicion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEnviando(true);
+    try {
+      await actualizar(formEdit);
+      setModalEditAbierto(false);
+    } catch (err) {
+      alert('Error al actualizar el presupuesto.');
+    } finally {
+      setEnviando(false);
+    }
+  };
 
   if (cargando) {
     return (
@@ -31,7 +67,15 @@ export function DetallePresupuestoPage() {
   }
 
   const opciones = presupuesto.opciones || [];
-  const seguimientos = presupuesto.seguimientos || [];
+
+  const handleSeleccionarPlan = async (monto: number) => {
+    if (!confirm(`¿Confirmar selección de este plan por USD ${monto}? El estado del presupuesto cambiará a Aprobado.`)) return;
+    try {
+      await seleccionarPlan(monto);
+    } catch (err) {
+      alert('Error al seleccionar el plan.');
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -42,9 +86,17 @@ export function DetallePresupuestoPage() {
             Paciente: <Link to={`/pacientes/${presupuesto.paciente_id}`} className="font-bold text-primario hover:underline">{presupuesto.paciente?.nombre_completo}</Link>
           </p>
         </div>
-        <Link to="/presupuestos" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-textoSecundario hover:bg-slate-50 transition-colors">
-          &larr; Volver
-        </Link>
+        <div className="flex gap-3">
+          <button 
+            onClick={abrirEdicion}
+            className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-textoSecundario hover:bg-slate-50 transition-colors"
+          >
+            Configurar
+          </button>
+          <Link to="/presupuestos" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-textoSecundario hover:bg-slate-50 transition-colors">
+            &larr; Volver
+          </Link>
+        </div>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -99,12 +151,18 @@ export function DetallePresupuestoPage() {
                       {opcion.descripcion || 'Sin descripción adicional del tratamiento.'}
                     </p>
                     
-                    <button className={`mt-6 w-full rounded-xl py-2.5 text-xs font-bold transition-all ${
-                      opcion.recomendada 
-                        ? 'bg-primario text-white hover:bg-primario/90 shadow-md shadow-primario/20' 
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}>
-                      Seleccionar éste plan
+                    <button 
+                      onClick={() => handleSeleccionarPlan(opcion.monto)}
+                      disabled={procesando || presupuesto.estado_presupuesto === 'aprobado'}
+                      className={`mt-6 w-full rounded-xl py-2.5 text-xs font-bold transition-all ${
+                        opcion.recomendada 
+                          ? 'bg-primario text-white hover:bg-primario/90 shadow-md shadow-primario/20' 
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      } disabled:opacity-50`}
+                    >
+                      {presupuesto.estado_presupuesto === 'aprobado' && presupuesto.monto_total_estimado === opcion.monto 
+                        ? 'Plan Seleccionado ✅' 
+                        : procesando ? 'Procesando...' : 'Seleccionar éste plan'}
                     </button>
                   </div>
                 ))}
@@ -119,17 +177,64 @@ export function DetallePresupuestoPage() {
               </div>
             )}
           </Card>
+
         </div>
 
         {/* Columna Derecha: Timeline */}
         <div className="space-y-6">
           <TimelineSeguimiento 
             presupuestoId={presupuesto.id} 
-            seguimientos={seguimientos} 
-            alActualizar={refrescar} 
           />
         </div>
       </div>
+      <Modal abierto={modalEditAbierto} alCerrar={() => setModalEditAbierto(false)} titulo="Configurar Presupuesto">
+        <form onSubmit={handleGuardarEdicion} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Monto Total (USD)</label>
+            <input 
+              required
+              type="number"
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formEdit.monto_total_estimado}
+              onChange={e => setFormEdit({...formEdit, monto_total_estimado: Number(e.target.value)})}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Estado</label>
+            <select 
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formEdit.estado_presupuesto}
+              onChange={e => setFormEdit({...formEdit, estado_presupuesto: e.target.value})}
+            >
+              <option value="borrador">Borrador</option>
+              <option value="enviado">Enviado</option>
+              <option value="aprobado">Aprobado</option>
+              <option value="rechazado">Rechazado</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Cuotas</label>
+            <select 
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formEdit.cantidad_cuotas}
+              onChange={e => setFormEdit({...formEdit, cantidad_cuotas: Number(e.target.value)})}
+            >
+              <option value={1}>1 Cuota</option>
+              <option value={3}>3 Cuotas</option>
+              <option value={6}>6 Cuotas</option>
+              <option value={12}>12 Cuotas</option>
+              <option value={18}>18 Cuotas</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button type="button" onClick={() => setModalEditAbierto(false)} className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100">Cancelar</button>
+            <button type="submit" disabled={enviando} className="rounded-xl bg-primario px-6 py-2 text-sm font-bold text-white shadow-lg shadow-primario/20 disabled:opacity-50">
+              {enviando ? 'Guardando...' : 'Guardar Cambios'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+
