@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { 
-  obtenerNotasPorCaso, 
-  crearNota, 
-  eliminarNota, 
-  type NotaApi 
-} from '../servicios/servicioNotas';
+import { useState, useEffect, useCallback } from "react";
+import {
+  obtenerNotasPorCaso,
+  crearNota,
+  eliminarNota,
+  type NotaApi,
+} from "../servicios/servicioNotas";
 
 export function useNotas(casoId: string | undefined) {
   const [notas, setNotas] = useState<NotaApi[]>([]);
@@ -20,7 +20,7 @@ export function useNotas(casoId: string | undefined) {
       setError(null);
     } catch (err) {
       console.error(err);
-      setError('No se pudieron cargar las notas.');
+      setError("No se pudieron cargar las notas.");
     } finally {
       setCargando(false);
     }
@@ -33,7 +33,7 @@ export function useNotas(casoId: string | undefined) {
       await cargar();
     } catch (err) {
       console.error(err);
-      throw new Error('Error al crear la nota.');
+      throw new Error("Error al crear la nota.");
     }
   };
 
@@ -43,7 +43,7 @@ export function useNotas(casoId: string | undefined) {
       await cargar();
     } catch (err) {
       console.error(err);
-      throw new Error('Error al eliminar la nota.');
+      throw new Error("Error al eliminar la nota.");
     }
   };
 

@@ -15,4 +15,9 @@ export class DisenosController {
   obtenerPorCaso(@Param('casoId') casoId: string) {
     return this.disenosService.obtenerPorCaso(casoId);
   }
+
+  @Get('publico/:disenoId')
+  obtenerPublico(@Param('disenoId') disenoId: string) {
+    return this.disenosService.obtenerPorId(disenoId);
+  }
 }

@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type ResumenDashboardApi = {
   pacientes_totales: number;
@@ -8,5 +8,5 @@ export type ResumenDashboardApi = {
 };
 
 export async function obtenerResumenDashboard() {
-  return clienteApi<ResumenDashboardApi>('/dashboard/resumen');
+  return clienteApi<ResumenDashboardApi>("/dashboard/resumen");
 }

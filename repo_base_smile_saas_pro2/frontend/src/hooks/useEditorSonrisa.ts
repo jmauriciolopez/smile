@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
-import { guardarDiseno, obtenerDisenoPorCaso } from '../servicios/servicioDisenos';
-import { obtenerCasoPorId } from '../servicios/servicioCasos';
-import { useEditorStore } from '../store/editor-sonrisa.store';
+import { useState, useEffect } from "react";
+import {
+  guardarDiseno,
+  obtenerDisenoPorCaso,
+} from "../servicios/servicioDisenos";
+import { obtenerCasoPorId } from "../servicios/servicioCasos";
+import { useEditorStore } from "../store/editor-sonrisa.store";
 
 export const presetsEditor = {
-  natural:  { scale: 0.80, opacity: 0.80 },
-  premium:  { scale: 0.90, opacity: 0.95 },
-  suave:    { scale: 0.75, opacity: 0.70 },
+  natural: { scale: 0.8, opacity: 0.8 },
+  premium: { scale: 0.9, opacity: 0.95 },
+  suave: { scale: 0.75, opacity: 0.7 },
 };
 
 export type PresetNombre = keyof typeof presetsEditor;
@@ -15,19 +18,16 @@ export function useEditorSonrisa(casoId: string | undefined) {
   const store = useEditorStore();
   const [cargando, setCargando] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [error, setError]   = useState<string | null>(null);
-  const [caso, setCaso]     = useState<any>(null);
-  const [preset, setPreset] = useState<PresetNombre>('natural');
+  const [error, setError] = useState<string | null>(null);
+  const [caso, setCaso] = useState<any>(null);
+  const [preset, setPreset] = useState<PresetNombre>("natural");
 
   /* ── Cargar caso + diseño desde backend ─────────────────────────────── */
   useEffect(() => {
     if (!casoId) return;
     setCargando(true);
 
-    Promise.all([
-      obtenerDisenoPorCaso(casoId),
-      obtenerCasoPorId(casoId),
-    ])
+    Promise.all([obtenerDisenoPorCaso(casoId), obtenerCasoPorId(casoId)])
       .then(([diseno, datosCaso]) => {
         setCaso(datosCaso);
 
@@ -35,8 +35,9 @@ export function useEditorSonrisa(casoId: string | undefined) {
         const fotos = datosCaso?.fotos ?? [];
         if (fotos.length > 0) {
           const prioritaria =
-            fotos.find((f: any) => f.tipo === 'frontal' || f.tipo === 'sonrisa')
-            ?? fotos[0];
+            fotos.find(
+              (f: any) => f.tipo === "frontal" || f.tipo === "sonrisa",
+            ) ?? fotos[0];
           store.setFotoUrl(prioritaria.url_foto);
         }
 
@@ -51,7 +52,7 @@ export function useEditorSonrisa(casoId: string | undefined) {
           store.resetDientes();
         }
       })
-      .catch(() => setError('No se pudo recuperar el caso o diseño previo.'))
+      .catch(() => setError("No se pudo recuperar el caso o diseño previo."))
       .finally(() => setCargando(false));
   }, [casoId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -59,7 +60,7 @@ export function useEditorSonrisa(casoId: string | undefined) {
   const aplicarPreset = (nombre: PresetNombre) => {
     setPreset(nombre);
     const p = presetsEditor[nombre];
-    store.dientes.forEach(d => {
+    store.dientes.forEach((d) => {
       store.actualizarDiente(d.id, { scaleX: p.scale, scaleY: p.scale });
     });
   };
@@ -77,12 +78,21 @@ export function useEditorSonrisa(casoId: string | undefined) {
       });
       return true;
     } catch {
-      setError('Error al guardar el diseño.');
+      setError("Error al guardar el diseño.");
       return false;
     } finally {
       setGuardando(false);
     }
   };
 
-  return { store, preset, aplicarPreset, manejarGuardar, caso, cargando, guardando, error };
+  return {
+    store,
+    preset,
+    aplicarPreset,
+    manejarGuardar,
+    caso,
+    cargando,
+    guardando,
+    error,
+  };
 }

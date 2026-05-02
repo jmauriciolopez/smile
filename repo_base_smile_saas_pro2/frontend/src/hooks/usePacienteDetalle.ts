@@ -1,5 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
-import { obtenerPacientePorId, actualizarPaciente, type PacienteApi } from '../servicios/servicioPacientes';
+import { useEffect, useState, useCallback } from "react";
+import {
+  obtenerPacientePorId,
+  actualizarPaciente,
+  type PacienteApi,
+} from "../servicios/servicioPacientes";
 
 export function usePacienteDetalle(id: string | undefined) {
   const [paciente, setPaciente] = useState<PacienteApi | null>(null);
@@ -15,7 +19,7 @@ export function usePacienteDetalle(id: string | undefined) {
         setError(null);
       })
       .catch(() => {
-        setError('No se pudo cargar el detalle del paciente.');
+        setError("No se pudo cargar el detalle del paciente.");
       })
       .finally(() => {
         setCargando(false);
@@ -29,7 +33,7 @@ export function usePacienteDetalle(id: string | undefined) {
       await cargar();
     } catch (error) {
       console.error(error);
-      throw new Error('Error al actualizar el paciente.');
+      throw new Error("Error al actualizar el paciente.");
     }
   };
 
@@ -39,4 +43,3 @@ export function usePacienteDetalle(id: string | undefined) {
 
   return { paciente, cargando, error, refrescar: cargar, actualizar };
 }
-

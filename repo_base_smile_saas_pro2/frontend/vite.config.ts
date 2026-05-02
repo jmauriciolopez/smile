@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
@@ -12,11 +12,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           // React core — siempre necesario
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          "vendor-react": ["react", "react-dom", "react-router-dom"],
           // Konva — solo en el editor
-          'vendor-konva': ['konva', 'react-konva', 'use-image'],
+          "vendor-konva": ["konva", "react-konva", "use-image"],
           // Zustand — state management
-          'vendor-zustand': ['zustand'],
+          "vendor-zustand": ["zustand"],
         },
       },
     },

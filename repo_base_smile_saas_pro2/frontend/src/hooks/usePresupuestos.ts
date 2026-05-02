@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
-import { obtenerPresupuestos, type PresupuestoApi } from '../servicios/servicioPresupuestos';
+import { useEffect, useState } from "react";
+import {
+  obtenerPresupuestos,
+  type PresupuestoApi,
+} from "../servicios/servicioPresupuestos";
 
 export function usePresupuestos() {
   const [presupuestos, setPresupuestos] = useState<PresupuestoApi[]>([]);
@@ -14,7 +17,7 @@ export function usePresupuestos() {
         if (vivo) setPresupuestos(datos);
       })
       .catch(() => {
-        if (vivo) setError('No se pudieron cargar los presupuestos.');
+        if (vivo) setError("No se pudieron cargar los presupuestos.");
       })
       .finally(() => {
         if (vivo) setCargando(false);

@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { 
-  obtenerSeguimientosPorPresupuesto, 
-  crearSeguimiento, 
-  eliminarSeguimiento, 
-  type SeguimientoApi 
-} from '../servicios/servicioSeguimientos';
+import { useState, useEffect, useCallback } from "react";
+import {
+  obtenerSeguimientosPorPresupuesto,
+  crearSeguimiento,
+  eliminarSeguimiento,
+  type SeguimientoApi,
+} from "../servicios/servicioSeguimientos";
 
 export function useSeguimientos(presupuestoId: string | undefined) {
   const [seguimientos, setSeguimientos] = useState<SeguimientoApi[]>([]);
@@ -20,23 +20,27 @@ export function useSeguimientos(presupuestoId: string | undefined) {
       setError(null);
     } catch (err) {
       console.error(err);
-      setError('No se pudieron cargar los seguimientos.');
+      setError("No se pudieron cargar los seguimientos.");
     } finally {
       setCargando(false);
     }
   }, [presupuestoId]);
 
-  const registrar = async (dto: { comentario: string; proxima_accion?: string; fecha_accion?: string }) => {
+  const registrar = async (dto: {
+    comentario: string;
+    proxima_accion?: string;
+    fecha_accion?: string;
+  }) => {
     if (!presupuestoId) return;
     try {
       await crearSeguimiento({
         presupuesto_id: presupuestoId,
-        ...dto
+        ...dto,
       });
       await cargar();
     } catch (err) {
       console.error(err);
-      throw new Error('Error al registrar el seguimiento.');
+      throw new Error("Error al registrar el seguimiento.");
     }
   };
 
@@ -46,7 +50,7 @@ export function useSeguimientos(presupuestoId: string | undefined) {
       await cargar();
     } catch (err) {
       console.error(err);
-      throw new Error('Error al eliminar el seguimiento.');
+      throw new Error("Error al eliminar el seguimiento.");
     }
   };
 
@@ -54,12 +58,12 @@ export function useSeguimientos(presupuestoId: string | undefined) {
     cargar();
   }, [cargar]);
 
-  return { 
-    seguimientos, 
-    cargando, 
-    error, 
-    registrar, 
-    eliminar, 
-    refrescar: cargar 
+  return {
+    seguimientos,
+    cargando,
+    error,
+    registrar,
+    eliminar,
+    refrescar: cargar,
   };
 }

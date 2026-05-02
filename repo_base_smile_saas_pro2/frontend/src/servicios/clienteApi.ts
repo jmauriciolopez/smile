@@ -1,10 +1,13 @@
-const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const URL_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-export async function clienteApi<T>(ruta: string, opciones?: RequestInit): Promise<T> {
-  const token = localStorage.getItem('token');
+export async function clienteApi<T>(
+  ruta: string,
+  opciones?: RequestInit,
+): Promise<T> {
+  const token = localStorage.getItem("token");
   const headers = {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(opciones?.headers || {}),
   };
 
@@ -15,10 +18,10 @@ export async function clienteApi<T>(ruta: string, opciones?: RequestInit): Promi
 
   if (!respuesta.ok) {
     if (respuesta.status === 401) {
-      console.warn('Sesión expirada o no autorizada');
+      console.warn("Sesión expirada o no autorizada");
     }
     const errorBody = await respuesta.json().catch(() => ({}));
-    throw new Error(errorBody.message || errorBody.mensaje || 'Error de API');
+    throw new Error(errorBody.message || errorBody.mensaje || "Error de API");
   }
 
   return respuesta.json() as Promise<T>;

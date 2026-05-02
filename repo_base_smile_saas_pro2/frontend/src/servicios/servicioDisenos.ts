@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type DisenoApi = {
   id: string;
@@ -13,8 +13,8 @@ export async function guardarDiseno(dto: {
   ajustes_json: string;
   url_imagen_resultado?: string;
 }) {
-  return clienteApi<DisenoApi>('/disenos', {
-    method: 'POST',
+  return clienteApi<DisenoApi>("/disenos", {
+    method: "POST",
     body: JSON.stringify(dto),
   });
 }

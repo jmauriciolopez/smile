@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { obtenerPerfil, UsuarioPerfil } from '../servicios/servicioUsuarios';
-import { useAutenticacionStore } from '../store/autenticacion.store';
+import { useState, useEffect } from "react";
+import { obtenerPerfil, UsuarioPerfil } from "../servicios/servicioUsuarios";
+import { useAutenticacionStore } from "../store/autenticacion.store";
 
 export function usePerfil() {
   const [perfil, setPerfil] = useState<UsuarioPerfil | null>(null);
@@ -19,7 +19,7 @@ export function usePerfil() {
         const datos = await obtenerPerfil();
         setPerfil(datos);
       } catch (err) {
-        setError('No se pudo cargar el perfil');
+        setError("No se pudo cargar el perfil");
         console.error(err);
       } finally {
         setCargando(false);

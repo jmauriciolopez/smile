@@ -25,18 +25,18 @@ export interface MorfologiaDiente {
 /** Genera path de corona con cuello cervical y borde incisal curvado */
 function coronaAnterior(
   anchoSuperior: number,
-  anchoCuello:   number,
-  alto:          number,
-  curvIncisal:   number = 8,
-  curvCervical:  number = 6
+  anchoCuello: number,
+  alto: number,
+  curvIncisal: number = 8,
+  curvCervical: number = 6,
 ): string {
   const cx = 50; // Centro X del viewBox (100 wide)
-  const left  = cx - anchoSuperior / 2;
+  const left = cx - anchoSuperior / 2;
   const right = cx + anchoSuperior / 2;
   const neck_l = cx - anchoCuello / 2;
   const neck_r = cx + anchoCuello / 2;
-  const top    = 5;
-  const bot    = top + alto;
+  const top = 5;
+  const bot = top + alto;
 
   return [
     `M ${left} ${top}`,
@@ -48,8 +48,8 @@ function coronaAnterior(
     `Q ${cx} ${bot + curvCervical} ${neck_l} ${bot}`,
     // Borde mesial
     `Q ${left - curvCervical} ${(top + bot) / 2} ${left} ${top}`,
-    'Z',
-  ].join(' ');
+    "Z",
+  ].join(" ");
 }
 
 // ── Biblioteca por pieza ──────────────────────────────────────────────────────
@@ -57,43 +57,43 @@ function coronaAnterior(
 /** Incisivo Central (11 / 21) */
 const incisivoCentral = (pieza: 11 | 21): MorfologiaDiente => ({
   pieza,
-  nombre:        'Incisivo Central',
+  nombre: "Incisivo Central",
   anchoRelativo: 1.0,
-  svgPath:       coronaAnterior(82, 70, 130, 10, 8),
+  svgPath: coronaAnterior(82, 70, 130, 10, 8),
 });
 
 /** Incisivo Lateral (12 / 22) */
 const incisivoLateral = (pieza: 12 | 22): MorfologiaDiente => ({
   pieza,
-  nombre:        'Incisivo Lateral',
+  nombre: "Incisivo Lateral",
   anchoRelativo: 0.72,
-  svgPath:       coronaAnterior(58, 50, 115, 8, 7),
+  svgPath: coronaAnterior(58, 50, 115, 8, 7),
 });
 
 /** Canino (13 / 23) */
 const canino = (pieza: 13 | 23): MorfologiaDiente => ({
   pieza,
-  nombre:        'Canino',
-  anchoRelativo: 0.80,
+  nombre: "Canino",
+  anchoRelativo: 0.8,
   // El canino tiene cúspide (borde incisal en punta)
   svgPath: (() => {
-    const cx   = 50;
-    const w    = 65;
+    const cx = 50;
+    const w = 65;
     const left = cx - w / 2;
     const rght = cx + w / 2;
-    const top  = 5;
-    const tip  = top + 12; // cúspide
-    const bot  = top + 125;
-    const nw   = 52;
+    const top = 5;
+    const tip = top + 12; // cúspide
+    const bot = top + 125;
+    const nw = 52;
     return [
       `M ${left} ${top}`,
       `Q ${cx - 10} ${top + 4} ${cx} ${tip}`, // bajada a cúspide
       `Q ${cx + 10} ${top + 4} ${rght} ${top}`, // subida desde cúspide
-      `Q ${rght + 6} ${(top + bot) / 2} ${cx + nw/2} ${bot}`,
-      `Q ${cx} ${bot + 6} ${cx - nw/2} ${bot}`,
+      `Q ${rght + 6} ${(top + bot) / 2} ${cx + nw / 2} ${bot}`,
+      `Q ${cx} ${bot + 6} ${cx - nw / 2} ${bot}`,
       `Q ${left - 6} ${(top + bot) / 2} ${left} ${top}`,
-      'Z',
-    ].join(' ');
+      "Z",
+    ].join(" ");
   })(),
 });
 
@@ -115,20 +115,34 @@ export const PIEZAS_FRONTALES = [13, 12, 11, 21, 22, 23] as const;
 export function generarPosicionesIniciales(
   canvasW: number,
   canvasH: number,
-  escalaBase = 0.55
-): Array<{ pieza: number; x: number; y: number; scaleX: number; scaleY: number }> {
-  const anchos = PIEZAS_FRONTALES.map(p => BIBLIOTECA_DENTAL[p].anchoRelativo);
+  escalaBase = 0.55,
+): Array<{
+  pieza: number;
+  x: number;
+  y: number;
+  scaleX: number;
+  scaleY: number;
+}> {
+  const anchos = PIEZAS_FRONTALES.map(
+    (p) => BIBLIOTECA_DENTAL[p].anchoRelativo,
+  );
   const anchoTotal = anchos.reduce((a, b) => a + b, 0);
-  const anchoBase  = 100 * escalaBase; // px para incisivo central
-  const totalPx    = anchoTotal * anchoBase;
-  let cursorX      = (canvasW - totalPx) / 2;
-  const baseY      = canvasH * 0.42; // 42% del canvas de arriba
+  const anchoBase = 100 * escalaBase; // px para incisivo central
+  const totalPx = anchoTotal * anchoBase;
+  let cursorX = (canvasW - totalPx) / 2;
+  const baseY = canvasH * 0.42; // 42% del canvas de arriba
 
   return PIEZAS_FRONTALES.map((pieza) => {
-    const morf  = BIBLIOTECA_DENTAL[pieza];
-    const pieW  = morf.anchoRelativo * anchoBase;
-    const pos   = { pieza, x: cursorX, y: baseY, scaleX: escalaBase, scaleY: escalaBase };
-    cursorX    += pieW;
+    const morf = BIBLIOTECA_DENTAL[pieza];
+    const pieW = morf.anchoRelativo * anchoBase;
+    const pos = {
+      pieza,
+      x: cursorX,
+      y: baseY,
+      scaleX: escalaBase,
+      scaleY: escalaBase,
+    };
+    cursorX += pieW;
     return pos;
   });
 }

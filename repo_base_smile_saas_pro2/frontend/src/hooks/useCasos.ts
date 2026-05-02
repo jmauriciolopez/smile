@@ -1,5 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
-import { obtenerCasos, crearCaso, type CasoClinicoApi } from '../servicios/servicioCasos';
+import { useEffect, useState, useCallback } from "react";
+import {
+  obtenerCasos,
+  crearCaso,
+  type CasoClinicoApi,
+} from "../servicios/servicioCasos";
 
 export function useCasos() {
   const [casos, setCasos] = useState<CasoClinicoApi[]>([]);
@@ -17,7 +21,7 @@ export function useCasos() {
         }
       })
       .catch(() => {
-        if (vivo) setError('No se pudieron cargar los casos clínicos.');
+        if (vivo) setError("No se pudieron cargar los casos clínicos.");
       })
       .finally(() => {
         if (vivo) setCargando(false);
@@ -32,18 +36,18 @@ export function useCasos() {
     cargarDatos();
   }, [cargarDatos]);
 
-  const crear = async (datos: import('../servicios/servicioCasos').CrearCasoData) => {
+  const crear = async (
+    datos: import("../servicios/servicioCasos").CrearCasoData,
+  ) => {
     try {
       const nuevo = await crearCaso(datos);
       setCasos((prev) => [nuevo, ...prev]);
       return nuevo;
     } catch (err) {
       console.error(err);
-      throw new Error('No se pudo crear el caso clínico.');
+      throw new Error("No se pudo crear el caso clínico.");
     }
   };
 
   return { casos, cargando, error, crear, refrescar: cargarDatos };
 }
-
-

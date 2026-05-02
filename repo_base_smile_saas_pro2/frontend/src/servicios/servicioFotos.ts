@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type FotoApi = {
   id: string;
@@ -8,16 +8,18 @@ export type FotoApi = {
   fecha_creacion: string;
 };
 
-export async function registrarFoto(dto: Omit<FotoApi, 'id' | 'fecha_creacion'>) {
-  return clienteApi<FotoApi>('/fotos', {
-    method: 'POST',
+export async function registrarFoto(
+  dto: Omit<FotoApi, "id" | "fecha_creacion">,
+) {
+  return clienteApi<FotoApi>("/fotos", {
+    method: "POST",
     body: JSON.stringify(dto),
   });
 }
 
 export async function eliminarFoto(id: string) {
   return clienteApi<void>(`/fotos/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 }
 

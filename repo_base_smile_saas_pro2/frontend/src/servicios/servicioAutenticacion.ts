@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type LoginRespuesta = {
   access_token: string;
@@ -11,8 +11,8 @@ export type LoginRespuesta = {
 };
 
 export async function login(email: string, contrasena: string) {
-  return clienteApi<LoginRespuesta>('/autenticacion/login', {
-    method: 'POST',
+  return clienteApi<LoginRespuesta>("/autenticacion/login", {
+    method: "POST",
     body: JSON.stringify({ email, contrasena }),
   });
 }

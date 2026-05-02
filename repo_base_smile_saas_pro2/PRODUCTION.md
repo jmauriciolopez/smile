@@ -14,8 +14,9 @@ Esta guía detalla los pasos técnicos para desplegar el ecosistema completo uti
 3. En el dashboard de Render, ve a "Blueprints" y selecciona tu repositorio.
 4. Render creará:
    - Una base de datos **PostgreSQL**.
-   - Un **Web Service** para el backend (usando el `Dockerfile`).
-5. Tras el despliegue, copia la URL de tu servicio (ej: `https://smile-backend.onrender.com`).
+   - Un **Web Service** para el backend (NestJS).
+   - Un **Web Service** para la IA (Python Vision Service).
+5. Tras el despliegue, copia las URLs de tus servicios.
 
 ---
 

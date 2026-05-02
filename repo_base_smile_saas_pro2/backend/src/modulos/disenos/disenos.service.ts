@@ -36,4 +36,23 @@ export class DisenosService {
 
     return diseno;
   }
+
+  async obtenerPorId(id: string) {
+    const diseno = await this.prisma.disenoSonrisa.findUnique({
+      where: { id },
+      include: {
+        caso_clinico: {
+          include: {
+            paciente: true,
+          },
+        },
+      },
+    });
+
+    if (!diseno) {
+      throw new NotFoundException('Diseño no encontrado');
+    }
+
+    return diseno;
+  }
 }

@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type CasoClinicoApi = {
   id: string;
@@ -37,7 +37,7 @@ export type ActualizarCasoData = Partial<CrearCasoData> & {
 };
 
 export async function obtenerCasos() {
-  return clienteApi<CasoClinicoApi[]>('/casos');
+  return clienteApi<CasoClinicoApi[]>("/casos");
 }
 
 export async function obtenerCasoPorId(id: string) {
@@ -45,16 +45,15 @@ export async function obtenerCasoPorId(id: string) {
 }
 
 export async function crearCaso(caso: CrearCasoData) {
-  return clienteApi<CasoClinicoApi>('/casos', {
-    method: 'POST',
+  return clienteApi<CasoClinicoApi>("/casos", {
+    method: "POST",
     body: JSON.stringify(caso),
   });
 }
 
 export async function actualizarCaso(id: string, caso: ActualizarCasoData) {
   return clienteApi<CasoClinicoApi>(`/casos/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: JSON.stringify(caso),
   });
 }
-

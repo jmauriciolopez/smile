@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type PacienteApi = {
   id: string;
@@ -23,7 +23,7 @@ export type CrearPacienteData = {
 export type ActualizarPacienteData = Partial<CrearPacienteData>;
 
 export async function obtenerPacientes() {
-  return clienteApi<PacienteApi[]>('/pacientes');
+  return clienteApi<PacienteApi[]>("/pacientes");
 }
 
 export async function obtenerPacientePorId(id: string) {
@@ -31,16 +31,18 @@ export async function obtenerPacientePorId(id: string) {
 }
 
 export async function crearPaciente(paciente: CrearPacienteData) {
-  return clienteApi<PacienteApi>('/pacientes', {
-    method: 'POST',
+  return clienteApi<PacienteApi>("/pacientes", {
+    method: "POST",
     body: JSON.stringify(paciente),
   });
 }
 
-export async function actualizarPaciente(id: string, paciente: ActualizarPacienteData) {
+export async function actualizarPaciente(
+  id: string,
+  paciente: ActualizarPacienteData,
+) {
   return clienteApi<PacienteApi>(`/pacientes/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: JSON.stringify(paciente),
   });
 }
-

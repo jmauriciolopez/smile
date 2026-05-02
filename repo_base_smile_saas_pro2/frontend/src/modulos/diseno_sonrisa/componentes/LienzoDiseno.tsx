@@ -1,29 +1,45 @@
-import React from 'react';
-import { Stage, Layer, Image as KImage, Line, Group, Path, Shape, Transformer } from 'react-konva';
-import useImage from 'use-image';
-import { useEditorStore } from '../../../store/editor-sonrisa.store';
-import type Konva from 'konva';
+import React from "react";
+import {
+  Stage,
+  Layer,
+  Image as KImage,
+  Line,
+  Group,
+  Path,
+  Shape,
+  Transformer,
+} from "react-konva";
+import useImage from "use-image";
+import { useEditorStore } from "../../../store/editor-sonrisa.store";
+import type Konva from "konva";
 
 interface Props {
-  width:  number;
+  width: number;
   height: number;
 }
 
 export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
   const {
-    fotoUrl, dientes, guias, seleccionadoId, faceData,
-    setSeleccionado, actualizarDiente,
+    fotoUrl,
+    dientes,
+    guias,
+    seleccionadoId,
+    faceData,
+    setSeleccionado,
+    actualizarDiente,
   } = useEditorStore();
 
-  const [image] = useImage(fotoUrl ?? '');
+  const [image] = useImage(fotoUrl ?? "");
 
-  const imageScale = image ? Math.min(width / image.width, height / image.height) : 1;
-  const imageX     = image ? (width  - image.width  * imageScale) / 2 : 0;
-  const imageY     = image ? (height - image.height * imageScale) / 2 : 0;
+  const imageScale = image
+    ? Math.min(width / image.width, height / image.height)
+    : 1;
+  const imageX = image ? (width - image.width * imageScale) / 2 : 0;
+  const imageY = image ? (height - image.height * imageScale) / 2 : 0;
 
   /* ── Transformer ref ────────────────────────────────────────────────────── */
   const transformerRef = React.useRef<Konva.Transformer>(null);
-  const shapeRefs      = React.useRef<Record<string, Konva.Path>>({});
+  const shapeRefs = React.useRef<Record<string, Konva.Path>>({});
 
   React.useEffect(() => {
     if (!transformerRef.current) return;
@@ -46,8 +62,10 @@ export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
           {image && (
             <KImage
               image={image}
-              x={imageX} y={imageY}
-              scaleX={imageScale} scaleY={imageScale}
+              x={imageX}
+              y={imageY}
+              scaleX={imageScale}
+              scaleY={imageScale}
             />
           )}
         </Layer>
@@ -59,16 +77,16 @@ export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
               <Line
                 key={g.id}
                 points={
-                  g.tipo === 'vertical'
+                  g.tipo === "vertical"
                     ? [g.posicion.x, 0, g.posicion.x, height]
                     : [0, g.posicion.y, width, g.posicion.y]
                 }
-                stroke={g.id === 'guia-media' ? '#3b82f6' : '#a78bfa'}
+                stroke={g.id === "guia-media" ? "#3b82f6" : "#a78bfa"}
                 strokeWidth={1}
                 dash={[10, 5]}
                 opacity={0.45}
               />
-            ) : null
+            ) : null,
           )}
         </Layer>
 
@@ -81,13 +99,13 @@ export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
                 const pts = faceData.lips.contornoCompleto;
                 pts.forEach((p, i) => {
                   if (i === 0) ctx.moveTo(p.x, p.y);
-                  else         ctx.lineTo(p.x, p.y);
+                  else ctx.lineTo(p.x, p.y);
                 });
                 ctx.closePath();
-                ctx.fillStyle = 'rgba(251,146,60,0.35)';
+                ctx.fillStyle = "rgba(251,146,60,0.35)";
                 ctx.fill();
-                ctx.strokeStyle = '#f97316';
-                ctx.lineWidth   = 1.5;
+                ctx.strokeStyle = "#f97316";
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
               }}
             />
@@ -107,17 +125,20 @@ export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
                 scaleX={diente.transform.scaleX}
                 scaleY={diente.transform.scaleY}
                 onClick={() => setSeleccionado(diente.id)}
-                onTap={()   => setSeleccionado(diente.id)}
+                onTap={() => setSeleccionado(diente.id)}
                 onDragEnd={(e) =>
-                  actualizarDiente(diente.id, { x: e.target.x(), y: e.target.y() })
+                  actualizarDiente(diente.id, {
+                    x: e.target.x(),
+                    y: e.target.y(),
+                  })
                 }
                 onTransformEnd={(e) =>
                   actualizarDiente(diente.id, {
-                    x:        e.target.x(),
-                    y:        e.target.y(),
+                    x: e.target.x(),
+                    y: e.target.y(),
                     rotation: e.target.rotation(),
-                    scaleX:   e.target.scaleX(),
-                    scaleY:   e.target.scaleY(),
+                    scaleX: e.target.scaleX(),
+                    scaleY: e.target.scaleY(),
                   })
                 }
               >
@@ -127,7 +148,11 @@ export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
                   }}
                   data={diente.svgPath}
                   fill="rgba(255,255,255,0.92)"
-                  stroke={seleccionadoId === diente.id ? '#3b82f6' : 'rgba(200,200,210,0.4)'}
+                  stroke={
+                    seleccionadoId === diente.id
+                      ? "#3b82f6"
+                      : "rgba(200,200,210,0.4)"
+                  }
                   strokeWidth={seleccionadoId === diente.id ? 2 : 0.8}
                   opacity={diente.opacity}
                   shadowBlur={seleccionadoId === diente.id ? 16 : 6}
@@ -135,21 +160,28 @@ export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
                   fillLinearGradientStartPoint={{ x: 50, y: 0 }}
                   fillLinearGradientEndPoint={{ x: 50, y: 160 }}
                   fillLinearGradientColorStops={[
-                    0,   'rgba(255,255,255,1)',
-                    0.6, 'rgba(240,244,255,0.95)',
-                    1,   'rgba(210,220,240,0.85)',
+                    0,
+                    "rgba(255,255,255,1)",
+                    0.6,
+                    "rgba(240,244,255,0.95)",
+                    1,
+                    "rgba(210,220,240,0.85)",
                   ]}
                 />
               </Group>
-            ) : null
+            ) : null,
           )}
 
           <Transformer
             ref={transformerRef}
             rotateEnabled
             enabledAnchors={[
-              'top-left', 'top-right', 'bottom-left', 'bottom-right',
-              'middle-left', 'middle-right',
+              "top-left",
+              "top-right",
+              "bottom-left",
+              "bottom-right",
+              "middle-left",
+              "middle-right",
             ]}
             boundBoxFunc={(oldBox, newBox) =>
               newBox.width < 10 || newBox.height < 10 ? oldBox : newBox

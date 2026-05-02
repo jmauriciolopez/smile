@@ -1,11 +1,13 @@
-import { Card } from '../../../componentes/ui/Card';
+import { Card } from "../../../componentes/ui/Card";
 
 export function SeguimientosPage() {
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-3xl font-semibold">Seguimientos</h1>
-        <p className="mt-1 text-textoSecundario">Registro comercial y próximas acciones.</p>
+        <p className="mt-1 text-textoSecundario">
+          Registro comercial y próximas acciones.
+        </p>
       </header>
 
       <Card titulo="Timeline comercial">

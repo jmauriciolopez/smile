@@ -17,8 +17,8 @@ export class PresupuestosService {
   async obtenerPorId(id: string) {
     const presupuesto = await this.prisma.presupuesto.findUnique({
       where: { id },
-      include: { 
-        paciente: true, 
+      include: {
+        paciente: true,
         caso_clinico: true,
         opciones: true,
         seguimientos: {

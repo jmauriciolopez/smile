@@ -16,6 +16,17 @@ services:
       - key: PORT
         value: 3000
 
+  - type: web
+    name: smile-vision
+    env: docker
+    dockerContext: ./vision-service
+    dockerfilePath: ./vision-service/Dockerfile
+    plan: free # Cambiar a pro para producción real (más RAM)
+    region: ohio
+    envVars:
+      - key: PORT
+        value: 8000
+
 databases:
   - name: smile-db
     plan: free

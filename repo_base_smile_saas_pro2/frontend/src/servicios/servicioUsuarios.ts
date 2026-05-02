@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type UsuarioPerfil = {
   id: string;
@@ -9,5 +9,5 @@ export type UsuarioPerfil = {
 };
 
 export async function obtenerPerfil() {
-  return clienteApi<UsuarioPerfil>('/usuarios/perfil');
+  return clienteApi<UsuarioPerfil>("/usuarios/perfil");
 }

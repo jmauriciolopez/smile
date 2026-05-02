@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type NotaApi = {
   id: string;
@@ -7,16 +7,16 @@ export type NotaApi = {
   fecha_creacion: string;
 };
 
-export async function crearNota(dto: Omit<NotaApi, 'id' | 'fecha_creacion'>) {
-  return clienteApi<NotaApi>('/notas', {
-    method: 'POST',
+export async function crearNota(dto: Omit<NotaApi, "id" | "fecha_creacion">) {
+  return clienteApi<NotaApi>("/notas", {
+    method: "POST",
     body: JSON.stringify(dto),
   });
 }
 
 export async function eliminarNota(id: string) {
   return clienteApi<void>(`/notas/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 }
 

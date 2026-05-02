@@ -1,5 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
-import { obtenerPresupuestoPorId, actualizarPresupuesto, type PresupuestoApi } from '../servicios/servicioPresupuestos';
+import { useEffect, useState, useCallback } from "react";
+import {
+  obtenerPresupuestoPorId,
+  actualizarPresupuesto,
+  type PresupuestoApi,
+} from "../servicios/servicioPresupuestos";
 
 export function usePresupuestoDetalle(id: string | undefined) {
   const [presupuesto, setPresupuesto] = useState<PresupuestoApi | null>(null);
@@ -15,7 +19,7 @@ export function usePresupuestoDetalle(id: string | undefined) {
         setError(null);
       })
       .catch(() => {
-        setError('No se pudo cargar el detalle del presupuesto.');
+        setError("No se pudo cargar el detalle del presupuesto.");
       })
       .finally(() => {
         setCargando(false);
@@ -34,10 +38,9 @@ export function usePresupuestoDetalle(id: string | undefined) {
       return actualizado;
     } catch (err) {
       console.error(err);
-      throw new Error('Error al actualizar el presupuesto.');
+      throw new Error("Error al actualizar el presupuesto.");
     }
   };
 
   return { presupuesto, cargando, error, refrescar: cargarDatos, actualizar };
 }
-

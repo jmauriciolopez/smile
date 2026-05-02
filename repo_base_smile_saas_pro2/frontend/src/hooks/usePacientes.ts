@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
-import { obtenerPacientes, type PacienteApi } from '../servicios/servicioPacientes';
+import { useEffect, useState } from "react";
+import {
+  obtenerPacientes,
+  type PacienteApi,
+} from "../servicios/servicioPacientes";
 
 export function usePacientes() {
   const [pacientes, setPacientes] = useState<PacienteApi[]>([]);
@@ -13,7 +16,7 @@ export function usePacientes() {
         setPacientes(datos);
       })
       .catch(() => {
-        setError('No se pudieron cargar los pacientes.');
+        setError("No se pudieron cargar los pacientes.");
       })
       .finally(() => {
         setCargando(false);

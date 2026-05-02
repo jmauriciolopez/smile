@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
-import { obtenerResumenDashboard, type ResumenDashboardApi } from '../servicios/servicioDashboard';
+import { useState, useEffect } from "react";
+import {
+  obtenerResumenDashboard,
+  type ResumenDashboardApi,
+} from "../servicios/servicioDashboard";
 
 export function useDashboard() {
   const [resumen, setResumen] = useState<ResumenDashboardApi | null>(null);
@@ -14,13 +17,15 @@ export function useDashboard() {
         if (vivo) setResumen(datos);
       })
       .catch(() => {
-        if (vivo) setError('No se pudo cargar el resumen del dashboard.');
+        if (vivo) setError("No se pudo cargar el resumen del dashboard.");
       })
       .finally(() => {
         if (vivo) setCargando(false);
       });
 
-    return () => { vivo = false; };
+    return () => {
+      vivo = false;
+    };
   }, []);
 
   return { resumen, cargando, error };

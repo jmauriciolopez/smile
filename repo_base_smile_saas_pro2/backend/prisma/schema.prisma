@@ -161,3 +161,19 @@ model FotoClinica {
   fecha_creacion   DateTime    @default(now())
   caso_clinico     CasoClinico @relation(fields: [caso_clinico_id], references: [id])
 }
+
+model AuditLog {
+  id               String   @id @default(uuid())
+  tipo_accion      String   // LOGIN_EXITOSO, ACCESO_PACIENTE, etc.
+  usuario_id       String?
+  entidad_tipo     String?  // 'paciente', 'caso', 'diseno', etc.
+  entidad_id       String?
+  descripcion      String
+  ip_origen        String?
+  metadata         String?  // JSON string
+  fecha_creacion   DateTime @default(now())
+
+  @@index([usuario_id])
+  @@index([entidad_id])
+  @@index([fecha_creacion])
+}

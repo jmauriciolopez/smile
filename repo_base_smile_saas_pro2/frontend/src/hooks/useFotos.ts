@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { 
-  obtenerFotosPorCaso, 
-  registrarFoto, 
-  eliminarFoto, 
-  type FotoApi 
-} from '../servicios/servicioFotos';
+import { useState, useEffect, useCallback } from "react";
+import {
+  obtenerFotosPorCaso,
+  registrarFoto,
+  eliminarFoto,
+  type FotoApi,
+} from "../servicios/servicioFotos";
 
 export function useFotos(casoId: string | undefined) {
   const [fotos, setFotos] = useState<FotoApi[]>([]);
@@ -20,7 +20,7 @@ export function useFotos(casoId: string | undefined) {
       setError(null);
     } catch (err) {
       console.error(err);
-      setError('No se pudieron cargar las fotos.');
+      setError("No se pudieron cargar las fotos.");
     } finally {
       setCargando(false);
     }
@@ -33,7 +33,7 @@ export function useFotos(casoId: string | undefined) {
       await cargar();
     } catch (err) {
       console.error(err);
-      throw new Error('Error al registrar la foto.');
+      throw new Error("Error al registrar la foto.");
     }
   };
 
@@ -43,7 +43,7 @@ export function useFotos(casoId: string | undefined) {
       await cargar();
     } catch (err) {
       console.error(err);
-      throw new Error('Error al eliminar la foto.');
+      throw new Error("Error al eliminar la foto.");
     }
   };
 

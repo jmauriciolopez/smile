@@ -540,51 +540,145 @@ Reglas:
 
 # 🚀 ROADMAP
 
-### Fase A — Core Visual (2 semanas) ✅
-- F1: Render de dientes sobre imagen
-- F2: Interacción (mover, escalar, rotar)
+### Fase A — Core Visual ✅
+- Render de dientes sobre imagen (react-konva)
+- Interacción: mover, escalar, rotar (Transformer)
+- Biblioteca dental anatómica: incisivos centrales, laterales, caninos (SVG paths paramétricos)
+- Posicionamiento inicial automático centrado en canvas
 
-### Fase B — Realismo (2 semanas) ✅
-- F3: Máscara de labios
-- F4: Render realista (sombras, translucidez, highlights)
+### Fase B — Realismo ✅
+- Máscara labial (FaceData → Path2D clip)
+- Render Engine PRO: sombras, translucidez (multiply), highlights (screen), blending soft-light
+- Gradiente esmalte vertical por diente
+- Sombra dinámica bajo labio superior (radial gradient)
+- Zona de sonrisa expandida (expandirBoundingBox × 1.25)
 
-### Fase C — Detección (2 semanas) ✅
-- F5: Face & Lip Detection automático (MediaPipe)
-- F6: Auto-landmarking y calibración
+### Fase C — Detección ✅
+- Face & Lip Detection automático (MediaPipe FaceLandmarker, carga lazy)
+- Auto-landmarking: ojos, nariz, boca, mentón, contorno labial completo
+- Alineación dental automática al eje labial post-detección
+- Normalización de coordenadas imagen → canvas
 
-### Fase C.1 — Completado (implementado) ✅
+### Fase C.1 — Motor PRO ✅
 - `BlueprintVersion[]` — historial Undo/Redo (max 50 snapshots, Ctrl+Z / Ctrl+Y)
 - `MaterialDiente` — `reflectividad` + `translucidez` por pieza con sliders en UI
 - `expandirBoundingBox` — zona de sonrisa expandida desde bounding box labial
-- `exportarFichaTecnica()` — JSON con medidas ancho/largo por pieza para laboratorio
+- `exportarFichaTecnica()` — JSON con medidas px + mm (si hay calibración) por pieza
 - `actualizarMaterial()` — acción inmutable en el store
 
-### Fase C.2 — Completado (implementado) ✅
-- **Build optimizado** — code splitting manual: vendor-react / vendor-konva / vendor-zustand. Chunk principal: 584KB → 102KB (−82%)
-- **Import dinámico eliminado** — `servicioCasos` importado estáticamente, sin conflicto de chunking
-- **Render Engine PRO** — `material.translucidez` y `material.reflectividad` afectan el render real (capas multiply + screen)
-- **Zona de sonrisa** — `expandirBoundingBox` conectada al render (overlay elíptico sutil cuando hay FaceData)
+### Fase C.2 — Optimización y Features PRO ✅
+- **Build optimizado** — code splitting: vendor-react / vendor-konva / vendor-zustand. Chunk principal: 584KB → 102KB (−82%)
+- **Render Engine PRO** — `material.translucidez` y `material.reflectividad` afectan el render real
 - **Hash SHA-256** — cada `BlueprintVersion` genera hash via `crypto.subtle` (Chain of Custody)
-- **Calibración métrica** — UI para ingresar distancia px + medida mm real → calcula `mmPorPx` → ficha técnica exporta `anchoMm`/`altoMm`
-- **Snapshot Diff** — panel de historial visual con navegación directa a cualquier versión + hash corto visible
+- **Calibración métrica** — UI px → mm real → ficha técnica exporta `anchoMm`/`altoMm`
+- **Snapshot Diff** — panel de historial visual con navegación directa + hash corto visible
+- **Action System** — `motor/action-system.ts`: `applyAction()` puro + `validarAccion()` + `applyActions()` batch
+- **Color Match** — `motor/color-match.ts`: muestreo de esclera → tono dental sugerido → escala Vita
+- **Archivo `.smile`** — export JSON con diseño + metadata + hash + referencia imagen base
 
-### Fase D — Inteligencia y Automatización ✅ (parcial)
-- **Visagismo Digital** (`motor/visagismo.ts`) — análisis de landmarks → forma facial (oval/cuadrada/triangular/redonda) → preset sugerido + confianza + razonamiento
-- **Color Match** (`motor/color-match.ts`) — muestreo de esclera → tono dental sugerido → escala Vita aproximada → aplicado automáticamente a todas las piezas
-- **UI integrada** — panel `VisagismoPanel` en tab Ajustes, activo cuando hay FaceData
-- Pendiente Fase D: Object Storage (S3), segmentación dental automática
+### Fase D — Inteligencia y Automatización ✅ (implementado)
+- **Vision AI Service** (`vision-service/main.py`) — Microservicio Python con FastAPI y MediaPipe.
+- **Visagismo Digital Pro** — Análisis morfológico en backend para detectar forma facial y sugerir presets.
+- **Color Match Pro** — Muestreo real de la esclera del ojo mediante visión artificial para sugerencia de escala Vita.
+- **Seguridad** — Comunicación segura entre NestJS y Python mediante `X-API-KEY`.
+- **Integración Backend** — `VisagismoService` (NestJS) conectado al microservicio real con fallback automático.
+- ⏳ Pendiente: Segmentación dental avanzada (identificación de contornos individuales diente-encía), S3/GCS real.
 
-### Fase E — Ecosistema y Colaboración ✅ (stub navegable)
-- **`PanelColaboracion.tsx`** — UI completa con código de sesión, lista de participantes, chat simulado. Arquitectura lista para Socket.io
-- **Archivo `.smile`** — botón "Exportar .smile" activo: genera JSON con diseño + metadata + hash + referencia a imagen base
-- Pendiente Fase E: servidor WebSockets real, sesiones compartidas, Portal del Paciente
+### Fase E — Ecosistema y Colaboración ✅ (stubs conectados)
+- **`PanelColaboracion`** — crea sesiones reales via `POST /colaboracion/sesiones`, unirse por código, lista de participantes, cerrar sesión
+- **`POST /laboratorio/enviar`** — botón "Enviar Lab" activo → retorna número de pedido + estado + historial
+- **Webhook laboratorio** — `POST /laboratorio/webhook` para actualizaciones de estado del proveedor
+- **Servicios frontend** — `servicioColaboracion.ts`, `servicioLaboratorio.ts`
+- ⏳ Pendiente: Socket.io WebSockets real, Redis pub/sub, Portal del Paciente
 
-### Fase F — Integración 3D y Legal ✅ (stub navegable)
-- **`PanelFirmaDigital.tsx`** — firma del diseño con hash SHA-256, nombre/rol del firmante, estados (firmado/aprobado), exporta documento JSON inmutable
-- Pendiente Fase F: PKI/certificados digitales reales, visor STL, auditoría HIPAA/GDPR
+### Fase F — Integración 3D y Legal ✅ (implementado)
+- **`PanelFirmaDigital`** — conectado a `POST /firmas`: firma con HMAC-SHA256, aprobar, verificar integridad.
+- **Auditoría Persistente** — Tabla `AuditLog` en DB (Prisma) para registro inmutable de acciones HIPAA.
+- **Visor 3D STL** — Componente `Visor3D` (Three.js) para visualización de escaneos intraorales.
+- **AuditModule @Global** — `GET /audit/logs` (filtros reales en DB), `GET /audit/exportar` formato HIPAA.
+- ⏳ Pendiente: PKI/certificados X.509 reales para validez legal externa.
 
 ---
 
-# 💥 VISIÓN FINAL
+# � INVENTARIO DE IMPLEMENTACIÓN
+
+## Frontend — `repo_base_smile_saas_pro2/frontend/src/`
+
+### Motor (`motor/`)
+| Archivo | Descripción |
+|---------|-------------|
+| `tipos-faciales.ts` | Tipos Vec2, Rect, LipData, FaceData, TransformFacial + `expandirBoundingBox`, `normalizar`, `generarMascaraLabios`, `calcularEjeFacial` |
+| `render-engine.ts` | Render compuesto OffscreenCanvas: foto base → zona sonrisa → sombra labial → dientes (material real) → soft-light → guías → watermark |
+| `useFaceEngine.ts` | Hook MediaPipe FaceLandmarker (lazy load) → FaceData → store + alineación dental automática |
+| `useRenderEngine.ts` | Hook que conecta render-engine con el store → renderizar, limpiar, descargar |
+| `biblioteca-dientes.ts` | SVG paths anatómicos: incisivo central, lateral, canino (FDI 11/12/13/21/22/23) + `generarPosicionesIniciales` |
+| `action-system.ts` | `applyAction()` puro + `applyActions()` batch + `validarAccion()` — MOVE/RESIZE/ROTATE/UPDATE_MATERIAL/TOGGLE_VISIBILITY/MOVE_GUIDE/TOGGLE_GUIDE |
+| `visagismo.ts` | Análisis morfológico facial → forma facial → preset sugerido + confianza + razonamiento |
+| `color-match.ts` | Muestreo de esclera → temperatura de color → tono dental sugerido → escala Vita |
+
+### Store (`store/`)
+| Archivo | Descripción |
+|---------|-------------|
+| `editor-sonrisa.store.ts` | Zustand store: dientes, guías, faceData, calibración, historial Undo/Redo (SHA-256), `applyAction`, `exportarFichaTecnica`, `exportarDiseno` |
+
+### Módulo Editor (`modulos/diseno_sonrisa/`)
+| Archivo | Descripción |
+|---------|-------------|
+| `paginas/EditorSonrisaPage.tsx` | Editor PRO v2.1: lienzo + 4 tabs (Ajustes / Exportar / Colaborar / Firma) + Undo/Redo + Ctrl+Z/Y |
+| `componentes/LienzoDiseno.tsx` | Canvas Konva: 4 capas (foto / guías / máscara labial / dientes manipulables + Transformer) |
+| `componentes/PanelExportacion.tsx` | Render PNG/JPG + Before/After split + Ficha Técnica JSON + Exportar .smile + Enviar Lab |
+| `componentes/PanelColaboracion.tsx` | Crear/unirse a sesiones de colaboración via API real |
+| `componentes/PanelFirmaDigital.tsx` | Firma HMAC-SHA256 + aprobar + verificar integridad via API real |
+
+### Servicios (`servicios/`)
+| Archivo | Endpoints |
+|---------|-----------|
+| `servicioDisenos.ts` | `POST /disenos`, `GET /disenos/caso/:id` |
+| `servicioArchivos.ts` | `POST /archivos/url-subida`, confirmar, `GET /:id/url`, `DELETE /:id` |
+| `servicioVisagismo.ts` | `POST /visagismo/analizar`, `GET /visagismo/caso/:id` |
+| `servicioColaboracion.ts` | `POST /colaboracion/sesiones`, unirse, `GET /:codigo`, listar, `DELETE /:codigo` |
+| `servicioLaboratorio.ts` | `POST /laboratorio/enviar`, `GET /pedidos/:id`, `GET /caso/:id` |
+| `servicioFirmas.ts` | `POST /firmas`, aprobar, `GET /diseno/:id`, `GET /:id/verificar` |
+
+---
+
+## Backend — `repo_base_smile_saas_pro2/backend/src/modulos/`
+
+### Módulos MVP (Fases 1-20) ✅
+`autenticacion` · `usuarios` · `pacientes` · `casos` · `presupuestos` · `disenos` · `dashboard` · `seguimientos` · `notas` · `tareas` · `fotos`
+
+### Módulos Fase D ✅
+| Módulo | Endpoints principales |
+|--------|-----------------------|
+| `archivos` | `POST /url-subida`, `POST /:id/confirmar`, `GET /:id/url`, `DELETE /:id` |
+| `visagismo` | `POST /analizar`, `GET /caso/:id` |
+
+### Módulos Fase E ✅
+| Módulo | Endpoints principales |
+|--------|-----------------------|
+| `colaboracion` | `POST /sesiones`, `POST /sesiones/unirse`, `GET /sesiones/:codigo`, `GET /caso/:id`, `DELETE /sesiones/:codigo` |
+| `laboratorio` | `POST /enviar`, `GET /pedidos/:id`, `GET /caso/:id`, `POST /webhook` |
+
+### Módulos Fase F ✅
+| Módulo | Endpoints principales |
+|--------|-----------------------|
+| `firmas` | `POST /`, `POST /aprobar`, `GET /diseno/:id`, `GET /:id/verificar` |
+| `audit` (`@Global`) | `GET /audit/logs` (filtros), `GET /audit/exportar` |
+
+---
+
+# ⏳ PENDIENTES REALES (requieren infraestructura externa)
+
+| Item | Fase | Requiere |
+|------|------|----------|
+| Socket.io WebSockets real | E | ✅ Implementado (Gateway + Client) |
+| Portal del Paciente | E | ✅ Implementado (Ruta pública /v/:id) |
+| PKI / certificados X.509 | F | CA o proveedor firma electrónica |
+| Audit logs inmutables en DB | F | ✅ Implementado (Prisma + AuditLog) |
+| Visor STL Three.js | F | ✅ Implementado (Three.js + Visor3D) |
+
+---
+
+# �💥 VISIÓN FINAL
 
 Plataforma líder de odontología estética digital, impulsada por IA, colaborativa y lista para producción CAD/CAM.

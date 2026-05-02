@@ -17,11 +17,11 @@ export class CasosService {
   async obtenerPorId(id: string) {
     const caso = await this.prisma.casoClinico.findUnique({
       where: { id },
-      include: { 
-        paciente: true, 
-        presupuestos: true, 
+      include: {
+        paciente: true,
+        presupuestos: true,
         fotos: true,
-        notas: true
+        notas: true,
       },
     });
 

@@ -1,5 +1,9 @@
-import { useEffect, useState, useCallback } from 'react';
-import { obtenerCasoPorId, actualizarCaso, type CasoClinicoApi } from '../servicios/servicioCasos';
+import { useEffect, useState, useCallback } from "react";
+import {
+  obtenerCasoPorId,
+  actualizarCaso,
+  type CasoClinicoApi,
+} from "../servicios/servicioCasos";
 
 export function useCasoDetalle(id: string | undefined) {
   const [caso, setCaso] = useState<CasoClinicoApi | null>(null);
@@ -15,7 +19,7 @@ export function useCasoDetalle(id: string | undefined) {
         setError(null);
       })
       .catch(() => {
-        setError('No se pudo cargar el detalle del caso clínico.');
+        setError("No se pudo cargar el detalle del caso clínico.");
       })
       .finally(() => {
         setCargando(false);
@@ -34,10 +38,9 @@ export function useCasoDetalle(id: string | undefined) {
       return actualizado;
     } catch (err) {
       console.error(err);
-      throw new Error('No se pudo actualizar el caso clínico.');
+      throw new Error("No se pudo actualizar el caso clínico.");
     }
   };
 
   return { caso, cargando, error, refrescar: cargarDatos, actualizar };
 }
-

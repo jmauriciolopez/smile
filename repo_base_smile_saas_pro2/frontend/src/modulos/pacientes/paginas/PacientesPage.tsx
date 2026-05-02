@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Card } from '../../../componentes/ui/Card';
-import { BadgeEstado } from '../../../componentes/ui/BadgeEstado';
-import { usePacientes } from '../../../hooks/usePacientes';
-import { ModalNuevoPaciente } from '../componentes/ModalNuevoPaciente';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Card } from "../../../componentes/ui/Card";
+import { BadgeEstado } from "../../../componentes/ui/BadgeEstado";
+import { usePacientes } from "../../../hooks/usePacientes";
+import { ModalNuevoPaciente } from "../componentes/ModalNuevoPaciente";
 
 export function PacientesPage() {
   const { pacientes, cargando, error, refrescar } = usePacientes();
@@ -13,10 +13,14 @@ export function PacientesPage() {
     <div className="space-y-6">
       <header className="flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Pacientes</h1>
-          <p className="mt-1 text-textoSecundario">Listado de pacientes sincronizado con el sistema.</p>
+          <h1 className="text-3xl font-semibold text-slate-900 leading-tight">
+            Pacientes
+          </h1>
+          <p className="mt-1 text-textoSecundario">
+            Listado de pacientes sincronizado con el sistema.
+          </p>
         </div>
-        <button 
+        <button
           onClick={() => setModalAbierto(true)}
           className="rounded-xl bg-primario px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primario/25 hover:bg-primario/90 hover:-translate-y-0.5 transition-all"
         >
@@ -24,19 +28,23 @@ export function PacientesPage() {
         </button>
       </header>
 
-      <ModalNuevoPaciente 
-        abierto={modalAbierto} 
-        alCerrar={() => setModalAbierto(false)} 
-        alGuardar={refrescar} 
+      <ModalNuevoPaciente
+        abierto={modalAbierto}
+        alCerrar={() => setModalAbierto(false)}
+        alGuardar={refrescar}
       />
 
       <Card titulo="Listado de pacientes">
         {cargando && (
-          <div className="py-12 text-center text-textoSecundario italic">Cargando pacientes...</div>
+          <div className="py-12 text-center text-textoSecundario italic">
+            Cargando pacientes...
+          </div>
         )}
-        
+
         {error && (
-          <div className="py-12 text-center text-red-500 font-medium">{error}</div>
+          <div className="py-12 text-center text-red-500 font-medium">
+            {error}
+          </div>
         )}
 
         {!cargando && !error && (
@@ -52,17 +60,31 @@ export function PacientesPage() {
               </thead>
               <tbody>
                 {pacientes.map((paciente) => (
-                  <tr key={paciente.id} className="border-t border-slate-200 hover:bg-slate-50 transition-colors">
+                  <tr
+                    key={paciente.id}
+                    className="border-t border-slate-200 hover:bg-slate-50 transition-colors"
+                  >
                     <td className="px-4 py-3">
-                      <div className="font-medium">{paciente.nombre_completo}</div>
-                      <div className="text-textoSecundario">{paciente.email}</div>
+                      <div className="font-medium">
+                        {paciente.nombre_completo}
+                      </div>
+                      <div className="text-textoSecundario">
+                        {paciente.email}
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-textoSecundario">{paciente.ciudad || '-'}</td>
-                    <td className="px-4 py-3">
-                      <BadgeEstado texto={paciente.estado_paciente || 'nuevo'} />
+                    <td className="px-4 py-3 text-textoSecundario">
+                      {paciente.ciudad || "-"}
                     </td>
                     <td className="px-4 py-3">
-                      <Link className="text-primario font-medium hover:underline" to={`/pacientes/${paciente.id}`}>
+                      <BadgeEstado
+                        texto={paciente.estado_paciente || "nuevo"}
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        className="text-primario font-medium hover:underline"
+                        to={`/pacientes/${paciente.id}`}
+                      >
                         Ver detalle
                       </Link>
                     </td>
@@ -70,7 +92,10 @@ export function PacientesPage() {
                 ))}
                 {pacientes.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-4 py-12 text-center text-textoSecundario italic">
+                    <td
+                      colSpan={4}
+                      className="px-4 py-12 text-center text-textoSecundario italic"
+                    >
                       No se encontraron pacientes.
                     </td>
                   </tr>

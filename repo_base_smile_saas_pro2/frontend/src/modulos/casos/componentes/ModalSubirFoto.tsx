@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Modal } from '../../../componentes/ui/Modal';
-import { useFotos } from '../../../hooks/useFotos';
+import React, { useState } from "react";
+import { Modal } from "../../../componentes/ui/Modal";
+import { useFotos } from "../../../hooks/useFotos";
 
 interface ModalSubirFotoProps {
   abierto: boolean;
@@ -8,12 +8,16 @@ interface ModalSubirFotoProps {
   casoId: string;
 }
 
-export function ModalSubirFoto({ abierto, alCerrar, casoId }: ModalSubirFotoProps) {
+export function ModalSubirFoto({
+  abierto,
+  alCerrar,
+  casoId,
+}: ModalSubirFotoProps) {
   const { subir } = useFotos(casoId);
   const [enviando, setEnviando] = useState(false);
   const [formData, setFormData] = useState({
-    url_foto: '',
-    tipo: 'frontal',
+    url_foto: "",
+    tipo: "frontal",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,26 +26,34 @@ export function ModalSubirFoto({ abierto, alCerrar, casoId }: ModalSubirFotoProp
     try {
       await subir(formData.url_foto, formData.tipo);
       alCerrar();
-      setFormData({ url_foto: '', tipo: 'frontal' });
+      setFormData({ url_foto: "", tipo: "frontal" });
     } catch (error) {
-      alert('Error al registrar la foto.');
+      alert("Error al registrar la foto.");
     } finally {
       setEnviando(false);
     }
   };
 
   return (
-    <Modal abierto={abierto} alCerrar={alCerrar} titulo="Subir Registro Fotográfico">
+    <Modal
+      abierto={abierto}
+      alCerrar={alCerrar}
+      titulo="Subir Registro Fotográfico"
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700">URL de la Imagen</label>
+          <label className="block text-sm font-medium text-slate-700">
+            URL de la Imagen
+          </label>
           <input
             required
             type="url"
             placeholder="https://ejemplo.com/foto.jpg"
             className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all font-sans"
             value={formData.url_foto}
-            onChange={(e) => setFormData({ ...formData, url_foto: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, url_foto: e.target.value })
+            }
           />
           <p className="mt-2 text-[10px] text-textoSecundario uppercase tracking-tighter">
             * En esta versión demo, pega el link de una imagen pública.
@@ -49,7 +61,9 @@ export function ModalSubirFoto({ abierto, alCerrar, casoId }: ModalSubirFotoProp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700">Tipo de Toma</label>
+          <label className="block text-sm font-medium text-slate-700">
+            Tipo de Toma
+          </label>
           <select
             className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all font-sans appearance-none"
             value={formData.tipo}
@@ -76,11 +90,10 @@ export function ModalSubirFoto({ abierto, alCerrar, casoId }: ModalSubirFotoProp
             disabled={enviando}
             className="rounded-xl bg-primario px-6 py-2 text-sm font-medium text-white shadow-lg shadow-primario/20 hover:bg-primario/90 disabled:opacity-50 transition-all"
           >
-            {enviando ? 'Subiendo...' : 'Registrar Foto'}
+            {enviando ? "Subiendo..." : "Registrar Foto"}
           </button>
         </div>
       </form>
     </Modal>
   );
 }
-

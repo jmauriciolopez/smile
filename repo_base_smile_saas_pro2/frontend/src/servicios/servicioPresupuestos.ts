@@ -1,4 +1,4 @@
-import { clienteApi } from './clienteApi';
+import { clienteApi } from "./clienteApi";
 
 export type PresupuestoApi = {
   id: string;
@@ -36,7 +36,7 @@ export type ActualizarPresupuestoData = Partial<CrearPresupuestoData> & {
 };
 
 export async function obtenerPresupuestos() {
-  return clienteApi<PresupuestoApi[]>('/presupuestos');
+  return clienteApi<PresupuestoApi[]>("/presupuestos");
 }
 
 export async function obtenerPresupuestoPorId(id: string) {
@@ -44,16 +44,18 @@ export async function obtenerPresupuestoPorId(id: string) {
 }
 
 export async function crearPresupuesto(data: CrearPresupuestoData) {
-  return clienteApi<PresupuestoApi>('/presupuestos', {
-    method: 'POST',
+  return clienteApi<PresupuestoApi>("/presupuestos", {
+    method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export async function actualizarPresupuesto(id: string, data: ActualizarPresupuestoData) {
+export async function actualizarPresupuesto(
+  id: string,
+  data: ActualizarPresupuestoData,
+) {
   return clienteApi<PresupuestoApi>(`/presupuestos/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: JSON.stringify(data),
   });
 }
-

@@ -15,21 +15,30 @@
  *   TOGGLE_GUIDE — mostrar/ocultar guía
  */
 
-import type { Diente, Guia, MaterialDiente, Transform } from '../store/editor-sonrisa.store';
+import type {
+  Diente,
+  Guia,
+  MaterialDiente,
+  Transform,
+} from "../store/editor-sonrisa.store";
 
 // ── Tipos de acciones ─────────────────────────────────────────────────────────
 
 export type AccionDiente =
-  | { type: 'MOVE_TOOTH';         id: string; payload: Pick<Transform, 'x' | 'y'> }
-  | { type: 'RESIZE_TOOTH';       id: string; payload: Pick<Transform, 'scaleX' | 'scaleY'> }
-  | { type: 'ROTATE_TOOTH';       id: string; payload: Pick<Transform, 'rotation'> }
-  | { type: 'UPDATE_MATERIAL';    id: string; payload: Partial<MaterialDiente> }
-  | { type: 'UPDATE_OPACITY';     id: string; payload: { opacity: number } }
-  | { type: 'TOGGLE_VISIBILITY';  id: string }
+  | { type: "MOVE_TOOTH"; id: string; payload: Pick<Transform, "x" | "y"> }
+  | {
+      type: "RESIZE_TOOTH";
+      id: string;
+      payload: Pick<Transform, "scaleX" | "scaleY">;
+    }
+  | { type: "ROTATE_TOOTH"; id: string; payload: Pick<Transform, "rotation"> }
+  | { type: "UPDATE_MATERIAL"; id: string; payload: Partial<MaterialDiente> }
+  | { type: "UPDATE_OPACITY"; id: string; payload: { opacity: number } }
+  | { type: "TOGGLE_VISIBILITY"; id: string };
 
 export type AccionGuia =
-  | { type: 'MOVE_GUIDE';   id: string; payload: { x: number; y: number } }
-  | { type: 'TOGGLE_GUIDE'; id: string; payload: { visible: boolean } }
+  | { type: "MOVE_GUIDE"; id: string; payload: { x: number; y: number } }
+  | { type: "TOGGLE_GUIDE"; id: string; payload: { visible: boolean } };
 
 export type Accion = AccionDiente | AccionGuia;
 
@@ -37,7 +46,7 @@ export type Accion = AccionDiente | AccionGuia;
 
 export interface BlueprintState {
   dientes: Diente[];
-  guias:   Guia[];
+  guias: Guia[];
 }
 
 // ── Función pura principal ────────────────────────────────────────────────────
@@ -49,82 +58,102 @@ export interface BlueprintState {
  * @example
  * const nuevo = applyAction(estado, { type: 'MOVE_TOOTH', id: 'diente-11', payload: { x: 200, y: 300 } })
  */
-export function applyAction(estado: BlueprintState, accion: Accion): BlueprintState {
+export function applyAction(
+  estado: BlueprintState,
+  accion: Accion,
+): BlueprintState {
   switch (accion.type) {
-
-    case 'MOVE_TOOTH':
+    case "MOVE_TOOTH":
       return {
         ...estado,
-        dientes: estado.dientes.map(d =>
+        dientes: estado.dientes.map((d) =>
           d.id === accion.id
-            ? { ...d, transform: { ...d.transform, x: accion.payload.x, y: accion.payload.y } }
-            : d
+            ? {
+                ...d,
+                transform: {
+                  ...d.transform,
+                  x: accion.payload.x,
+                  y: accion.payload.y,
+                },
+              }
+            : d,
         ),
       };
 
-    case 'RESIZE_TOOTH':
+    case "RESIZE_TOOTH":
       return {
         ...estado,
-        dientes: estado.dientes.map(d =>
+        dientes: estado.dientes.map((d) =>
           d.id === accion.id
-            ? { ...d, transform: { ...d.transform, scaleX: accion.payload.scaleX, scaleY: accion.payload.scaleY } }
-            : d
+            ? {
+                ...d,
+                transform: {
+                  ...d.transform,
+                  scaleX: accion.payload.scaleX,
+                  scaleY: accion.payload.scaleY,
+                },
+              }
+            : d,
         ),
       };
 
-    case 'ROTATE_TOOTH':
+    case "ROTATE_TOOTH":
       return {
         ...estado,
-        dientes: estado.dientes.map(d =>
+        dientes: estado.dientes.map((d) =>
           d.id === accion.id
-            ? { ...d, transform: { ...d.transform, rotation: accion.payload.rotation } }
-            : d
+            ? {
+                ...d,
+                transform: {
+                  ...d.transform,
+                  rotation: accion.payload.rotation,
+                },
+              }
+            : d,
         ),
       };
 
-    case 'UPDATE_MATERIAL':
+    case "UPDATE_MATERIAL":
       return {
         ...estado,
-        dientes: estado.dientes.map(d =>
+        dientes: estado.dientes.map((d) =>
           d.id === accion.id
             ? { ...d, material: { ...d.material, ...accion.payload } }
-            : d
+            : d,
         ),
       };
 
-    case 'UPDATE_OPACITY':
+    case "UPDATE_OPACITY":
       return {
         ...estado,
-        dientes: estado.dientes.map(d =>
-          d.id === accion.id
-            ? { ...d, opacity: accion.payload.opacity }
-            : d
+        dientes: estado.dientes.map((d) =>
+          d.id === accion.id ? { ...d, opacity: accion.payload.opacity } : d,
         ),
       };
 
-    case 'TOGGLE_VISIBILITY':
+    case "TOGGLE_VISIBILITY":
       return {
         ...estado,
-        dientes: estado.dientes.map(d =>
-          d.id === accion.id ? { ...d, visible: !d.visible } : d
+        dientes: estado.dientes.map((d) =>
+          d.id === accion.id ? { ...d, visible: !d.visible } : d,
         ),
       };
 
-    case 'MOVE_GUIDE':
+    case "MOVE_GUIDE":
       return {
         ...estado,
-        guias: estado.guias.map(g =>
+        guias: estado.guias.map((g) =>
           g.id === accion.id
             ? { ...g, posicion: { x: accion.payload.x, y: accion.payload.y } }
-            : g
+            : g,
         ),
       };
 
-    case 'TOGGLE_GUIDE':
+    case "TOGGLE_GUIDE":
       return {
         ...estado,
-        guias: estado.guias.map(g =>
-          g.id === accion.id ? { ...g, visible: accion.payload.visible } : g
+        guias: estado.guias.map((g) =>
+          g.id === accion.id ? { ...g, visible: accion.payload.visible } : g,
         ),
       };
 
@@ -138,7 +167,10 @@ export function applyAction(estado: BlueprintState, accion: Accion): BlueprintSt
  * Aplica una secuencia de acciones en orden, acumulando el resultado.
  * Útil para replay de historial o batch de operaciones.
  */
-export function applyActions(estado: BlueprintState, acciones: Accion[]): BlueprintState {
+export function applyActions(
+  estado: BlueprintState,
+  acciones: Accion[],
+): BlueprintState {
   return acciones.reduce((est, accion) => applyAction(est, accion), estado);
 }
 
@@ -148,18 +180,22 @@ export function applyActions(estado: BlueprintState, acciones: Accion[]): Bluepr
  */
 export function validarAccion(accion: Accion): boolean {
   switch (accion.type) {
-    case 'MOVE_TOOTH':
+    case "MOVE_TOOTH":
       return isFinite(accion.payload.x) && isFinite(accion.payload.y);
-    case 'RESIZE_TOOTH':
+    case "RESIZE_TOOTH":
       return (
-        isFinite(accion.payload.scaleX) && accion.payload.scaleX > 0 &&
-        isFinite(accion.payload.scaleY) && accion.payload.scaleY > 0
+        isFinite(accion.payload.scaleX) &&
+        accion.payload.scaleX > 0 &&
+        isFinite(accion.payload.scaleY) &&
+        accion.payload.scaleY > 0
       );
-    case 'ROTATE_TOOTH':
+    case "ROTATE_TOOTH":
       return isFinite(accion.payload.rotation);
-    case 'UPDATE_MATERIAL':
-      return Object.values(accion.payload).every(v => typeof v !== 'number' || isFinite(v));
-    case 'UPDATE_OPACITY':
+    case "UPDATE_MATERIAL":
+      return Object.values(accion.payload).every(
+        (v) => typeof v !== "number" || isFinite(v),
+      );
+    case "UPDATE_OPACITY":
       return accion.payload.opacity >= 0 && accion.payload.opacity <= 1;
     default:
       return true;
