@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from "react";
-import { useEditorStore } from "../../../store/editor-sonrisa.store";
 import {
   crearSesion,
   unirseASesion,

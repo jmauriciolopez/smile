@@ -1,5 +1,6 @@
 import { PrismaClient, EstadoPaciente, EstadoCaso, EstadoPresupuesto, RolUsuario } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { PLANTILLAS } from './plantillas.seed';
 
 const prisma = new PrismaClient();
 
@@ -114,6 +115,25 @@ async function main() {
       }
     }
   });
+
+  // 5. Plantillas de Diseño de Sonrisa
+  console.log(`✨ Cargando ${PLANTILLAS.length} plantillas...`);
+  for (const p of PLANTILLAS) {
+    await prisma.plantillaSonrisa.upsert({
+      where: { id: p.id },
+      update: {
+        nombre: p.nombre,
+        categoria: p.categoria,
+        parametros: p.parametros as any,
+      },
+      create: {
+        id: p.id,
+        nombre: p.nombre,
+        categoria: p.categoria,
+        parametros: p.parametros as any,
+      },
+    });
+  }
 
   console.log('✅ Base de datos poblada con éxito.');
 }

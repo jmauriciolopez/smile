@@ -1,826 +1,816 @@
-import React, { useRef, useState, useCallback } from "react";
-import { ErrorBoundary } from "../../../componentes/ui/ErrorBoundary";
-import { useNavigate, useParams } from "react-router-dom";
-import { Card } from "../../../componentes/ui/Card";
-import { LienzoDiseno } from "../componentes/LienzoDiseno";
-import { PanelExportacion } from "../componentes/PanelExportacion";
-import { PanelColaboracion } from "../componentes/PanelColaboracion";
-import { PanelFirmaDigital } from "../componentes/PanelFirmaDigital";
-import { CapturaCamara } from "../componentes/CapturaCamara";
-import {
-  useEditorSonrisa,
-  presetsEditor,
-  type PresetNombre,
-} from "../../../hooks/useEditorSonrisa";
+import React, { useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { useEditorStore } from "../../../store/editor-sonrisa.store";
-import { useFaceEngine } from "../../../motor/useFaceEngine";
-import { analizarVisagismo } from "../../../motor/visagismo";
-import { analizarColorMatch } from "../../../motor/color-match";
+import { PLANTILLAS_PREDEFINIDAS } from "../../../motor/plantilla-engine/seed";
+import {
+  PRESETS_MATERIALES,
+  TipoCeramica,
+} from "../../../motor/plantilla-engine/materiales";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { CadExporter } from "../../../motor/export-engine/cad-exporter";
 
-type PanelTab = "ajustes" | "exportar" | "colaborar" | "firma";
-
-/* ── Sub-componente: Visagismo + Color Match ─────────────────────────────── */
-function VisagismoPanel({
-  imgRef,
-}: {
-  imgRef: React.RefObject<HTMLImageElement>;
-}) {
-  const store = useEditorStore();
-  const [resultado, setResultado] = React.useState<ReturnType<
-    typeof analizarVisagismo
-  > | null>(null);
-  const [colorMatch, setColorMatch] = React.useState<{
-    colorSugerido: string;
-    vitaAproximado: string;
-    descripcion: string;
-    temperatura: string;
-  } | null>(null);
-  const [analizando, setAnalizando] = React.useState(false);
-
-  const analizar = async () => {
-    if (!store.faceData) return;
-    setAnalizando(true);
-
-    // Visagismo
-    const res = analizarVisagismo(store.faceData);
-    setResultado(res);
-
-    // Color Match (requiere imagen cargada)
-    if (imgRef.current && imgRef.current.complete && store.fotoUrl) {
-      try {
-        const cm = await analizarColorMatch(
-          imgRef.current,
-          store.faceData,
-          store.canvasSize,
-        );
-        setColorMatch(cm);
-        // Aplicar color sugerido a todos los dientes
-        store.dientes.forEach((d) => {
-          store.actualizarMaterial(d.id, { colorBase: cm.colorSugerido });
-        });
-      } catch {
-        // CORS o imagen no disponible — ignorar color match
-      }
-    }
-
-    setAnalizando(false);
-  };
-
-  return (
-    <Card titulo="🧠 Visagismo Digital">
-      <div className="space-y-3 text-xs">
-        <p className="text-slate-400 leading-relaxed">
-          Análisis facial automático para sugerir la morfología dental más
-          armónica.
-        </p>
-
-        <button
-          onClick={analizar}
-          disabled={analizando || !store.faceData}
-          className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 py-2 text-xs font-bold text-white hover:opacity-90 disabled:opacity-40 transition"
-        >
-          {analizando ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Analizando…
-            </span>
-          ) : (
-            "🧠 Analizar rostro"
-          )}
-        </button>
-
-        {resultado && (
-          <div className="space-y-2">
-            {/* Forma facial */}
-            <div className="rounded-lg bg-violet-50 border border-violet-100 p-2.5 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-violet-700 capitalize">
-                  {resultado.formaFacial}
-                </span>
-                <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-bold text-violet-600">
-                  {Math.round(resultado.confianza * 100)}% confianza
-                </span>
-              </div>
-              <p className="text-[10px] text-violet-600 leading-relaxed">
-                {resultado.razonamiento}
-              </p>
-            </div>
-
-            {/* Preset sugerido */}
-            <div className="flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
-              <span className="text-blue-600 font-bold text-[10px] uppercase tracking-wider">
-                Preset sugerido:
-              </span>
-              <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[9px] font-bold text-white capitalize">
-                {resultado.presetSugerido}
-              </span>
-            </div>
-
-            {/* Métricas */}
-            <div className="grid grid-cols-2 gap-1.5 font-mono text-[9px] text-slate-500">
-              <div className="rounded bg-slate-50 px-2 py-1">
-                <span className="font-bold">Índice facial:</span>{" "}
-                {resultado.metricas.indiceFacial}
-              </div>
-              <div className="rounded bg-slate-50 px-2 py-1">
-                <span className="font-bold">Mandibular:</span>{" "}
-                {resultado.metricas.indiceMandibular}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Color Match */}
-        {colorMatch && (
-          <div className="rounded-lg border border-slate-200 p-2.5 space-y-1.5">
-            <p className="font-bold text-[10px] uppercase tracking-wider text-slate-500">
-              🎨 Color Match
-            </p>
-            <div className="flex items-center gap-2">
-              <div
-                className="h-8 w-8 rounded-lg border border-slate-200 flex-shrink-0"
-                style={{ backgroundColor: colorMatch.colorSugerido }}
-              />
-              <div>
-                <p className="font-bold text-slate-700">
-                  {colorMatch.vitaAproximado} — {colorMatch.temperatura}
-                </p>
-                <p className="text-[9px] text-slate-400 leading-relaxed">
-                  {colorMatch.descripcion}
-                </p>
-              </div>
-            </div>
-            <p className="text-[9px] text-emerald-600">
-              ✓ Color aplicado a todas las piezas
-            </p>
-          </div>
-        )}
-      </div>
-    </Card>
-  );
-}
-
-/* ── Sub-componente: Calibración métrica ─────────────────────────────────── */
-function CalibracionPanel() {
-  const store = useEditorStore();
-  const [distPx, setDistPx] = React.useState("");
-  const [medMm, setMedMm] = React.useState("35"); // ancho intercanino típico
-
-  const aplicar = () => {
-    const px = parseFloat(distPx);
-    const mm = parseFloat(medMm);
-    if (!px || !mm || px <= 0 || mm <= 0) return;
-    store.setCalibracion({ distanciaPx: px, medidaMm: mm, mmPorPx: mm / px });
-  };
-
-  const cal = store.calibracion;
-
-  return (
-    <div className="space-y-3 text-xs">
-      <p className="text-slate-400 leading-relaxed">
-        Ingresá una distancia conocida en px (ej. ancho entre caninos medido en
-        el lienzo) y su valor real en mm para calibrar la ficha técnica.
-      </p>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="block mb-1 font-bold uppercase tracking-wider text-slate-500">
-            Distancia (px)
-          </label>
-          <input
-            type="number"
-            min="1"
-            placeholder="ej. 280"
-            value={distPx}
-            onChange={(e) => setDistPx(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 font-bold uppercase tracking-wider text-slate-500">
-            Medida real (mm)
-          </label>
-          <input
-            type="number"
-            min="1"
-            placeholder="ej. 35"
-            value={medMm}
-            onChange={(e) => setMedMm(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
-          />
-        </div>
-      </div>
-      <button
-        onClick={aplicar}
-        className="w-full rounded-xl bg-slate-800 py-1.5 text-xs font-bold text-white hover:bg-slate-700 transition"
-      >
-        Aplicar calibración
-      </button>
-
-      {cal && (
-        <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-2 font-mono text-[10px] text-emerald-700 space-y-0.5">
-          <div>✓ {cal.mmPorPx.toFixed(4)} mm/px</div>
-          <div>
-            {cal.distanciaPx}px = {cal.medidaMm}mm
-          </div>
-          <button
-            onClick={() => store.setCalibracion(null)}
-            className="text-[9px] text-emerald-500 underline mt-1"
-          >
-            Limpiar
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Sub-componente: Snapshot Diff ───────────────────────────────────────── */
-function SnapshotDiffPanel() {
-  const store = useEditorStore();
-  const { history, historyIndex } = store;
-
-  // Mostrar los últimos 8 snapshots
-  const visibles = history.slice(-8).reverse();
-
-  return (
-    <div className="space-y-1.5 text-[10px]">
-      <p className="text-slate-400 mb-2">
-        {history.length} versión{history.length !== 1 ? "es" : ""} · posición
-        actual: {historyIndex + 1}
-      </p>
-      {visibles.map((v, i) => {
-        const idx = history.length - 1 - i;
-        const esActual = idx === historyIndex;
-        return (
-          <button
-            key={`${v.timestamp}-${idx}`}
-            onClick={() => {
-              // Navegar al snapshot: aplicar undo/redo hasta llegar
-              const delta = idx - historyIndex;
-              if (delta < 0) {
-                for (let j = 0; j < Math.abs(delta); j++) store.undo();
-              } else {
-                for (let j = 0; j < delta; j++) store.redo();
-              }
-            }}
-            className={`w-full text-left rounded-lg px-2 py-1.5 font-mono transition-all ${
-              esActual
-                ? "bg-blue-50 border border-blue-200 text-blue-700"
-                : "bg-slate-50 border border-slate-100 text-slate-500 hover:border-slate-200"
-            }`}
-          >
-            <span className="font-bold">{esActual ? "▶ " : "  "}</span>v
-            {idx + 1} · {new Date(v.timestamp).toLocaleTimeString()} ·{" "}
-            {v.dientes.length} piezas
-            {v.hash ? (
-              <span className="ml-1 text-[9px] text-slate-300">
-                #{v.hash.slice(0, 6)}
-              </span>
-            ) : null}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-export function EditorSonrisaPage() {
-  const navigate = useNavigate();
-  const { casoId } = useParams();
+export const EditorSonrisaPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
-    store,
-    preset,
+    blueprint,
+    generarDiseno,
+    inicializarEngine,
+    cargarDisenoPersistente,
+    guardarDisenoPersistente,
+    cambiarVista,
+    alternarGuia,
+    undo,
+    redo,
     aplicarPreset,
-    manejarGuardar,
-    caso,
-    cargando,
-    guardando,
-    error,
-  } = useEditorSonrisa(casoId);
-  const { detectando, error: errorFace, detectar } = useFaceEngine();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    explorarVariantes,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    plantillasPersonalizadas,
+    ejecutarOptimizacionIA,
+    ejecutarAutoAlineacion,
+    obtenerDiagnosticoIA,
+    recomendarPlantillaIA,
+    modoComparativa,
+    alternarComparativa,
+    generarReporteClinico,
+    seleccionarMaterialCeramico,
+    setOpacidadLabios,
+    seleccionadoId,
+    actualizarTransformacion3D,
+    resetearTransformacion3D,
+    aplicarEstiloAPieza,
+    favoritos,
+    alternarFavorito,
+    setModoVisual,
+    saltarAVersion,
+    crearSnapshotInterno,
+    actualizarDiente,
+    actualizarFotoVista,
+    setGuiaValor,
+  } = useEditorStore();
 
-  const seleccionado = store.dientes.find((d) => d.id === store.seleccionadoId);
-  const [mensajeOk, setMensajeOk] = useState(false);
-  const [tab, setTab] = useState<PanelTab>("ajustes");
+  const [filtroFavoritos, setFiltroFavoritos] = React.useState(false);
 
-  /* ── Keyboard shortcuts Undo/Redo ──────────────────────────────────── */
-  React.useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
-        e.preventDefault();
-        store.undo();
-      }
-      if (
-        (e.ctrlKey || e.metaKey) &&
-        (e.key === "y" || (e.key === "z" && e.shiftKey))
-      ) {
-        e.preventDefault();
-        store.redo();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [store]);
-
-  /* ── Guardar con feedback ──────────────────────────────────────────── */
-  const onGuardar = async () => {
-    const ok = await manejarGuardar();
-    if (ok) {
-      setMensajeOk(true);
-      setTimeout(() => setMensajeOk(false), 3000);
+  useEffect(() => {
+    if (containerRef.current) {
+      inicializarEngine(containerRef.current);
     }
-  };
+  }, [inicializarEngine]);
 
-  /* ── Carga de foto local ────────────────────────────────────────────── */
-  const inputFileRef = useRef<HTMLInputElement>(null);
-  const imgOcultoRef = useRef<HTMLImageElement>(null);
-  const [mostrarCamara, setMostrarCamara] = useState(false);
-
-  const onFotoSeleccionada = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      store.setFotoUrl(url);
-      store.resetDientes();
-    },
-    [store],
-  );
-
-  const onCapturaFinalizada = (file: File) => {
-    const url = URL.createObjectURL(file);
-    store.setFotoUrl(url);
-    store.resetDientes();
-    setMostrarCamara(false);
-  };
-
-  /* ── Detectar cara en foto ──────────────────────────────────────────── */
-  const onDetectarCara = async () => {
-    if (!imgOcultoRef.current || !store.fotoUrl) return;
-    // Esperar que la imagen esté cargada
-    if (!imgOcultoRef.current.complete) {
-      await new Promise<void>((res) => {
-        imgOcultoRef.current!.onload = () => res();
+  useEffect(() => {
+    if (id) {
+      cargarDisenoPersistente(id).then(() => {
+        if (!useEditorStore.getState().blueprint) {
+          generarDiseno({
+            puntos: [],
+            anchoCara: 1000,
+            altoCara: 1000,
+            lineaMediaX: 500,
+            lineaBipupilarY: 400,
+            contornoLabios: [],
+            labiosExterior: [],
+            labiosInterior: [],
+          });
+        }
       });
     }
-    await detectar(imgOcultoRef.current);
-  };
-
-  /* ── Slider por pieza seleccionada ─────────────────────────────────── */
-  const onTransformSlider = (key: string, raw: number) => {
-    if (!store.seleccionadoId) return;
-    if (key === "opacity") {
-      store.actualizarOpacidad(store.seleccionadoId, raw / 100);
-    } else if (key === "scaleX" || key === "scaleY") {
-      store.actualizarDiente(store.seleccionadoId, { [key]: raw / 100 } as any);
-    } else {
-      store.actualizarDiente(store.seleccionadoId, { [key]: raw } as any);
-    }
-  };
-
-  /* ── Loading ────────────────────────────────────────────────────────── */
-  if (cargando)
-    return (
-      <div className="flex min-h-[500px] flex-col items-center justify-center gap-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-        <p className="text-sm text-slate-500 italic">
-          Cargando sesión de diseño…
-        </p>
-      </div>
-    );
+  }, [id, generarDiseno, cargarDisenoPersistente]);
 
   return (
-    <div className="space-y-5 animate-in fade-in duration-500">
-      {/* ── HEADER ───────────────────────────────────────────────────────── */}
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            ✦ Diseño Digital de Sonrisa
-            <span className="ml-2 text-xs font-semibold text-blue-600 bg-blue-50 rounded px-2 py-0.5">
-              PRO v2.1
-            </span>
-          </h1>
-          <p className="mt-0.5 text-xs text-slate-400">
-            Caso: {caso?.titulo ?? casoId}
-          </p>
+    <div className="flex h-screen w-full bg-slate-900 text-white overflow-hidden">
+      {/* Sidebar Izquierda */}
+      <div className="w-80 border-r border-slate-700 p-4 flex flex-col overflow-y-auto scrollbar-hide">
+        <h2 className="text-xl font-bold mb-4">Smile Engine PRO</h2>
+
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={alternarComparativa}
+            className={`flex-1 py-2 font-bold rounded text-xs transition-all ${
+              modoComparativa
+                ? "bg-blue-600 shadow-lg shadow-blue-500/30"
+                : "bg-slate-800 text-slate-400"
+            }`}
+          >
+            {modoComparativa ? "👁️ Vista Única" : "🌓 Comparativa"}
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {mensajeOk && (
-            <span className="text-xs font-bold text-emerald-600 animate-bounce">
-              ✓ Guardado
-            </span>
+        {/* Controles de Historial */}
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={undo}
+            disabled={!blueprint || blueprint.historial.length <= 1}
+            className="flex-1 py-1 bg-slate-800 rounded text-xs disabled:opacity-30"
+          >
+            ↩️ Undo
+          </button>
+          <button
+            onClick={redo}
+            className="flex-1 py-1 bg-slate-800 rounded text-xs"
+          >
+            Redo ↪️
+          </button>
+        </div>
+
+        {/* CAD/CAM Export */}
+        <div className="pt-2 border-t border-slate-700 mb-4">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+            Laboratorio CAD/CAM
+          </h3>
+          <div className="flex gap-2 mb-2">
+            <button
+              onClick={() => useEditorStore.getState().engine?.exportarSTL()}
+              disabled={!blueprint}
+              className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-[10px] font-black rounded shadow-lg transition-all disabled:opacity-30 flex items-center justify-center gap-1"
+            >
+              <span>🦷</span> STL Diseño Pro
+            </button>
+            <button
+              onClick={() => useEditorStore.getState().engine?.exportarOBJ()}
+              disabled={!blueprint}
+              className="flex-1 py-2 bg-teal-600 hover:bg-teal-500 text-[10px] font-black rounded shadow-lg transition-all disabled:opacity-30 flex items-center justify-center gap-1"
+            >
+              <span>📦</span> OBJ Diseño Pro
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => useEditorStore.getState().engine?.exportarExocad()}
+              disabled={!blueprint}
+              className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-[10px] font-black rounded shadow-lg transition-all disabled:opacity-30 flex items-center justify-center gap-1"
+            >
+              <span>⚙️</span> Exocad / 3Shape Data
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* Inteligencia Facial */}
+          <div className="pt-2 border-t border-slate-700">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Inteligencia Facial
+            </h3>
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={ejecutarOptimizacionIA}
+                className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-[10px] font-black rounded shadow-lg transition-all"
+                title="Optimización iterativa de proporciones"
+              >
+                🤖 Optimizar
+              </button>
+              <button
+                onClick={ejecutarAutoAlineacion}
+                className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-[10px] font-black rounded shadow-lg transition-all"
+                title="Sincronizar con el plano bipupilar"
+              >
+                ⚖️ Auto-Alinear
+              </button>
+              <button
+                onClick={() => {
+                  obtenerDiagnosticoIA();
+                  recomendarPlantillaIA();
+                }}
+                className="py-2 px-4 bg-slate-800 hover:bg-slate-700 rounded transition-all"
+                title="Analizar Diseño"
+              >
+                🔍
+              </button>
+            </div>
+
+            {blueprint?.analisisIA &&
+              blueprint.analisisIA.scoreEstetico > 0 && (
+                <div className="bg-slate-800/80 border border-slate-700 rounded-lg p-3 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] font-bold text-slate-400">
+                      SCORE ESTÉTICO
+                    </span>
+                    <span
+                      className={`text-lg font-black ${blueprint.analisisIA.scoreEstetico > 80 ? "text-green-400" : "text-yellow-400"}`}
+                    >
+                      {blueprint.analisisIA.scoreEstetico}%
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    {blueprint.analisisIA.sugerencias.map(
+                      (s: string, i: number) => (
+                        <p
+                          key={i}
+                          className="text-[9px] text-slate-300 flex gap-2"
+                        >
+                          <span className="text-blue-500">→</span> {s}
+                        </p>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
+          </div>
+
+          <div className="pt-2">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Modo de Visualización
+            </h3>
+            <div className="flex bg-slate-800 rounded-lg p-1 gap-1">
+              <button
+                onClick={() => setModoVisual("humedo")}
+                className={`flex-1 py-2 text-[10px] font-bold rounded-md transition-all flex items-center justify-center gap-2 ${blueprint?.configuracion.modoVisual === "humedo" ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+              >
+                <span className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"></span>
+                HÚMEDO
+              </button>
+              <button
+                onClick={() => setModoVisual("seco")}
+                className={`flex-1 py-2 text-[10px] font-bold rounded-md transition-all flex items-center justify-center gap-2 ${blueprint?.configuracion.modoVisual === "seco" ? "bg-slate-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+              >
+                <span className="w-2 h-2 bg-amber-400 rounded-full"></span>
+                SECO
+              </button>
+            </div>
+          </div>
+
+          {/* Biblioteca de Estilos */}
+          <div className="pt-2">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                Biblioteca de Estilos
+              </h3>
+              <button
+                onClick={() => setFiltroFavoritos(!filtroFavoritos)}
+                className={`text-[9px] px-2 py-0.5 rounded-full border transition-all ${filtroFavoritos ? "bg-pink-600/20 border-pink-500 text-pink-400" : "bg-slate-800 border-slate-700 text-slate-500"}`}
+              >
+                {filtroFavoritos ? "❤️ Favoritos" : "♡ Todos"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              {PLANTILLAS_PREDEFINIDAS.filter(
+                (p: any) => !filtroFavoritos || favoritos.includes(p.id),
+              ).map((p: any) => (
+                <div
+                  key={p.id}
+                  className="group flex flex-col bg-slate-800/40 border border-slate-700/50 rounded-xl overflow-hidden hover:border-blue-500/50 transition-all"
+                >
+                  <div className="relative h-20 bg-slate-900">
+                    <img
+                      src={
+                        p.id === "hollywood"
+                          ? "/C:/Users/mauricio/.gemini/antigravity/brain/6201f9e6-6b07-4d02-bda0-48bba529db63/smile_template_hollywood_1777765683086.png"
+                          : "/C:/Users/mauricio/.gemini/antigravity/brain/6201f9e6-6b07-4d02-bda0-48bba529db63/smile_template_natural_1777765700791.png"
+                      }
+                      className="w-full h-full object-cover opacity-50 group-hover:opacity-80 transition-all"
+                      alt={p.nombre}
+                    />
+                    <div className="absolute bottom-2 left-2 flex justify-between w-[90%] items-center">
+                      <span className="text-[9px] font-black uppercase text-white drop-shadow-md">
+                        {p.nombre}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          alternarFavorito(p.id);
+                        }}
+                        className={`p-1 rounded-full backdrop-blur-md ${favoritos.includes(p.id) ? "bg-pink-600 text-white" : "text-slate-300"}`}
+                      >
+                        ❤️
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-2 flex gap-1">
+                    <button
+                      onClick={() => aplicarPreset(p.id)}
+                      className="flex-1 py-1 bg-blue-600/20 text-[9px] rounded"
+                    >
+                      APLICAR
+                    </button>
+                    {seleccionadoId && (
+                      <button
+                        onClick={() =>
+                          aplicarEstiloAPieza(seleccionadoId, p.id)
+                        }
+                        className="flex-1 py-1 bg-emerald-600/20 text-[9px] rounded"
+                      >
+                        PIEZA
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-700">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Material Cerámico
+            </h3>
+            <div className="grid grid-cols-1 gap-2 mb-4">
+              {Object.entries(PRESETS_MATERIALES).map(
+                ([id, m]: [string, any]) => (
+                  <button
+                    key={id}
+                    onClick={() =>
+                      seleccionarMaterialCeramico(id as TipoCeramica)
+                    }
+                    className={`w-full p-2.5 rounded-lg border text-left transition-all ${blueprint?.dientes[0]?.material.colorBase === id ? "bg-blue-600 border-blue-400 shadow-lg" : "bg-slate-800/40 border-slate-700 hover:border-slate-500"}`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-bold">
+                        {id.toUpperCase()}
+                      </span>
+                      <div
+                        className="w-3 h-3 rounded-full border border-white/20"
+                        style={{ background: m.colorBase }}
+                      ></div>
+                    </div>
+                  </button>
+                ),
+              )}
+            </div>
+
+            {/* Personalización Óptica Avanzada */}
+            <div className="space-y-3 p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+              <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                Personalización Óptica (PBR)
+              </h4>
+
+              <div>
+                <div className="flex justify-between text-[8px] text-slate-400 mb-1 font-bold">
+                  <span>FRESNEL</span>
+                  <span>
+                    {(blueprint?.dientes[0]?.material.fresnel || 0).toFixed(2)}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={blueprint?.dientes[0]?.material.fresnel || 0}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    blueprint?.dientes.forEach((d: any) =>
+                      actualizarDiente(d.id, {
+                        material: { ...d.material, fresnel: val },
+                      }),
+                    );
+                  }}
+                  className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-[8px] text-slate-400 mb-1 font-bold">
+                  <span>SSS (Scattering)</span>
+                  <span>
+                    {(blueprint?.dientes[0]?.material.sss || 0).toFixed(2)}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={blueprint?.dientes[0]?.material.sss || 0}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    blueprint?.dientes.forEach((d: any) =>
+                      actualizarDiente(d.id, {
+                        material: { ...d.material, sss: val },
+                      }),
+                    );
+                  }}
+                  className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-[8px] text-slate-400 mb-1 font-bold">
+                  <span>OPALESCENCIA</span>
+                  <span>
+                    {(
+                      blueprint?.dientes[0]?.material.opalescencia || 0
+                    ).toFixed(2)}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={blueprint?.dientes[0]?.material.opalescencia || 0}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    blueprint?.dientes.forEach((d: any) =>
+                      actualizarDiente(d.id, {
+                        material: { ...d.material, opalescencia: val },
+                      }),
+                    );
+                  }}
+                  className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Transparencia Labial
+            </h3>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={blueprint?.configuracion.opacidadLabios || 1}
+              onChange={(e) => setOpacidadLabios(parseFloat(e.target.value))}
+              className="w-full h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+          </div>
+
+          {/* Panel 3D */}
+          {seleccionadoId && (
+            <div className="bg-slate-800/80 border border-blue-500/30 rounded-xl p-4 animate-in fade-in slide-in-from-right-4">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                Control 3D Pieza{" "}
+                {
+                  blueprint?.dientes.find((d: any) => d.id === seleccionadoId)
+                    ?.pieza
+                }
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-[9px] text-slate-400 mb-1 font-bold">
+                    <span>ROTACIÓN X</span>
+                    <span>
+                      {(
+                        (blueprint?.dientes.find(
+                          (d: any) => d.id === seleccionadoId,
+                        )?.transformacion3D.rotX || 0) *
+                        (180 / Math.PI)
+                      ).toFixed(0)}
+                      °
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-0.5"
+                    max="0.5"
+                    step="0.01"
+                    value={
+                      blueprint?.dientes.find(
+                        (d: any) => d.id === seleccionadoId,
+                      )?.transformacion3D.rotX || 0
+                    }
+                    onChange={(e) =>
+                      actualizarTransformacion3D(seleccionadoId, {
+                        rotX: parseFloat(e.target.value),
+                      })
+                    }
+                    className="w-full h-1 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-[9px] text-slate-400 mb-1 font-bold">
+                    <span>ROTACIÓN Y</span>
+                    <span>
+                      {(
+                        (blueprint?.dientes.find(
+                          (d: any) => d.id === seleccionadoId,
+                        )?.transformacion3D.rotY || 0) *
+                        (180 / Math.PI)
+                      ).toFixed(0)}
+                      °
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-0.5"
+                    max="0.5"
+                    step="0.01"
+                    value={
+                      blueprint?.dientes.find(
+                        (d: any) => d.id === seleccionadoId,
+                      )?.transformacion3D.rotY || 0
+                    }
+                    onChange={(e) =>
+                      actualizarTransformacion3D(seleccionadoId, {
+                        rotY: parseFloat(e.target.value),
+                      })
+                    }
+                    className="w-full h-1 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-[9px] text-slate-400 mb-1 font-bold">
+                    <span>PROFUNDIDAD (Z)</span>
+                    <span>
+                      {(
+                        blueprint?.dientes.find(
+                          (d: any) => d.id === seleccionadoId,
+                        )?.transformacion3D.posZ || 0
+                      ).toFixed(2)}
+                      mm
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-2"
+                    max="2"
+                    step="0.1"
+                    value={
+                      blueprint?.dientes.find(
+                        (d: any) => d.id === seleccionadoId,
+                      )?.transformacion3D.posZ || 0
+                    }
+                    onChange={(e) =>
+                      actualizarTransformacion3D(seleccionadoId, {
+                        posZ: parseFloat(e.target.value),
+                      })
+                    }
+                    className="w-full h-1 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                  />
+                </div>
+
+                <button
+                  onClick={() => resetearTransformacion3D(seleccionadoId)}
+                  className="w-full py-2 bg-slate-900 hover:bg-slate-700 text-[9px] font-bold text-slate-400 rounded transition-all"
+                >
+                  RESETEAR ANATOMÍA 3D
+                </button>
+              </div>
+            </div>
           )}
 
-          {/* Cargar foto / Cámara */}
-          <input
-            ref={inputFileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onFotoSeleccionada}
-          />
-          <div className="flex rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="pt-4 border-t border-slate-700 flex flex-col gap-2">
             <button
-              onClick={() => inputFileRef.current?.click()}
-              className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition border-r border-slate-200"
+              onClick={() => id && guardarDisenoPersistente(id)}
+              className="w-full py-3 bg-green-600 hover:bg-green-500 font-black rounded shadow-lg transition-all"
             >
-              📂 Foto
+              💾 Guardar Diseño
             </button>
             <button
-              onClick={() => setMostrarCamara(true)}
-              className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+              onClick={generarReporteClinico}
+              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-[10px] font-bold rounded border border-slate-700 transition-all"
             >
-              📷 Cámara
+              📄 Generar Reporte Clínico
             </button>
           </div>
 
-          {/* Detectar cara (FaceEngine) */}
-          <button
-            onClick={onDetectarCara}
-            disabled={detectando || !store.fotoUrl}
-            className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700 hover:bg-violet-100 disabled:opacity-40 transition"
-          >
-            {detectando ? (
-              <>
-                <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-violet-600 border-t-transparent mr-1" />
-                Detectando…
-              </>
-            ) : (
-              "🎯 Detectar Cara"
-            )}
-          </button>
-
-          {/* Guardar */}
-          <button
-            onClick={onGuardar}
-            disabled={guardando}
-            className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all"
-          >
-            {guardando ? "Guardando…" : "Guardar Diseño"}
-          </button>
-
-          {/* Undo / Redo */}
-          <button
-            onClick={() => store.undo()}
-            disabled={!store.canUndo()}
-            title="Deshacer (Ctrl+Z)"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 hover:bg-slate-50 disabled:opacity-30 transition"
-          >
-            ↩
-          </button>
-          <button
-            onClick={() => store.redo()}
-            disabled={!store.canRedo()}
-            title="Rehacer (Ctrl+Y)"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 hover:bg-slate-50 disabled:opacity-30 transition"
-          >
-            ↪
-          </button>
-
-          <button
-            onClick={() => navigate(-1)}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-500 hover:bg-slate-50 transition"
-          >
-            Cerrar
-          </button>
-        </div>
-      </header>
-
-      {/* ── Errores ──────────────────────────────────────────────────────── */}
-      {(error || errorFace) && (
-        <div className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-600 border border-red-100">
-          ⚠️ {error ?? errorFace}
-        </div>
-      )}
-
-      {/* Imagen oculta para FaceEngine y render */}
-      {store.fotoUrl && (
-        <img
-          ref={imgOcultoRef}
-          src={store.fotoUrl}
-          alt=""
-          crossOrigin="anonymous"
-          className="hidden"
-        />
-      )}
-
-      {/* ── LAYOUT PRINCIPAL ─────────────────────────────────────────────── */}
-      <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
-        {/* LIENZO */}
-        <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-          {/* Chrome bar */}
-          <div className="bg-slate-800 px-4 py-2 flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-            <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-            <span className="ml-2 text-[11px] text-slate-400 font-mono">
-              smile-canvas v2.1 · {store.dientes.length} piezas ·{" "}
-              {store.fotoUrl ? "foto activa" : "sin foto"}
-              {store.faceData ? " · 🎯 face detectado" : ""}
-            </span>
-          </div>
-          <LienzoDiseno width={860} height={580} />
-        </div>
-
-        {/* PANEL DERECHO con tabs */}
-        <div className="flex flex-col gap-0">
-          {/* Tabs */}
-          <div className="flex border-b border-slate-200 mb-4">
-            {(
-              [
-                { id: "ajustes", label: "🎨 Ajustes" },
-                { id: "exportar", label: "🖼️ Exportar" },
-                { id: "colaborar", label: "👥 Colaborar" },
-                { id: "firma", label: "🔒 Firma" },
-              ] as const
-            ).map((t) => (
+          {/* Historial Ramificado */}
+          <div className="pt-6 border-t border-slate-700">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                Historial de Diseño
+              </h3>
               <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`flex-1 py-2 text-[10px] font-bold transition-all border-b-2 ${
-                  tab === t.id
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-slate-400 hover:text-slate-600"
-                }`}
+                onClick={() => {
+                  const nombre = prompt("Nombre del Snapshot:");
+                  if (nombre) crearSnapshotInterno(nombre);
+                }}
+                className="text-[9px] bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-2 py-0.5 rounded transition-all"
               >
-                {t.label}
+                + Snapshot
               </button>
+            </div>
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
+              {blueprint?.historial
+                .slice()
+                .reverse()
+                .map((version: any, idx: number) => {
+                  const esSnapshot = version.etiqueta?.startsWith("SNAPSHOT:");
+                  const esActiva =
+                    blueprint.historial.length - 1 - idx ===
+                    blueprint.indiceHistorial;
+
+                  return (
+                    <button
+                      key={version.id}
+                      onClick={() => saltarAVersion(version.id)}
+                      className={`w-full text-left p-2 rounded-lg border transition-all relative overflow-hidden ${
+                        esActiva
+                          ? "bg-blue-600 border-blue-400"
+                          : esSnapshot
+                            ? "bg-emerald-600/10 border-emerald-500/30"
+                            : "bg-slate-800/50 border-slate-700 hover:border-slate-500"
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <span
+                          className={`text-[9px] font-black uppercase truncate ${esActiva ? "text-white" : esSnapshot ? "text-emerald-400" : "text-blue-400"}`}
+                        >
+                          {version.etiqueta || "Edición Manual"}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Área Central */}
+      <div className="flex-1 relative bg-black flex overflow-hidden">
+        {modoComparativa && (
+          <div className="flex-1 border-r border-slate-700 relative bg-slate-900">
+            <div className="absolute top-4 left-4 bg-black/50 px-2 py-1 rounded text-[10px] font-bold text-slate-400 z-10">
+              ORIGINAL
+            </div>
+            <img
+              src={
+                blueprint?.vistas.find((v) => v.id === blueprint.vistaActivaId)
+                  ?.fotoUrl || "/static/img/ejemplo_paciente_frontal.jpg"
+              }
+              className="w-full h-full object-contain opacity-50 grayscale"
+              alt="Antes"
+            />
+          </div>
+        )}
+        <div className="flex-1 relative" ref={containerRef}>
+          <div className="absolute top-4 left-4 bg-blue-600/50 px-2 py-1 rounded text-[10px] font-bold text-white z-10 uppercase tracking-widest">
+            {modoComparativa ? "DISEÑO PRO" : "SMILE DESIGN ENGINE"}
+          </div>
+        </div>
+      </div>
+
+      {/* Capas Derecha */}
+      <div className="w-64 border-l border-slate-700 p-4 bg-slate-900/50">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">
+          Capas & Escenarios
+        </h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-2">
+            {blueprint?.vistas.map((vista: any) => (
+              <div key={vista.id} className="flex gap-1">
+                <button
+                  onClick={() => cambiarVista(vista.id)}
+                  className={`flex-1 py-2 text-[10px] rounded border transition-all ${vista.activo ? "bg-blue-600 border-blue-400 text-white font-black" : "bg-slate-800 border-slate-700 text-slate-400"}`}
+                >
+                  {vista.tipo.toUpperCase()}
+                </button>
+                <button
+                  onClick={() => {
+                    const url = prompt(
+                      "URL de la foto para esta vista:",
+                      vista.fotoUrl,
+                    );
+                    if (url) actualizarFotoVista(vista.id, url);
+                  }}
+                  className="p-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700"
+                  title="Cargar Foto"
+                >
+                  📷
+                </button>
+              </div>
             ))}
           </div>
 
-          {/* ── TAB: AJUSTES ───────────────────────────────────────────── */}
-          {tab === "ajustes" && (
-            <div className="flex flex-col gap-4">
-              {/* Presets globales */}
-              <Card titulo="🎨 Presets de Sonrisa">
-                <div className="grid grid-cols-3 gap-2">
-                  {(Object.keys(presetsEditor) as PresetNombre[]).map((n) => (
-                    <button
-                      key={n}
-                      onClick={() => aplicarPreset(n)}
-                      className={`rounded-xl border py-2 text-xs font-bold capitalize transition-all ${
-                        preset === n
-                          ? "border-blue-500 bg-blue-50 text-blue-600"
-                          : "border-slate-100 bg-slate-50 text-slate-400 hover:border-slate-200"
-                      }`}
-                    >
-                      {n}
-                    </button>
-                  ))}
+          <div className="pt-4 border-t border-slate-700">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Capas & Visibilidad
+            </h3>
+            <div className="space-y-2">
+              {blueprint?.capas.map((capa: any) => (
+                <div
+                  key={capa.id}
+                  className="flex justify-between items-center p-2 bg-slate-800/30 rounded border border-slate-700/30"
+                >
+                  <span className="text-[9px] font-bold text-slate-400 uppercase">
+                    {capa.tipo}
+                  </span>
+                  <button
+                    onClick={() => alternarGuia(capa.tipo)}
+                    className="text-xs opacity-50"
+                  >
+                    {capa.visible ? "👁️" : "🙈"}
+                  </button>
                 </div>
-              </Card>
+              ))}
+            </div>
+          </div>
 
-              {/* Pieza seleccionada */}
-              {seleccionado ? (
-                <Card titulo={`🦷 Pieza ${seleccionado.pieza}`}>
-                  <div className="space-y-3.5 text-xs">
-                    {[
-                      {
-                        label: "Escala X",
-                        key: "scaleX",
-                        min: 10,
-                        max: 200,
-                        value: Math.round(seleccionado.transform.scaleX * 100),
-                        unit: "%",
-                      },
-                      {
-                        label: "Escala Y",
-                        key: "scaleY",
-                        min: 10,
-                        max: 200,
-                        value: Math.round(seleccionado.transform.scaleY * 100),
-                        unit: "%",
-                      },
-                      {
-                        label: "Rotación",
-                        key: "rotation",
-                        min: -45,
-                        max: 45,
-                        value: Math.round(seleccionado.transform.rotation),
-                        unit: "°",
-                      },
-                      {
-                        label: "Opacidad",
-                        key: "opacity",
-                        min: 0,
-                        max: 100,
-                        value: Math.round(seleccionado.opacity * 100),
-                        unit: "%",
-                      },
-                    ].map(({ label, key, min, max, value, unit }) => (
-                      <div key={key}>
-                        <div className="mb-1 flex justify-between">
-                          <span className="font-bold uppercase tracking-wider text-slate-500">
-                            {label}
-                          </span>
-                          <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600">
-                            {value}
-                            {unit}
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min={min}
-                          max={max}
-                          value={value}
-                          onChange={(e) =>
-                            onTransformSlider(key, Number(e.target.value))
-                          }
-                          className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600"
-                        />
-                      </div>
-                    ))}
+          <div className="pt-4 border-t border-slate-700">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
+              Guías Clínicas PRO
+            </h3>
+            <div className="space-y-4">
+              {blueprint?.guias.map((guia: any) => (
+                <div key={guia.id} className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase">
+                      {guia.tipo.replace("-", " ")}
+                    </span>
+                    <button
+                      onClick={() => alternarGuia(guia.tipo)}
+                      className={`text-[8px] px-2 py-0.5 rounded transition-all ${guia.visible ? "bg-blue-600 text-white" : "bg-slate-800 text-slate-500"}`}
+                    >
+                      {guia.visible ? "ACTIVA" : "OCULTA"}
+                    </button>
+                  </div>
 
-                    {/* Ajuste fino de posición X/Y */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <div className="space-y-1">
-                        <p className="text-[9px] uppercase font-bold text-slate-400">Horizontal</p>
-                        <div className="flex gap-1">
-                          <button onClick={() => store.actualizarDiente(seleccionado.id, { x: seleccionado.transform.x - 1 })} className="flex-1 bg-slate-50 border border-slate-200 rounded py-1 hover:bg-white text-[10px]">◀</button>
-                          <button onClick={() => store.actualizarDiente(seleccionado.id, { x: seleccionado.transform.x + 1 })} className="flex-1 bg-slate-50 border border-slate-200 rounded py-1 hover:bg-white text-[10px]">▶</button>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-[9px] uppercase font-bold text-slate-400">Vertical</p>
-                        <div className="flex gap-1">
-                          <button onClick={() => store.actualizarDiente(seleccionado.id, { y: seleccionado.transform.y - 1 })} className="flex-1 bg-slate-50 border border-slate-200 rounded py-1 hover:bg-white text-[10px]">▲</button>
-                          <button onClick={() => store.actualizarDiente(seleccionado.id, { y: seleccionado.transform.y + 1 })} className="flex-1 bg-slate-50 border border-slate-200 rounded py-1 hover:bg-white text-[10px]">▼</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Material PRO — translucidez + reflectividad */}
-                    <div className="pt-1 border-t border-slate-100">
-                      <p className="mb-2 font-bold uppercase tracking-wider text-slate-400 text-[10px]">
-                        💎 Material
-                      </p>
-                      {[
-                        {
-                          label: "Translucidez",
-                          matKey: "translucidez",
-                          value: Math.round(
-                            seleccionado.material.translucidez * 100,
-                          ),
-                        },
-                        {
-                          label: "Reflectividad",
-                          matKey: "reflectividad",
-                          value: Math.round(
-                            seleccionado.material.reflectividad * 100,
-                          ),
-                        },
-                      ].map(({ label, matKey, value }) => (
-                        <div key={matKey} className="mb-2">
-                          <div className="mb-1 flex justify-between">
-                            <span className="font-bold uppercase tracking-wider text-slate-500">
-                              {label}
-                            </span>
-                            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600">
-                              {value}%
-                            </span>
+                  {guia.visible && (
+                    <div className="pl-2 border-l border-slate-800 space-y-3">
+                      {guia.tipo === "media" && (
+                        <div>
+                          <div className="flex justify-between text-[8px] text-slate-500 mb-1">
+                            <span>POSICIÓN X</span>
+                            <span>{guia.valor.x}px</span>
                           </div>
                           <input
                             type="range"
-                            min={0}
-                            max={100}
-                            value={value}
+                            min="0"
+                            max="1000"
+                            step="1"
+                            value={guia.valor.x}
                             onChange={(e) =>
-                              store.actualizarMaterial(seleccionado.id, {
-                                [matKey]: Number(e.target.value) / 100,
+                              setGuiaValor(guia.id, {
+                                ...guia.valor,
+                                x: parseInt(e.target.value),
                               })
                             }
-                            className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-violet-600"
+                            className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-red-500"
                           />
                         </div>
-                      ))}
+                      )}
+                      {guia.tipo === "sonrisa" && (
+                        <div className="space-y-2">
+                          <div>
+                            <div className="flex justify-between text-[8px] text-slate-500 mb-1">
+                              <span>CURVATURA</span>
+                              <span>{guia.valor.curva.toFixed(2)}</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="2"
+                              step="0.01"
+                              value={guia.valor.curva}
+                              onChange={(e) =>
+                                setGuiaValor(guia.id, {
+                                  ...guia.valor,
+                                  curva: parseFloat(e.target.value),
+                                })
+                              }
+                              className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+                            />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-[8px] text-slate-500 mb-1">
+                              <span>ALTURA (Y)</span>
+                              <span>{guia.valor.y}px</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="1000"
+                              step="1"
+                              value={guia.valor.y}
+                              onChange={(e) =>
+                                setGuiaValor(guia.id, {
+                                  ...guia.valor,
+                                  y: parseInt(e.target.value),
+                                })
+                              }
+                              className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {guia.tipo === "proporcion" && (
+                        <div>
+                          <div className="flex justify-between text-[8px] text-slate-500 mb-1">
+                            <span>ESCALA ÁUREA</span>
+                            <span>{guia.valor.escala.toFixed(2)}</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0.1"
+                            max="5"
+                            step="0.01"
+                            value={guia.valor.escala}
+                            onChange={(e) =>
+                              setGuiaValor(guia.id, {
+                                ...guia.valor,
+                                escala: parseFloat(e.target.value),
+                              })
+                            }
+                            className="w-full h-0.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                          />
+                        </div>
+                      )}
                     </div>
-
-                    <div className="pt-2 flex gap-2">
-                      <button
-                        onClick={() => store.toggleVisibilidad(seleccionado.id)}
-                        className="flex-1 rounded-xl border border-slate-200 py-1.5 text-[10px] text-slate-500 hover:bg-slate-50 transition"
-                      >
-                        {seleccionado.visible ? "👁 Ocultar" : "👁 Mostrar"}
-                      </button>
-                      <button
-                        onClick={() => store.setSeleccionado(null)}
-                        className="flex-1 rounded-xl bg-slate-100 py-1.5 text-[10px] font-bold text-slate-600 hover:bg-slate-200 transition"
-                      >
-                        🔙 Volver
-                      </button>
-                    </div>
-                  </div>
-                </Card>
-              ) : (
-                <Card titulo="🦷 Piezas Dentales">
-                  <p className="text-xs text-slate-400 mb-3">
-                    Haz clic en una pieza en el lienzo para seleccionarla.
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {store.dientes.map((d) => (
-                      <button
-                        key={d.id}
-                        onClick={() => store.setSeleccionado(d.id)}
-                        className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-blue-600 transition"
-                      >
-                        {d.pieza}
-                      </button>
-                    ))}
-                  </div>
-                </Card>
-              )}
-
-              {/* Guías */}
-              <Card titulo="📐 Guías Clínicas">
-                <div className="space-y-2">
-                  {store.guias.map((g) => (
-                    <label
-                      key={g.id}
-                      className="flex items-center gap-2 cursor-pointer text-xs text-slate-600"
-                    >
-                      <input
-                        type="checkbox"
-                        defaultChecked={g.visible}
-                        className="accent-blue-600"
-                        onChange={(e) =>
-                          store.toggleGuia(g.id, e.target.checked)
-                        }
-                      />
-                      <span className="capitalize">
-                        {g.id.replace("guia-", "")}
-                      </span>
-                    </label>
-                  ))}
+                  )}
                 </div>
-              </Card>
-
-              {/* Calibración métrica */}
-              <Card titulo="📏 Calibración (mm)">
-                <CalibracionPanel />
-              </Card>
-
-              {/* Snapshot Diff — historial de versiones */}
-              {store.history.length > 1 && (
-                <Card titulo="🕐 Historial">
-                  <SnapshotDiffPanel />
-                </Card>
-              )}
-
-              {/* Info face */}
-              {store.faceData && (
-                <div className="rounded-xl bg-violet-50 border border-violet-100 p-3 space-y-1">
-                  <p className="text-[10px] font-bold text-violet-600 uppercase tracking-widest">
-                    🎯 Face Engine activo
-                  </p>
-                  <p className="text-[10px] text-violet-500">
-                    Eje facial: {store.faceData.transform.rotation.toFixed(1)}°
-                    · Boca: {Math.round(store.faceData.landmarks.boca.ancho)}px
-                    ·{store.faceData.lips.contornoCompleto.length} puntos de
-                    labio
-                  </p>
-                </div>
-              )}
-
-              {/* Visagismo + Color Match */}
-              {store.faceData && <VisagismoPanel imgRef={imgOcultoRef} />}
+              ))}
             </div>
-          )}
-
-          {/* ── TAB: EXPORTAR ─────────────────────────────────────────── */}
-          {tab === "exportar" && (
-            <PanelExportacion
-              fotoUrl={store.fotoUrl}
-              casoId={casoId}
-              disenoId={caso?.diseno_activo_id}
-            />
-          )}
-
-          {/* ── TAB: COLABORAR ────────────────────────────────────────── */}
-          {tab === "colaborar" && (
-            <PanelColaboracion
-              casoId={casoId}
-              disenoId={caso?.diseno_activo_id}
-            />
-          )}
-
-          {/* ── TAB: FIRMA ────────────────────────────────────────────── */}
-          {tab === "firma" && (
-            <PanelFirmaDigital
-              casoId={casoId}
-              disenoId={caso?.diseno_activo_id}
-            />
-          )}
+          </div>
         </div>
       </div>
-
-      {/* Modal de Cámara */}
-      {mostrarCamara && (
-        <CapturaCamara
-          onCaptura={onCapturaFinalizada}
-          onCerrar={() => setMostrarCamara(false)}
-        />
-      )}
     </div>
   );
-}
+};

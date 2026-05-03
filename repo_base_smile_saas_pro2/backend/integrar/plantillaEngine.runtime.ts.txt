@@ -1,0 +1,238 @@
+// 🧠 PLANTILLA ENGINE RUNTIME — ENTERPRISE
+
+import { PLANTILLAS, PlantillaSonrisa } from "./plantillas.seed"
+
+// -------------------------
+// TIPOS BASE
+// -------------------------
+
+type Vec2 = { x: number; y: number }
+
+type FaceData = {
+    centroBoca: Vec2
+    anchoBoca: number
+    ejeFacial: number
+}
+
+type Tooth = {
+    pieza: number
+    posicion: Vec2
+    dimensiones: { width: number; height: number }
+    transform: { rotacion: number; escala: number }
+    material: {
+        colorBase: string
+        translucidez: number
+        reflectividad: number
+    }
+}
+
+type Blueprint = {
+    id: string
+    teeth: Tooth[]
+}
+
+// -------------------------
+// UTILIDADES
+// -------------------------
+
+function lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t
+}
+
+function clamp(v: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, v))
+}
+
+// -------------------------
+// GENERADOR DE DIENTES BASE
+// -------------------------
+
+function generarFilaDientes(face: FaceData, plantilla: PlantillaSonrisa): Tooth[] {
+    const dientes: Tooth[] = []
+
+    const baseWidth = face.anchoBoca / 8
+
+    const piezas = [11, 12, 13, 21, 22, 23]
+
+    piezas.forEach((pieza, i) => {
+        const offsetX = (i - 2.5) * baseWidth
+
+        const width =
+            pieza === 11 || pieza === 21
+                ? baseWidth * plantilla.parametros.proporciones.incisivoCentral
+                : pieza === 12 || pieza === 22
+                    ? baseWidth * plantilla.parametros.proporciones.incisivoLateral
+                    : baseWidth * plantilla.parametros.proporciones.canino
+
+        const height = width * 1.2
+
+        dientes.push({
+            pieza,
+            posicion: {
+                x: face.centroBoca.x + offsetX,
+                y: face.centroBoca.y
+            },
+            dimensiones: { width, height },
+            transform: { rotacion: 0, escala: 1 },
+            material: {
+                colorBase: "#ffffff",
+                translucidez: plantilla.parametros.color.translucidez,
+                reflectividad: 0.5
+            }
+        })
+    })
+
+    return dientes
+}
+
+// -------------------------
+// REGLAS
+// -------------------------
+
+function aplicarSimetria(teeth: Tooth[], intensidad: number): Tooth[] {
+    return teeth.map((t) => {
+        if (t.pieza >= 21) {
+            return {
+                ...t,
+                posicion: {
+                    x: lerp(t.posicion.x, -t.posicion.x, intensidad),
+                    y: t.posicion.y
+                }
+            }
+        }
+        return t
+    })
+}
+
+function aplicarCurvatura(teeth: Tooth[], curva: number): Tooth[] {
+    return teeth.map((t, i) => {
+        const offset = Math.abs(i - 2.5)
+        return {
+            ...t,
+            posicion: {
+                x: t.posicion.x,
+                y: t.posicion.y - offset * curva * 5
+            }
+        }
+    })
+}
+
+function aplicarColor(teeth: Tooth[], whiteness: number): Tooth[] {
+    return teeth.map((t) => ({
+        ...t,
+        material: {
+            ...t.material,
+            colorBase: `rgba(255,255,255,${whiteness})`
+        }
+    }))
+}
+
+// -------------------------
+// CORE: aplicarPlantilla
+// -------------------------
+
+export function aplicarPlantilla(
+    plantilla: PlantillaSonrisa,
+    face: FaceData
+): Blueprint {
+    let teeth = generarFilaDientes(face, plantilla)
+
+    teeth = aplicarCurvatura(teeth, plantilla.parametros.curvaSonrisa)
+    teeth = aplicarSimetria(teeth, plantilla.parametros.simetria)
+    teeth = aplicarColor(teeth, plantilla.parametros.color.whiteness)
+
+    return {
+        id: crypto.randomUUID(),
+        teeth
+    }
+}
+
+// -------------------------
+// COMBINAR PLANTILLAS
+// -------------------------
+
+export function combinarPlantillas(
+    a: PlantillaSonrisa,
+    b: PlantillaSonrisa
+): PlantillaSonrisa {
+    return {
+        ...a,
+        parametros: {
+            proporciones: {
+                incisivoCentral: lerp(
+                    a.parametros.proporciones.incisivoCentral,
+                    b.parametros.proporciones.incisivoCentral,
+                    0.5
+                ),
+                incisivoLateral: lerp(
+                    a.parametros.proporciones.incisivoLateral,
+                    b.parametros.proporciones.incisivoLateral,
+                    0.5
+                ),
+                canino: lerp(
+                    a.parametros.proporciones.canino,
+                    b.parametros.proporciones.canino,
+                    0.5
+                )
+            },
+            forma: a.parametros.forma,
+            curvaSonrisa: lerp(a.parametros.curvaSonrisa, b.parametros.curvaSonrisa, 0.5),
+            exposicionDental: lerp(a.parametros.exposicionDental, b.parametros.exposicionDental, 0.5),
+            simetria: lerp(a.parametros.simetria, b.parametros.simetria, 0.5),
+            color: {
+                whiteness: lerp(a.parametros.color.whiteness, b.parametros.color.whiteness, 0.5),
+                translucidez: lerp(a.parametros.color.translucidez, b.parametros.color.translucidez, 0.5),
+                saturacion: lerp(a.parametros.color.saturacion, b.parametros.color.saturacion, 0.5)
+            }
+        }
+    }
+}
+
+// -------------------------
+// VARIANTES AUTOMÁTICAS
+// -------------------------
+
+export function generarVariantes(
+    plantilla: PlantillaSonrisa,
+    cantidad = 5
+): PlantillaSonrisa[] {
+    const variantes: PlantillaSonrisa[] = []
+
+    for (let i = 0; i < cantidad; i++) {
+        variantes.push({
+            ...plantilla,
+            id: `${plantilla.id}_var_${i}`,
+            parametros: {
+                ...plantilla.parametros,
+                curvaSonrisa: clamp(
+                    plantilla.parametros.curvaSonrisa + (Math.random() - 0.5) * 0.2,
+                    0,
+                    1
+                ),
+                simetria: clamp(
+                    plantilla.parametros.simetria + (Math.random() - 0.5) * 0.1,
+                    0,
+                    1
+                ),
+                color: {
+                    ...plantilla.parametros.color,
+                    whiteness: clamp(
+                        plantilla.parametros.color.whiteness + (Math.random() - 0.5) * 0.1,
+                        0,
+                        1
+                    )
+                }
+            }
+        })
+    }
+
+    return variantes
+}
+
+// -------------------------
+// UTIL: obtener plantilla
+// -------------------------
+
+export function getPlantillaById(id: string) {
+    return PLANTILLAS.find((p) => p.id === id)
+}

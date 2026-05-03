@@ -1,194 +1,62 @@
-import React from "react";
-import {
-  Stage,
-  Layer,
-  Image as KImage,
-  Line,
-  Group,
-  Path,
-  Shape,
-  Transformer,
-} from "react-konva";
-import useImage from "use-image";
-import { useEditorStore } from "../../../store/editor-sonrisa.store";
-import type Konva from "konva";
+import React, { useRef } from "react";
+import { useRenderEngine } from "../../../motor/useRenderEngine";
+import { useEditorSonrisa } from "../../../hooks/useEditorSonrisa";
 
-interface Props {
-  width: number;
-  height: number;
-}
+/**
+ * Componente Lienzo de Diseño PRO.
+ * Contenedor principal para el renderizado WebGL del diseño de sonrisa.
+ */
+export const LienzoDiseno: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { blueprint, seleccionadoId, seleccionarDiente } = useEditorSonrisa();
 
-export const LienzoDiseno: React.FC<Props> = ({ width, height }) => {
-  const {
-    fotoUrl,
-    dientes,
-    guias,
-    seleccionadoId,
-    faceData,
-    setSeleccionado,
-    actualizarDiente,
-  } = useEditorStore();
-
-  const [image] = useImage(fotoUrl ?? "");
-
-  const imageScale = image
-    ? Math.min(width / image.width, height / image.height)
-    : 1;
-  const imageX = image ? (width - image.width * imageScale) / 2 : 0;
-  const imageY = image ? (height - image.height * imageScale) / 2 : 0;
-
-  /* ── Transformer ref ────────────────────────────────────────────────────── */
-  const transformerRef = React.useRef<Konva.Transformer>(null);
-  const shapeRefs = React.useRef<Record<string, Konva.Path>>({});
-
-  React.useEffect(() => {
-    if (!transformerRef.current) return;
-    const node = seleccionadoId ? shapeRefs.current[seleccionadoId] : null;
-    transformerRef.current.nodes(node ? [node] : []);
-    transformerRef.current.getLayer()?.batchDraw();
-  }, [seleccionadoId]);
+  // Activar el motor de renderizado 3D
+  useRenderEngine(containerRef);
 
   return (
-    <div className="overflow-hidden rounded-b-2xl bg-slate-900">
-      <Stage
-        width={width}
-        height={height}
-        onMouseDown={(e) => {
-          if (e.target === e.target.getStage()) setSeleccionado(null);
-        }}
-      >
-        {/* ── CAPA 1: Foto del paciente ────────────────────────────────── */}
-        <Layer listening={false}>
-          {image && (
-            <KImage
-              image={image}
-              x={imageX}
-              y={imageY}
-              scaleX={imageScale}
-              scaleY={imageScale}
-            />
-          )}
-        </Layer>
+    <div className="relative w-full h-full bg-black overflow-hidden group">
+      {/* Capa de Renderizado Three.js */}
+      <div
+        ref={containerRef}
+        className="w-full h-full cursor-crosshair"
+        onClick={() => seleccionarDiente(null)}
+      />
 
-        {/* ── CAPA 2: Guías clínicas ───────────────────────────────────── */}
-        <Layer listening={false}>
-          {guias.map((g) =>
-            g.visible ? (
-              <Line
-                key={g.id}
-                points={
-                  g.tipo === "vertical"
-                    ? [g.posicion.x, 0, g.posicion.x, height]
-                    : [0, g.posicion.y, width, g.posicion.y]
-                }
-                stroke={g.id === "guia-media" ? "#3b82f6" : "#a78bfa"}
-                strokeWidth={1}
-                dash={[10, 5]}
-                opacity={0.45}
-              />
-            ) : null,
-          )}
-        </Layer>
+      {/* Overlay de HUD Clínico */}
+      <div className="absolute top-4 left-4 pointer-events-none">
+        <div className="bg-black/60 backdrop-blur-md p-3 rounded-lg border border-white/10">
+          <div className="text-[10px] uppercase tracking-widest text-blue-400 font-bold mb-1">
+            Status Sistema
+          </div>
+          <div className="text-xs text-white">
+            {blueprint ? (
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                Motor 3D Activo - v{blueprint.version}
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full" />
+                Esperando Detección Facial...
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
 
-        {/* ── CAPA 3: Máscara labial (FaceEngine) ─────────────────────── */}
-        {faceData && (
-          <Layer listening={false} opacity={0.25}>
-            <Shape
-              sceneFunc={(ctx) => {
-                ctx.beginPath();
-                const pts = faceData.lips.contornoCompleto;
-                pts.forEach((p, i) => {
-                  if (i === 0) ctx.moveTo(p.x, p.y);
-                  else ctx.lineTo(p.x, p.y);
-                });
-                ctx.closePath();
-                ctx.fillStyle = "rgba(251,146,60,0.35)";
-                ctx.fill();
-                ctx.strokeStyle = "#f97316";
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-              }}
-            />
-          </Layer>
-        )}
-
-        {/* ── CAPA 4: Dientes manipulables ────────────────────────────── */}
-        <Layer>
-          {dientes.map((diente) =>
-            diente.visible ? (
-              <Group
-                key={diente.id}
-                draggable
-                x={diente.transform.x}
-                y={diente.transform.y}
-                rotation={diente.transform.rotation}
-                scaleX={diente.transform.scaleX}
-                scaleY={diente.transform.scaleY}
-                onClick={() => setSeleccionado(diente.id)}
-                onTap={() => setSeleccionado(diente.id)}
-                onDragEnd={(e) =>
-                  actualizarDiente(diente.id, {
-                    x: e.target.x(),
-                    y: e.target.y(),
-                  })
-                }
-                onTransformEnd={(e) =>
-                  actualizarDiente(diente.id, {
-                    x: e.target.x(),
-                    y: e.target.y(),
-                    rotation: e.target.rotation(),
-                    scaleX: e.target.scaleX(),
-                    scaleY: e.target.scaleY(),
-                  })
-                }
-              >
-                <Path
-                  ref={(node) => {
-                    if (node) shapeRefs.current[diente.id] = node;
-                  }}
-                  data={diente.svgPath}
-                  fill="rgba(255,255,255,0.92)"
-                  stroke={
-                    seleccionadoId === diente.id
-                      ? "#3b82f6"
-                      : "rgba(200,200,210,0.4)"
-                  }
-                  strokeWidth={seleccionadoId === diente.id ? 2 : 0.8}
-                  opacity={diente.opacity}
-                  shadowBlur={seleccionadoId === diente.id ? 16 : 6}
-                  shadowColor="rgba(255,255,255,0.7)"
-                  fillLinearGradientStartPoint={{ x: 50, y: 0 }}
-                  fillLinearGradientEndPoint={{ x: 50, y: 160 }}
-                  fillLinearGradientColorStops={[
-                    0,
-                    "rgba(255,255,255,1)",
-                    0.6,
-                    "rgba(240,244,255,0.95)",
-                    1,
-                    "rgba(210,220,240,0.85)",
-                  ]}
-                />
-              </Group>
-            ) : null,
-          )}
-
-          <Transformer
-            ref={transformerRef}
-            rotateEnabled
-            enabledAnchors={[
-              "top-left",
-              "top-right",
-              "bottom-left",
-              "bottom-right",
-              "middle-left",
-              "middle-right",
-            ]}
-            boundBoxFunc={(oldBox, newBox) =>
-              newBox.width < 10 || newBox.height < 10 ? oldBox : newBox
-            }
-          />
-        </Layer>
-      </Stage>
+      {/* Indicadores de Selección */}
+      {seleccionadoId && (
+        <div className="absolute bottom-4 right-4 bg-blue-600/20 backdrop-blur-xl p-4 rounded-xl border border-blue-500/50">
+          <div className="text-xs font-bold text-blue-300 mb-1">
+            PIEZA SELECCIONADA
+          </div>
+          <div className="text-2xl font-black text-white italic">
+            {seleccionadoId}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+export default LienzoDiseno;

@@ -7,16 +7,40 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // React core — siempre necesario
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
-          // Konva — solo en el editor
-          "vendor-konva": ["konva", "react-konva", "use-image"],
-          // Zustand — state management
-          "vendor-zustand": ["zustand"],
+        manualChunks(id) {
+          // Separar librerías pesadas de node_modules
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("three") ||
+              id.includes("@react-three") ||
+              id.includes("postprocessing")
+            ) {
+              return "vendor-three";
+            }
+            if (id.includes("konva") || id.includes("react-konva")) {
+              return "vendor-konva";
+            }
+            if (
+              id.includes("react") ||
+              id.includes("scheduler") ||
+              id.includes("object-assign")
+            ) {
+              return "vendor-react";
+            }
+            if (id.includes("cornerstone") || id.includes("dicom-parser")) {
+              return "vendor-medical";
+            }
+            if (id.includes("@mediapipe")) {
+              return "vendor-ai";
+            }
+          }
+          // Separar los motores de cálculo clínico (core del negocio)
+          if (id.includes("src/motor/")) {
+            return "smile-engines-pro";
+          }
         },
       },
     },

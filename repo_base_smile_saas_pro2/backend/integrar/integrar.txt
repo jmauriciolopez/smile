@@ -1,0 +1,11 @@
+Cómo lo usás (ejemplo real)
+const face = {
+  centroBoca: { x: 300, y: 250 },
+  anchoBoca: 200,
+  ejeFacial: 0
+}
+
+const plantilla = getPlantillaById("hollywood")
+
+const blueprint = aplicarPlantilla(plantilla, face)
+

@@ -145,11 +145,35 @@ model TareaInterna {
 model DisenoSonrisa {
   id                    String      @id @default(uuid())
   caso_clinico_id       String
-  ajustes_json          String      // Guardamos ancho, alto, etc como string JSON
+  ajustes_json          String      // Guardamos posiciones, escala, etc.
+  score_json            String?     // Historial de scores de IA y sugerencias
   url_imagen_resultado  String?
   activo                Boolean     @default(true)
   fecha_creacion        DateTime    @default(now())
   fecha_actualizacion   DateTime    @updatedAt
+  caso_clinico          CasoClinico @relation(fields: [caso_clinico_id], references: [id])
+}
+
+model SignatureDesign {
+  id                    String      @id @default(uuid())
+  caso_clinico_id       String      @unique
+  url_scan_stl          String?
+  url_waxup_stl         String?
+  url_retrato_jpg       String?
+  alineacion_json       String?     // Matrix de transformación 3D
+  puntos_labio_json     String?     // Puntos de la curva Bezier
+  fecha_creacion        DateTime    @default(now())
+  fecha_actualizacion   DateTime    @updatedAt
+  caso_clinico          CasoClinico @relation(fields: [caso_clinico_id], references: [id])
+}
+
+model CBCTStudy {
+  id                    String      @id @default(uuid())
+  caso_clinico_id       String
+  nombre_estudio        String
+  url_zip_dicom         String?
+  metadatos_json        String?     // Windowing, slices, modalidad
+  fecha_creacion        DateTime    @default(now())
   caso_clinico          CasoClinico @relation(fields: [caso_clinico_id], references: [id])
 }
 
@@ -176,4 +200,12 @@ model AuditLog {
   @@index([usuario_id])
   @@index([entidad_id])
   @@index([fecha_creacion])
+}
+
+model PlantillaSonrisa {
+  id              String   @id
+  nombre          String
+  categoria       String
+  parametros      Json     // Almacena proporciones, forma, color, etc.
+  fecha_creacion  DateTime @default(now())
 }

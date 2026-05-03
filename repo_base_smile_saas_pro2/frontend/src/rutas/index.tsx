@@ -11,6 +11,8 @@ import { DetallePresupuestoPage } from "../modulos/presupuestos/paginas/DetalleP
 import { SeguimientosPage } from "../modulos/seguimientos/paginas/SeguimientosPage";
 import { LoginPage } from "../modulos/autenticacion/paginas/LoginPage";
 import { VistaPacientePage } from "../modulos/diseno_sonrisa/paginas/VistaPacientePage";
+import SignatureDesignPage from "../modulos/signature_design/paginas/SignatureDesignPage";
+import CBCTViewerPage from "../modulos/cbct_viewer/paginas/CBCTViewerPage";
 import { useAutenticacionStore } from "../store/autenticacion.store";
 
 function RutaPrivada() {
@@ -35,6 +37,8 @@ export function AppRoutes() {
             path="/disenos/editor/:casoId"
             element={<EditorSonrisaPage />}
           />
+          <Route path="/lab" element={<SignatureDesignPage />} />
+          <Route path="/radiologia" element={<CBCTViewerPage />} />
           <Route path="/presupuestos" element={<PresupuestosPage />} />
           <Route
             path="/presupuestos/:id"

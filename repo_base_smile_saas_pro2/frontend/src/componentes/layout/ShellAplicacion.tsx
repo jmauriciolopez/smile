@@ -27,6 +27,17 @@ const menu = [
     icono:
       "M9 8l3 5m0 0l3-5m-3 5v4m-3-5h6m-6 3h6m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
   },
+  {
+    to: "/lab",
+    etiqueta: "Lab & 3D (Signature)",
+    icono:
+      "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9",
+  },
+  {
+    to: "/radiologia",
+    etiqueta: "Visor CBCT",
+    icono: "M9 9l6 6m0-6l-6 6m12-3a9 9 0 11-18 0 9 9 0 0118 0",
+  },
 ];
 
 export function ShellAplicacion() {

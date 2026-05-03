@@ -8,7 +8,6 @@ type Props = {
 export function CapturaCamara({ onCaptura, onCerrar }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,7 +22,6 @@ export function CapturaCamara({ onCaptura, onCerrar }: Props) {
           },
         });
         currentStream = s;
-        setStream(s);
         if (videoRef.current) {
           videoRef.current.srcObject = s;
         }
@@ -38,7 +36,9 @@ export function CapturaCamara({ onCaptura, onCerrar }: Props) {
 
     return () => {
       if (currentStream) {
-        currentStream.getTracks().forEach((track) => track.stop());
+        (currentStream as MediaStream)
+          .getTracks()
+          .forEach((track) => track.stop());
       }
     };
   }, []);

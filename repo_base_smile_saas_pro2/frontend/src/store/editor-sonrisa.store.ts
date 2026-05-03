@@ -1,389 +1,574 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import {
-  BIBLIOTECA_DENTAL,
-  PIEZAS_FRONTALES,
-  generarPosicionesIniciales,
-} from "../motor/biblioteca-dientes";
-import type { FaceData } from "../motor/tipos-faciales";
+  activarVista,
+  deshacer,
+  rehacer,
+  saltarAVersion,
+  crearSnapshotInterno,
+  actualizarFotoVista,
+  actualizarGuia,
+} from "../motor/blueprint-engine/blueprint";
+import {
+  aplicarPlantilla,
+  combinarPlantillas,
+  generarVariantes,
+  extraerPlantillaDeBlueprint,
+  aplicarMaterialCeramico,
+} from "../motor/plantilla-engine/engine";
+import { TipoCeramica } from "../motor/plantilla-engine/materiales";
+import { EstheticAI } from "../motor/ai-engine-pro";
+import { ClinicalReportEngine } from "../motor/report-engine";
+import { BiomechanicalPhysicsEngine } from "../motor/physics-engine/physics";
+import { PLANTILLAS_PREDEFINIDAS } from "../motor/plantilla-engine/seed";
+import {
+  Blueprint,
+  DatosFaciales,
+  Diente,
+  PlantillaSonrisa,
+  Transformacion3D,
+} from "../core/types";
+import { SmileEngineCore } from "../motor/engine-core";
+import * as servicioDisenos from "../servicios/servicioDisenos";
 
-export interface Punto {
-  x: number;
-  y: number;
-}
-
-export interface Transform {
-  x: number;
-  y: number;
-  rotation: number;
-  scaleX: number;
-  scaleY: number;
-}
-
-/** Material del diente — spec v2.0 */
-export interface MaterialDiente {
-  colorBase: string;
-  translucidez: number; // 0..1
-  reflectividad: number; // 0..1
-}
-
-export interface Diente {
-  id: string;
-  pieza: number;
-  svgPath: string;
-  transform: Transform;
-  visible: boolean;
-  opacity: number;
-  material: MaterialDiente;
-}
-
-export interface Guia {
-  id: string;
-  tipo: "horizontal" | "vertical" | "curva";
-  posicion: Punto;
-  visible: boolean;
-}
-
-/** Snapshot inmutable para historial Undo/Redo */
-export interface BlueprintVersion {
-  timestamp: string;
-  /** Hash SHA-256 del contenido del snapshot para Chain of Custody */
-  hash: string;
-  dientes: Omit<Diente, "svgPath">[];
-  guias: Guia[];
-}
-
-/** Medida real en mm para calibración del lienzo */
-export interface CalibracionMetrica {
-  /** Distancia en px entre los dos puntos de referencia marcados */
-  distanciaPx: number;
-  /** Medida real conocida en mm (ej. ancho intercanino = 35mm) */
-  medidaMm: number;
-  /** Factor de conversión calculado: mm por px */
-  mmPorPx: number;
-}
-
-const MATERIAL_DEFAULT: MaterialDiente = {
-  colorBase: "#FFFFFF",
-  translucidez: 0.12,
-  reflectividad: 0.08,
-};
+// Re-exportar tipos para compatibilidad
+export type { Diente, Blueprint, DatosFaciales, PlantillaSonrisa };
 
 interface EditorStore {
-  // ── Estado ──────────────────────────────────────────────────────────────
-  canvasSize: { width: number; height: number };
-  fotoUrl: string | null;
-  dientes: Diente[];
-  guias: Guia[];
+  blueprint: Blueprint | null;
   seleccionadoId: string | null;
-  faceData: FaceData | null;
-  calibracion: CalibracionMetrica | null;
+  engine: SmileEngineCore | null;
+  plantillasPersonalizadas: PlantillaSonrisa[];
+  favoritos: string[]; // IDs de plantillas
+  modoComparativa: boolean;
+  loading: boolean;
 
-  // ── Historial Undo/Redo ─────────────────────────────────────────────────
-  history: BlueprintVersion[];
-  historyIndex: number;
+  // Colaboración
+  colaboradores: any[];
+  dientesBloqueados: Record<string, string>; // { dienteId: colaboradorId }
 
-  // ── Acciones básicas ────────────────────────────────────────────────────
+  // ── Getters Proyectados (Compatibilidad Legacy) ─────────────────────────
+  dientes: Diente[];
+  guias: any[];
+  faceData: DatosFaciales | null;
+  fotoUrl: string;
+
+  // ── Acciones ────────────────────────────────────────────────────────────
+  inicializarEngine: (container: HTMLElement) => void;
+  generarDiseno: (cara: DatosFaciales) => void;
+  actualizarDiente: (id: string, cambios: Partial<Diente>) => void;
+  seleccionarDiente: (id: string | null) => void;
+  aplicarPlantilla: (plantilla: PlantillaSonrisa) => void;
+  renderizar: () => void;
   setFotoUrl: (url: string) => void;
-  setCanvasSize: (width: number, height: number) => void;
-  setSeleccionado: (id: string | null) => void;
-  setFaceData: (data: FaceData | null) => void;
-  setCalibracion: (cal: CalibracionMetrica | null) => void;
-
-  // ── Manipulación dental ─────────────────────────────────────────────────
-  actualizarDiente: (id: string, cambios: Partial<Transform>) => void;
-  actualizarOpacidad: (id: string, opacity: number) => void;
-  actualizarMaterial: (id: string, cambios: Partial<MaterialDiente>) => void;
-  toggleVisibilidad: (id: string) => void;
-  resetDientes: () => void;
-
-  // ── Guías ───────────────────────────────────────────────────────────────
-  toggleGuia: (id: string, visible: boolean) => void;
-  moverGuia: (id: string, posicion: Punto) => void;
-
-  // ── Historial ───────────────────────────────────────────────────────────
-  guardarSnapshot: () => void;
+  actualizarFotoVista: (
+    vistaId: string,
+    url: string,
+    puntos?: DatosFaciales,
+  ) => void;
+  cambiarVista: (id: string) => void;
+  setGuiaValor: (guiaId: string, valor: any) => void;
+  alternarGuia: (tipo: string) => void;
   undo: () => void;
   redo: () => void;
-  canUndo: () => boolean;
-  canRedo: () => boolean;
+  saltarAVersion: (id: string) => void;
 
-  // ── Import / Export ─────────────────────────────────────────────────────
-  importarDiseno: (json: any) => void;
-  exportarDiseno: () => any;
-  exportarFichaTecnica: () => FichaTecnica;
+  // Plantillas
+  aplicarPreset: (id: string) => void;
+  mezclarEstilos: (id1: string, id2: string, ratio: number) => void;
+  explorarVariantes: (id: string) => void;
+  guardarComoPlantilla: (nombre: string) => void;
+  recomendarPlantillaIA: () => void;
+  seleccionarMaterialCeramico: (tipo: TipoCeramica) => void;
+  setModoVisual: (modo: "humedo" | "seco") => void;
+  setOpacidadLabios: (valor: number) => void;
+  actualizarTransformacion3D: (
+    dienteId: string,
+    transform: Partial<Transformacion3D>,
+  ) => void;
+  resetearTransformacion3D: (dienteId: string) => void;
+  aplicarEstiloAPieza: (dienteId: string, plantillaId: string) => void;
+  alternarFavorito: (plantillaId: string) => void;
+  crearSnapshotInterno: (nombre: string) => void;
+
+  // UI
+  alternarComparativa: () => void;
+
+  // Reporting
+  generarReporteClinico: () => void;
+
+  // AI Engine
+  ejecutarOptimizacionIA: () => void;
+  ejecutarAutoAlineacion: () => void;
+  obtenerDiagnosticoIA: () => void;
+
+  // Persistencia
+  guardarDisenoPersistente: (casoId: string) => Promise<void>;
+  cargarDisenoPersistente: (casoId: string) => Promise<void>;
+
+  // Colaboración API
+  setColaboradores: (colaboradores: any[]) => void;
+  bloquearDiente: (dienteId: string, usuarioId: string) => void;
+  desbloquearDiente: (dienteId: string) => void;
+  actualizarDesdeColaborador: (blueprint: Blueprint) => void;
 }
 
-/** Ficha técnica para laboratorio — spec output */
-export interface MedidaPieza {
-  pieza: number;
-  nombre: string;
-  anchoPx: number;
-  altoPx: number;
-  anchoMm?: number; // si hay calibración métrica
-  altoMm?: number;
-}
-
-export interface FichaTecnica {
-  version: string;
-  fecha: string;
-  piezas: MedidaPieza[];
-  escalaBase: number;
-  calibracion?: CalibracionMetrica;
-}
-
-/** Genera un hash SHA-256 del contenido del snapshot (Chain of Custody) */
-async function generarHash(data: object): Promise<string> {
-  try {
-    const texto = JSON.stringify(data);
-    const buffer = new TextEncoder().encode(texto);
-    const digest = await crypto.subtle.digest("SHA-256", buffer);
-    return Array.from(new Uint8Array(digest))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-  } catch {
-    // Fallback si crypto.subtle no está disponible (HTTP sin TLS)
-    return Date.now().toString(36);
-  }
-}
-
-/** Crea un snapshot del estado actual (sin svgPath para ahorrar espacio) */
-function crearSnapshot(dientes: Diente[], guias: Guia[]): BlueprintVersion {
-  const dientesSnap = dientes.map((d) => {
-    const { svgPath: _svgPath, ...rest } = d;
-    return rest;
-  });
-  return {
-    timestamp: new Date().toISOString(),
-    hash: "", // se rellena de forma asíncrona en guardarSnapshot
-    dientes: dientesSnap,
-    guias: [...guias],
-  };
-}
-
-export const useEditorStore = create<EditorStore>((set, get) => ({
-  canvasSize: { width: 860, height: 580 },
-  fotoUrl: null,
-  dientes: [],
-  faceData: null,
-  calibracion: null,
-  seleccionadoId: null,
-  history: [],
-  historyIndex: -1,
-
-  guias: [
-    {
-      id: "guia-media",
-      tipo: "vertical",
-      posicion: { x: 430, y: 0 },
-      visible: true,
-    },
-    {
-      id: "guia-oclusal",
-      tipo: "horizontal",
-      posicion: { x: 0, y: 290 },
-      visible: true,
-    },
-    {
-      id: "guia-bipupilar",
-      tipo: "horizontal",
-      posicion: { x: 0, y: 160 },
-      visible: false,
-    },
-  ],
-
-  setFotoUrl: (url) => set({ fotoUrl: url }),
-  setCanvasSize: (width, height) => set({ canvasSize: { width, height } }),
-  setSeleccionado: (id) => set({ seleccionadoId: id }),
-  setFaceData: (data) => set({ faceData: data }),
-  setCalibracion: (cal) => set({ calibracion: cal }),
-
-  actualizarDiente: (id, cambios) => {
-    get().guardarSnapshot();
-    set((s) => ({
-      dientes: s.dientes.map((d) =>
-        d.id === id ? { ...d, transform: { ...d.transform, ...cambios } } : d,
-      ),
-    }));
-  },
-
-  actualizarOpacidad: (id, opacity) => {
-    get().guardarSnapshot();
-    set((s) => ({
-      dientes: s.dientes.map((d) => (d.id === id ? { ...d, opacity } : d)),
-    }));
-  },
-
-  actualizarMaterial: (id, cambios) => {
-    get().guardarSnapshot();
-    set((s) => ({
-      dientes: s.dientes.map((d) =>
-        d.id === id ? { ...d, material: { ...d.material, ...cambios } } : d,
-      ),
-    }));
-  },
-
-  toggleVisibilidad: (id) => {
-    get().guardarSnapshot();
-    set((s) => ({
-      dientes: s.dientes.map((d) =>
-        d.id === id ? { ...d, visible: !d.visible } : d,
-      ),
-    }));
-  },
-
-  /* ── Inicializar con paths anatómicos reales ─────────────────────────── */
-  resetDientes: () => {
-    const { canvasSize } = get();
-    const posiciones = generarPosicionesIniciales(
-      canvasSize.width,
-      canvasSize.height,
-    );
-
-    const iniciales: Diente[] = PIEZAS_FRONTALES.map((pieza) => {
-      const morf = BIBLIOTECA_DENTAL[pieza];
-      const pos = posiciones.find((p) => p.pieza === pieza)!;
-      return {
-        id: `diente-${pieza}`,
-        pieza,
-        svgPath: morf.svgPath,
-        visible: true,
-        opacity: 0.88,
-        material: { ...MATERIAL_DEFAULT },
-        transform: {
-          x: pos.x,
-          y: pos.y,
-          rotation: 0,
-          scaleX: pos.scaleX,
-          scaleY: pos.scaleY,
-        },
-      };
-    });
-
-    set({
-      dientes: iniciales,
+export const useEditorStore = create<EditorStore>()(
+  persist(
+    (set, get) => ({
+      blueprint: null,
       seleccionadoId: null,
-      history: [],
-      historyIndex: -1,
-    });
-  },
+      engine: null,
+      plantillasPersonalizadas: [],
+      favoritos: [],
+      modoComparativa: false,
+      loading: false,
+      colaboradores: [],
+      dientesBloqueados: {},
 
-  toggleGuia: (id, visible) =>
-    set((s) => ({
-      guias: s.guias.map((g) => (g.id === id ? { ...g, visible } : g)),
-    })),
-
-  moverGuia: (id, posicion) =>
-    set((s) => ({
-      guias: s.guias.map((g) => (g.id === id ? { ...g, posicion } : g)),
-    })),
-
-  /* ── Historial ───────────────────────────────────────────────────────── */
-  guardarSnapshot: () => {
-    const { dientes, guias, history, historyIndex } = get();
-    const snapshot = crearSnapshot(dientes, guias);
-    const nuevaHistory = [
-      ...history.slice(0, historyIndex + 1),
-      snapshot,
-    ].slice(-50);
-    set({ history: nuevaHistory, historyIndex: nuevaHistory.length - 1 });
-
-    // Calcular hash SHA-256 de forma asíncrona y actualizar el snapshot
-    generarHash({ dientes: snapshot.dientes, guias: snapshot.guias }).then(
-      (hash) => {
-        set((s) => ({
-          history: s.history.map((v, i) =>
-            i === s.historyIndex ? { ...v, hash } : v,
-          ),
-        }));
+      // Getters computados
+      get dientes() {
+        return get().blueprint?.dientes || [];
       },
-    );
-  },
+      get guias() {
+        return get().blueprint?.guias || [];
+      },
+      get faceData() {
+        return get().blueprint?.cara || null;
+      },
+      get fotoUrl() {
+        return "";
+      },
 
-  undo: () => {
-    const { history, historyIndex } = get();
-    if (historyIndex <= 0) return;
-    const prev = history[historyIndex - 1];
-    const dientesRestaurados: Diente[] = prev.dientes.map((d: any) => ({
-      ...d,
-      svgPath: BIBLIOTECA_DENTAL[d.pieza]?.svgPath ?? "",
-      material: d.material ?? { ...MATERIAL_DEFAULT },
-    }));
-    set({
-      dientes: dientesRestaurados,
-      guias: prev.guias,
-      historyIndex: historyIndex - 1,
-    });
-  },
+      inicializarEngine: (container) => {
+        const engine = new SmileEngineCore(container);
+        set({ engine });
+      },
 
-  redo: () => {
-    const { history, historyIndex } = get();
-    if (historyIndex >= history.length - 1) return;
-    const next = history[historyIndex + 1];
-    const dientesRestaurados: Diente[] = next.dientes.map((d: any) => ({
-      ...d,
-      svgPath: BIBLIOTECA_DENTAL[d.pieza]?.svgPath ?? "",
-      material: d.material ?? { ...MATERIAL_DEFAULT },
-    }));
-    set({
-      dientes: dientesRestaurados,
-      guias: next.guias,
-      historyIndex: historyIndex + 1,
-    });
-  },
+      generarDiseno: (cara) => {
+        const { engine } = get();
+        if (!engine) return;
+        const blueprint = engine.generarDisenoCompleto(cara);
+        set({ blueprint });
+        engine.renderizar();
+      },
 
-  canUndo: () => get().historyIndex > 0,
-  canRedo: () => get().historyIndex < get().history.length - 1,
+      actualizarDiente: (id, cambios) => {
+        const { blueprint, engine, dientesBloqueados } = get();
+        if (!blueprint || !engine) return;
 
-  importarDiseno: (json) => {
-    if (!json) return;
-    const dientes: Diente[] = (json.dientes ?? []).map((d: any) => ({
-      ...d,
-      svgPath: BIBLIOTECA_DENTAL[d.pieza]?.svgPath ?? d.svgPath ?? "",
-      material: d.material ?? { ...MATERIAL_DEFAULT },
-    }));
-    set({
-      dientes,
-      guias: json.guias ?? get().guias,
-      history: [],
-      historyIndex: -1,
-    });
-  },
+        // Validar Lock Pesimista
+        if (dientesBloqueados[id]) return; // Protegido contra edición concurrente
 
-  exportarDiseno: () => {
-    const { dientes, guias } = get();
-    const dientesExport = dientes.map((d) => {
-      const { svgPath: _svgPath, ...rest } = d;
-      return rest;
-    });
-    return { dientes: dientesExport, guias, version: "2.1-fase-b" };
-  },
+        let nuevosDientes = blueprint.dientes.map((d) =>
+          d.id === id ? { ...d, ...cambios } : d,
+        );
 
-  exportarFichaTecnica: (): FichaTecnica => {
-    const { dientes, calibracion } = get();
-    const piezas: MedidaPieza[] = dientes.map((d) => {
-      const anchoPx = Math.round(100 * d.transform.scaleX);
-      const altoPx = Math.round(160 * d.transform.scaleY);
-      const anchoMm = calibracion
-        ? +(anchoPx * calibracion.mmPorPx).toFixed(2)
-        : undefined;
-      const altoMm = calibracion
-        ? +(altoPx * calibracion.mmPorPx).toFixed(2)
-        : undefined;
-      return {
-        pieza: d.pieza,
-        nombre: BIBLIOTECA_DENTAL[d.pieza]?.nombre ?? `Pieza ${d.pieza}`,
-        anchoPx,
-        altoPx,
-        anchoMm,
-        altoMm,
-      };
-    });
-    return {
-      version: "2.1",
-      fecha: new Date().toISOString(),
-      piezas,
-      escalaBase: dientes[0]?.transform.scaleX ?? 0.55,
-      calibracion: calibracion ?? undefined,
-    };
-  },
-}));
+        // ⚛️ Ejecutar Physics Engine dinámico (Resuelve colisiones de inmediato)
+        nuevosDientes =
+          BiomechanicalPhysicsEngine.simulateOclusalContact(nuevosDientes);
+
+        const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      seleccionarDiente: (id) => set({ seleccionadoId: id }),
+
+      aplicarPlantilla: (_plantilla) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        // ...
+      },
+
+      ejecutarAutoAlineacion: () => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const nuevoBlueprint = EstheticAI.autoAlinear(blueprint);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      renderizar: () => {
+        const { engine } = get();
+        engine?.renderizar();
+      },
+
+      actualizarFotoVista: (vistaId: string, url: string, puntos?) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const nuevoBlueprint = actualizarFotoVista(
+          blueprint,
+          vistaId,
+          url,
+          puntos,
+        );
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      cambiarVista: (id: string) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const nuevoBlueprint = activarVista(blueprint, id);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      setGuiaValor: (guiaId: string, valor: any) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const nuevoBlueprint = actualizarGuia(blueprint, guiaId, { valor });
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      alternarGuia: (tipo: string) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevasGuias = blueprint.guias.map((g) =>
+          g.tipo === tipo ? { ...g, visible: !g.visible } : g,
+        );
+
+        const nuevoBlueprint = { ...blueprint, guias: nuevasGuias };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      setModoVisual: (modo) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevoBlueprint = {
+          ...blueprint,
+          configuracion: { ...blueprint.configuracion, modoVisual: modo },
+        };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      setOpacidadLabios: (valor) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevoBlueprint = {
+          ...blueprint,
+          configuracion: { ...blueprint.configuracion, opacidadLabios: valor },
+        };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      actualizarTransformacion3D: (dienteId, transform) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        let nuevosDientes = blueprint.dientes.map((d) =>
+          d.id === dienteId
+            ? {
+                ...d,
+                transformacion3D: { ...d.transformacion3D, ...transform },
+              }
+            : d,
+        );
+
+        // ⚛️ Physics Engine (Cambiar rotaciones/profundidad también empuja piezas)
+        nuevosDientes =
+          BiomechanicalPhysicsEngine.simulateOclusalContact(nuevosDientes);
+
+        const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      resetearTransformacion3D: (dienteId) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevosDientes = blueprint.dientes.map((d) =>
+          d.id === dienteId
+            ? {
+                ...d,
+                transformacion3D: {
+                  rotX: 0,
+                  rotY: 0,
+                  rotZ: 0,
+                  posZ: 0,
+                  escala: 1,
+                },
+              }
+            : d,
+        );
+
+        const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      aplicarEstiloAPieza: (dienteId, plantillaId) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const plantilla = PLANTILLAS_PREDEFINIDAS.find(
+          (p) => p.id === plantillaId,
+        );
+        if (!plantilla) return;
+
+        const nuevosDientes = blueprint.dientes.map((d) => {
+          if (d.id !== dienteId) return d;
+
+          let escalaX = 1;
+          if (d.pieza === 11 || d.pieza === 21)
+            escalaX = plantilla.parametros.proporciones.incisivoCentral;
+          if (d.pieza === 12 || d.pieza === 22)
+            escalaX = plantilla.parametros.proporciones.incisivoLateral;
+          if (d.pieza === 13 || d.pieza === 23)
+            escalaX = plantilla.parametros.proporciones.canino;
+
+          return {
+            ...d,
+            transformacion: { ...d.transformacion, escala: escalaX },
+            material: {
+              ...d.material,
+              translucidez: plantilla.parametros.color.translucidez,
+              opalescencia: plantilla.parametros.color.opalescencia,
+              rugosidad: plantilla.parametros.color.rugosidad,
+            },
+          };
+        });
+
+        const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      alternarFavorito: (plantillaId) => {
+        const { favoritos } = get();
+        const nuevosFavoritos = favoritos.includes(plantillaId)
+          ? favoritos.filter((id) => id !== plantillaId)
+          : [...favoritos, plantillaId];
+
+        set({ favoritos: nuevosFavoritos });
+      },
+
+      crearSnapshotInterno: (nombre) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevoBlueprint = crearSnapshotInterno(blueprint, nombre);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      undo: () => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const anterior = deshacer(blueprint);
+        set({ blueprint: anterior });
+        engine.actualizarYRenderizar(anterior);
+      },
+
+      redo: () => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const siguiente = rehacer(blueprint);
+        set({ blueprint: siguiente });
+        engine.actualizarYRenderizar(siguiente);
+      },
+
+      saltarAVersion: (id: string) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+        const version = saltarAVersion(blueprint, id);
+        set({ blueprint: version });
+        engine.actualizarYRenderizar(version);
+      },
+
+      aplicarPreset: (id) => {
+        const { blueprint, engine, plantillasPersonalizadas } = get();
+        // Buscar en predefinidas o personalizadas
+        const plantilla =
+          PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id) ||
+          plantillasPersonalizadas.find((p) => p.id === id);
+        if (!blueprint || !engine || !plantilla) return;
+
+        const nuevoBlueprint = aplicarPlantilla(blueprint, plantilla);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      mezclarEstilos: (id1, id2, ratio) => {
+        const { blueprint, engine } = get();
+        const p1 = PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id1);
+        const p2 = PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id2);
+        if (!blueprint || !engine || !p1 || !p2) return;
+
+        const mezcla = combinarPlantillas(p1, p2, ratio);
+        const nuevoBlueprint = aplicarPlantilla(blueprint, mezcla);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      explorarVariantes: (id) => {
+        const { blueprint, engine } = get();
+        const base = PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id);
+        if (!blueprint || !engine || !base) return;
+
+        const variantes = generarVariantes(base, 1);
+        const nuevoBlueprint = aplicarPlantilla(blueprint, variantes[0]);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      guardarComoPlantilla: (nombre) => {
+        const { blueprint, plantillasPersonalizadas } = get();
+        if (!blueprint) return;
+
+        // Lógica de Versionado de Presets
+        const existentes = plantillasPersonalizadas.filter((p) =>
+          p.nombre.startsWith(nombre),
+        );
+        const version = existentes.length > 0 ? existentes.length + 1 : 1;
+        const nombreVersionado = version > 1 ? `${nombre} v${version}` : nombre;
+
+        const nueva = extraerPlantillaDeBlueprint(blueprint, nombreVersionado);
+        set({
+          plantillasPersonalizadas: [...plantillasPersonalizadas, nueva],
+        });
+      },
+
+      alternarComparativa: () =>
+        set({ modoComparativa: !get().modoComparativa }),
+
+      recomendarPlantillaIA: () => {
+        const { blueprint, plantillasPersonalizadas } = get();
+        if (!blueprint) return;
+
+        const todas = [...PLANTILLAS_PREDEFINIDAS, ...plantillasPersonalizadas];
+        const recomendada = EstheticAI.seleccionarPlantillaIdeal(
+          blueprint,
+          todas,
+        );
+
+        if (recomendada) {
+          const nuevoBlueprint = {
+            ...blueprint,
+            analisisIA: {
+              ...blueprint.analisisIA,
+              sugerencias: [
+                ...blueprint.analisisIA.sugerencias,
+                `💡 Sugerencia IA: El estilo "${recomendada.nombre}" armoniza mejor con esta fisonomía.`,
+              ],
+            },
+          };
+          set({ blueprint: nuevoBlueprint });
+        }
+      },
+
+      seleccionarMaterialCeramico: (tipo) => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevoBlueprint = aplicarMaterialCeramico(blueprint, tipo);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      ejecutarOptimizacionIA: () => {
+        const { blueprint, engine } = get();
+        if (!blueprint || !engine) return;
+
+        const nuevoBlueprint = EstheticAI.optimizar(blueprint);
+        set({ blueprint: nuevoBlueprint });
+        engine.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      obtenerDiagnosticoIA: () => {
+        const { blueprint } = get();
+        if (!blueprint) return;
+
+        const diagnostico = EstheticAI.evaluar(blueprint);
+        const nuevoBlueprint = {
+          ...blueprint,
+          analisisIA: {
+            ...blueprint.analisisIA,
+            scoreEstetico: diagnostico.scoreTotal,
+            sugerencias: diagnostico.sugerencias,
+            simetriaFacial: diagnostico.metricas.simetria,
+            cumplimientoProporcion: diagnostico.metricas.proporcionAurea,
+          },
+        };
+        set({ blueprint: nuevoBlueprint });
+      },
+
+      generarReporteClinico: () => {
+        const { blueprint } = get();
+        if (!blueprint) return;
+        ClinicalReportEngine.imprimir(blueprint);
+      },
+
+      setFotoUrl: (_url) => {
+        // ...
+      },
+
+      guardarDisenoPersistente: async (casoId: string) => {
+        const { blueprint } = get();
+        if (!blueprint) return;
+
+        try {
+          await servicioDisenos.guardarDiseno({
+            caso_clinico_id: casoId,
+            ajustes_json: JSON.stringify(blueprint),
+          });
+          console.log("✅ Diseño guardado en DB");
+        } catch (error) {
+          console.error("❌ Error al guardar diseño:", error);
+        }
+      },
+
+      cargarDisenoPersistente: async (casoId: string) => {
+        try {
+          const diseno = await servicioDisenos.obtenerDisenoPorCaso(casoId);
+          if (diseno && diseno.ajustes_json) {
+            const blueprint = JSON.parse(diseno.ajustes_json) as Blueprint;
+            set({ blueprint });
+            get().engine?.actualizarYRenderizar(blueprint);
+          }
+        } catch (error) {
+          console.error("❌ Error al cargar diseño:", error);
+        }
+      },
+
+      setColaboradores: (colaboradores) => set({ colaboradores }),
+
+      bloquearDiente: (dienteId, usuarioId) =>
+        set((state) => ({
+          dientesBloqueados: {
+            ...state.dientesBloqueados,
+            [dienteId]: usuarioId,
+          },
+        })),
+
+      desbloquearDiente: (dienteId) =>
+        set((state) => {
+          const nuevosLocks = { ...state.dientesBloqueados };
+          delete nuevosLocks[dienteId];
+          return { dientesBloqueados: nuevosLocks };
+        }),
+
+      actualizarDesdeColaborador: (nuevoBlueprint) => {
+        set({ blueprint: nuevoBlueprint });
+        get().engine?.actualizarYRenderizar(nuevoBlueprint);
+      },
+    }),
+    {
+      name: "smile-design-library-storage",
+      // Solo persistir el catálogo de plantillas y favoritos (UX escalable)
+      partialize: (state) => ({
+        plantillasPersonalizadas: state.plantillasPersonalizadas,
+        favoritos: state.favoritos,
+      }),
+    },
+  ),
+);
