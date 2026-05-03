@@ -423,12 +423,12 @@ export class ClinicalAuditEngine {
    */
   private validarInclinacionPlanoOclusal(blueprint: Blueprint) {
     // Importamos dinámicamente o usamos EstheticAI
-    const ratio = blueprint.cara.altoCara / blueprint.cara.anchoCara;
     let ejeInterpupilar = 0;
     if (blueprint.cara.puntos && blueprint.cara.puntos.length > 263) {
       const p33 = blueprint.cara.puntos[33];
       const p263 = blueprint.cara.puntos[263];
-      ejeInterpupilar = (Math.atan2(p263.y - p33.y, p263.x - p33.x) * 180) / Math.PI;
+      ejeInterpupilar =
+        (Math.atan2(p263.y - p33.y, p263.x - p33.x) * 180) / Math.PI;
     }
 
     const tiltDeseadoRad = (ejeInterpupilar * Math.PI) / 180;

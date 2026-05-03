@@ -184,9 +184,58 @@ export const useEditorStore = create<EditorStore>()(
       ejecutarAutoAlineacion: () => {
         const { blueprint, engine } = get();
         if (!blueprint || !engine) return;
-        const nuevoBlueprint = EstheticAI.autoAlinear(blueprint);
-        set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+
+        const targetBlueprint = EstheticAI.autoAlinear(blueprint);
+        const startBlueprint = JSON.parse(JSON.stringify(blueprint)); // Deep clone para el punto de partida
+
+        const duration = 1000; // 1s de fluidez clínica
+        const startTime = performance.now();
+
+        const animate = (currentTime: number) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          // Easing: easeOutCubic (suave al final)
+          const ease = 1 - Math.pow(1 - progress, 3);
+
+          const animatedDientes = startBlueprint.dientes.map(
+            (startD: Diente, i: number) => {
+              const targetD = targetBlueprint.dientes[i];
+              return {
+                ...startD,
+                posicion: {
+                  x:
+                    startD.posicion.x +
+                    (targetD.posicion.x - startD.posicion.x) * ease,
+                  y:
+                    startD.posicion.y +
+                    (targetD.posicion.y - startD.posicion.y) * ease,
+                },
+                transformacion3D: {
+                  ...startD.transformacion3D,
+                  rotZ:
+                    startD.transformacion3D.rotZ +
+                    (targetD.transformacion3D.rotZ -
+                      startD.transformacion3D.rotZ) *
+                      ease,
+                },
+              };
+            },
+          );
+
+          const frameBlueprint = {
+            ...targetBlueprint,
+            dientes: animatedDientes,
+          };
+          set({ blueprint: frameBlueprint });
+          engine.actualizarYRenderizar(frameBlueprint);
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        };
+
+        requestAnimationFrame(animate);
       },
 
       renderizar: () => {

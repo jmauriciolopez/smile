@@ -191,7 +191,7 @@ export class EstheticAI {
       "Optimización IA Multi-Variable",
     );
   }
-  
+
   /**
    * 4. AUTO-ALINEACIÓN: Sincroniza el diseño con la postura facial
    */
@@ -199,28 +199,32 @@ export class EstheticAI {
     const features = this.extraerFeatures(blueprint.cara);
     const tiltRad = (features.ejeInterpupilar * Math.PI) / 180;
     const centroX = blueprint.cara.lineaMediaX;
-    
+
     // Aplicar transformaciones globales basadas en el plano bipupilar
     const blueprintAlineado = {
       ...blueprint,
-      dientes: blueprint.dientes.map(d => ({
+      dientes: blueprint.dientes.map((d) => ({
         ...d,
         transformacion3D: {
           ...d.transformacion3D,
-          rotZ: tiltRad // Paralelismo absoluto con el eje interpupilar
-        }
-      }))
+          rotZ: tiltRad, // Paralelismo absoluto con el eje interpupilar
+        },
+      })),
     };
 
     // Ajuste fino de la línea media (Centrado quirúrgico)
-    const d11 = blueprintAlineado.dientes.find(d => d.pieza === 11);
-    const d21 = blueprintAlineado.dientes.find(d => d.pieza === 21);
-    
+    const d11 = blueprintAlineado.dientes.find((d) => d.pieza === 11);
+    const d21 = blueprintAlineado.dientes.find((d) => d.pieza === 21);
+
     if (d11 && d21) {
-      const centroActualX = (d11.posicion.x + (d11.dimensiones.ancho * d11.transformacion.escala) + d21.posicion.x) / 2;
+      const centroActualX =
+        (d11.posicion.x +
+          d11.dimensiones.ancho * d11.transformacion.escala +
+          d21.posicion.x) /
+        2;
       const shiftX = centroX - centroActualX;
-      
-      blueprintAlineado.dientes.forEach(d => {
+
+      blueprintAlineado.dientes.forEach((d) => {
         d.posicion.x += shiftX;
       });
     }

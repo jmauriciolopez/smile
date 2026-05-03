@@ -1,4 +1,8 @@
 import { Blueprint } from "../../core/types";
+import {
+  ClinicalAuditEngine,
+  ResultadoAuditoria,
+} from "../clinical-audit-engine";
 
 /**
  * Motor de Generación de Reportes Clínicos.
@@ -8,7 +12,10 @@ export class ClinicalReportEngine {
   /**
    * Genera una estructura de datos para el reporte.
    */
-  static generarReporteHTML(blueprint: Blueprint): string {
+  static generarReporteHTML(
+    blueprint: Blueprint,
+    auditoria: ResultadoAuditoria,
+  ): string {
     const { metadata: _metadata, analisisIA, historial, dientes } = blueprint;
     const d11 = dientes.find((d) => d.pieza === 11) || dientes[0];
     const m = d11.material;
@@ -27,18 +34,42 @@ export class ClinicalReportEngine {
           </div>
         </div>
 
-        <!-- Dashboard de Score IA -->
-        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 30px;">
-          <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <h3 style="font-size: 10px; color: #64748b; margin: 0 0 15px; text-transform: uppercase; letter-spacing: 0.05em;">Diagnóstico de Visagismo IA</h3>
-            <ul style="font-size: 12px; line-height: 1.6; color: #334155; padding-left: 18px; margin: 0;">
-              ${analisisIA.sugerencias.map((s) => `<li style="margin-bottom: 8px;">${s}</li>`).join("")}
-            </ul>
-          </div>
+        <!-- Dashboard de Inteligencia -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
           <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); padding: 20px; border-radius: 12px; text-align: center; color: white;">
             <h3 style="font-size: 10px; opacity: 0.8; margin: 0 0 10px; text-transform: uppercase;">Score Estético</h3>
             <div style="font-size: 42px; font-weight: 900;">${analisisIA.scoreEstetico}%</div>
-            <p style="font-size: 10px; opacity: 0.7; margin-top: 10px;">Armonía Orofacial Calculada</p>
+            <p style="font-size: 10px; opacity: 0.7; margin-top: 10px;">Armonía Facial (IA)</p>
+          </div>
+          <div style="background: ${auditoria.aprobado ? "linear-gradient(135deg, #065f46 0%, #10b981 100%)" : "linear-gradient(135deg, #991b1b 0%, #ef4444 100%)"}; padding: 20px; border-radius: 12px; text-align: center; color: white;">
+            <h3 style="font-size: 10px; opacity: 0.8; margin: 0 0 10px; text-transform: uppercase;">Score Clínico</h3>
+            <div style="font-size: 42px; font-weight: 900;">${auditoria.scoreClinico}%</div>
+            <p style="font-size: 10px; opacity: 0.7; margin-top: 10px;">Validación Médica (Audit)</p>
+          </div>
+        </div>
+
+        <!-- Alertas de Auditoría Clínica -->
+        <div style="margin-bottom: 30px; background: #fff7ed; border: 1px solid #ffedd5; padding: 20px; border-radius: 12px;">
+          <h2 style="font-size: 14px; color: #9a3412; margin-bottom: 15px; font-weight: 800; text-transform: uppercase;">Informe de Auditoría Clínica</h2>
+          <div style="space-y: 10px;">
+            ${
+              auditoria.alertas.length === 0
+                ? `<p style="font-size: 12px; color: #166534;">✅ No se detectaron contraindicaciones clínicas.</p>`
+                : auditoria.alertas
+                    .map(
+                      (a) => `
+                <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #fed7aa;">
+                  <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                    <span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: ${a.severidad === "critico" ? "#ef4444" : "#f59e0b"}; color: white; font-weight: bold; text-transform: uppercase;">${a.severidad}</span>
+                    <strong style="font-size: 12px; color: #1e293b;">${a.mensaje} ${a.pieza ? `(Pieza ${a.pieza})` : ""}</strong>
+                  </div>
+                  <p style="font-size: 11px; color: #475569; margin: 0;">${a.detalleTecnico}</p>
+                  <p style="font-size: 10px; color: #3b82f6; margin-top: 4px; font-weight: bold;">💡 RECOMENDACIÓN: ${a.recomendacion}</p>
+                </div>
+              `,
+                    )
+                    .join("")
+            }
           </div>
         </div>
 
@@ -115,7 +146,8 @@ export class ClinicalReportEngine {
    * Dispara la impresión del reporte.
    */
   static imprimir(blueprint: Blueprint) {
-    const html = this.generarReporteHTML(blueprint);
+    const auditoria = ClinicalAuditEngine.auditar(blueprint);
+    const html = this.generarReporteHTML(blueprint, auditoria);
     const win = window.open("", "_blank");
     if (win) {
       win.document.write(`
