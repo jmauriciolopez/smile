@@ -1,6 +1,8 @@
 /**
- * Servicio de Archivos — Fase D
- * Gestión de archivos pesados con Object Storage (S3/GCS stub).
+ * Servicio de Archivos
+ *
+ * Sube archivos al backend vía multipart/form-data.
+ * El backend decide automáticamente si persiste en disco local (dev) o S3 (prod).
  */
 import { clienteApi } from "./clienteApi";
 
@@ -21,40 +23,56 @@ export interface ArchivoSubido {
   fecha: string;
 }
 
-export interface UrlSubida {
-  url_subida: string;
-  archivo_id: string;
-}
-
-/** Solicita una URL presignada para subida directa al storage */
-export async function generarUrlSubida(dto: {
-  nombre_original: string;
-  tipo: TipoArchivo;
-  caso_clinico_id?: string;
-  diseno_id?: string;
-}): Promise<UrlSubida> {
-  return clienteApi<UrlSubida>("/archivos/url-subida", {
-    method: "POST",
-    body: JSON.stringify(dto),
-  });
-}
-
-/** Confirma que el archivo fue subido y registra su metadata */
-export async function confirmarSubida(
-  archivoId: string,
-  dto: { nombre_original: string; tipo: TipoArchivo },
+/**
+ * Sube un File/Blob al backend y devuelve la URL persistida.
+ * Funciona tanto con archivos del input[type=file] como con dataURLs convertidos.
+ */
+export async function subirArchivo(
+  archivo: File | Blob,
+  tipo: TipoArchivo,
+  nombreOriginal?: string,
 ): Promise<ArchivoSubido> {
-  return clienteApi<ArchivoSubido>(`/archivos/${archivoId}/confirmar`, {
+  const formData = new FormData();
+
+  if (archivo instanceof File) {
+    formData.append("archivo", archivo, archivo.name);
+  } else {
+    // Blob (ej: captura de cámara convertida desde dataURL)
+    const nombre = nombreOriginal || `captura_${Date.now()}.jpg`;
+    formData.append("archivo", archivo, nombre);
+  }
+
+  // Usamos fetch directamente porque clienteApi fuerza Content-Type: application/json
+  const token = localStorage.getItem("token");
+  const baseUrl = import.meta.env.VITE_API_URL || "/api";
+
+  const response = await fetch(`${baseUrl}/archivos/subir?tipo=${tipo}`, {
     method: "POST",
-    body: JSON.stringify(dto),
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
   });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: response.statusText }));
+    throw new Error(error.message || "Error al subir archivo");
+  }
+
+  return response.json() as Promise<ArchivoSubido>;
 }
 
-/** Obtiene la URL CDN de un archivo */
-export async function obtenerUrlArchivo(
-  archivoId: string,
-): Promise<{ url: string; url_cdn: string }> {
-  return clienteApi(`/archivos/${archivoId}/url`);
+/**
+ * Convierte un dataURL (base64) a Blob para poder subirlo como archivo.
+ */
+export function dataUrlABlob(dataUrl: string): Blob {
+  const [header, data] = dataUrl.split(",");
+  const mimeMatch = header.match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : "image/jpeg";
+  const binary = atob(data);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new Blob([bytes], { type: mime });
 }
 
 /** Elimina un archivo del storage */

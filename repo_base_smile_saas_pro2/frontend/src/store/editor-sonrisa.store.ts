@@ -187,13 +187,14 @@ export const useEditorStore = create<EditorStore>()(
 
       aplicarPlantilla: (_plantilla) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
         // ...
+        if (engine) engine.actualizarYRenderizar(blueprint);
       },
 
       ejecutarAutoAlineacion: () => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const targetBlueprint = EstheticAI.autoAlinear(blueprint);
         const startBlueprint = JSON.parse(JSON.stringify(blueprint)); // Deep clone para el punto de partida
@@ -238,7 +239,7 @@ export const useEditorStore = create<EditorStore>()(
             dientes: animatedDientes,
           };
           set({ blueprint: frameBlueprint });
-          engine.actualizarYRenderizar(frameBlueprint);
+          get().engine?.actualizarYRenderizar(frameBlueprint);
 
           if (progress < 1) {
             requestAnimationFrame(animate);
@@ -270,15 +271,15 @@ export const useEditorStore = create<EditorStore>()(
 
       cambiarVista: (id: string) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
         const nuevoBlueprint = activarVista(blueprint, id);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       setGuiaValor: (guiaId: string, valor: any) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
         // Merge profundo del campo valor para no perder propiedades no modificadas
         const guia = blueprint.guias.find((g) => g.id === guiaId);
         const valorMergeado =
@@ -293,12 +294,12 @@ export const useEditorStore = create<EditorStore>()(
           valor: valorMergeado,
         });
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       alternarGuia: (tipo: string) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevasGuias = blueprint.guias.map((g) =>
           g.tipo === tipo ? { ...g, visible: !g.visible } : g,
@@ -306,36 +307,36 @@ export const useEditorStore = create<EditorStore>()(
 
         const nuevoBlueprint = { ...blueprint, guias: nuevasGuias };
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       setModoVisual: (modo) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevoBlueprint = {
           ...blueprint,
           configuracion: { ...blueprint.configuracion, modoVisual: modo },
         };
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       setOpacidadLabios: (valor) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevoBlueprint = {
           ...blueprint,
           configuracion: { ...blueprint.configuracion, opacidadLabios: valor },
         };
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       actualizarTransformacion3D: (dienteId, transform) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         let nuevosDientes = blueprint.dientes.map((d) =>
           d.id === dienteId
@@ -346,18 +347,17 @@ export const useEditorStore = create<EditorStore>()(
             : d,
         );
 
-        // ⚛️ Physics Engine (Cambiar rotaciones/profundidad también empuja piezas)
         nuevosDientes =
           BiomechanicalPhysicsEngine.simulateOclusalContact(nuevosDientes);
 
         const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       resetearTransformacion3D: (dienteId) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevosDientes = blueprint.dientes.map((d) =>
           d.id === dienteId
@@ -376,12 +376,12 @@ export const useEditorStore = create<EditorStore>()(
 
         const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       aplicarEstiloAPieza: (dienteId, plantillaId) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const plantilla = PLANTILLAS_PREDEFINIDAS.find(
           (p) => p.id === plantillaId,
@@ -413,7 +413,7 @@ export const useEditorStore = create<EditorStore>()(
 
         const nuevoBlueprint = { ...blueprint, dientes: nuevosDientes };
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       alternarFavorito: (plantillaId) => {
@@ -427,71 +427,70 @@ export const useEditorStore = create<EditorStore>()(
 
       crearSnapshotInterno: (nombre) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevoBlueprint = crearSnapshotInterno(blueprint, nombre);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       undo: () => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
         const anterior = deshacer(blueprint);
         set({ blueprint: anterior });
-        engine.actualizarYRenderizar(anterior);
+        if (engine) engine.actualizarYRenderizar(anterior);
       },
 
       redo: () => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
         const siguiente = rehacer(blueprint);
         set({ blueprint: siguiente });
-        engine.actualizarYRenderizar(siguiente);
+        if (engine) engine.actualizarYRenderizar(siguiente);
       },
 
       saltarAVersion: (id: string) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
         const version = saltarAVersion(blueprint, id);
         set({ blueprint: version });
-        engine.actualizarYRenderizar(version);
+        if (engine) engine.actualizarYRenderizar(version);
       },
 
       aplicarPreset: (id) => {
         const { blueprint, engine, plantillasPersonalizadas } = get();
-        // Buscar en predefinidas o personalizadas
         const plantilla =
           PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id) ||
           plantillasPersonalizadas.find((p) => p.id === id);
-        if (!blueprint || !engine || !plantilla) return;
+        if (!blueprint || !plantilla) return;
 
         const nuevoBlueprint = aplicarPlantilla(blueprint, plantilla);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       mezclarEstilos: (id1, id2, ratio) => {
         const { blueprint, engine } = get();
         const p1 = PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id1);
         const p2 = PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id2);
-        if (!blueprint || !engine || !p1 || !p2) return;
+        if (!blueprint || !p1 || !p2) return;
 
         const mezcla = combinarPlantillas(p1, p2, ratio);
         const nuevoBlueprint = aplicarPlantilla(blueprint, mezcla);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       explorarVariantes: (id) => {
         const { blueprint, engine } = get();
         const base = PLANTILLAS_PREDEFINIDAS.find((p) => p.id === id);
-        if (!blueprint || !engine || !base) return;
+        if (!blueprint || !base) return;
 
         const variantes = generarVariantes(base, 1);
         const nuevoBlueprint = aplicarPlantilla(blueprint, variantes[0]);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       guardarComoPlantilla: (nombre) => {
@@ -538,20 +537,20 @@ export const useEditorStore = create<EditorStore>()(
 
       seleccionarMaterialCeramico: (tipo) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevoBlueprint = aplicarMaterialCeramico(blueprint, tipo);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       ejecutarOptimizacionIA: () => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        if (!blueprint) return;
 
         const nuevoBlueprint = EstheticAI.optimizar(blueprint);
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       obtenerDiagnosticoIA: () => {
@@ -590,7 +589,8 @@ export const useEditorStore = create<EditorStore>()(
       },
 
       guardarDisenoPersistente: async (casoId: string) => {
-        const { blueprint } = get();
+        // Leer el estado más reciente directamente del store (no del closure)
+        const blueprint = get().blueprint;
         if (!blueprint) return;
 
         try {
@@ -598,9 +598,11 @@ export const useEditorStore = create<EditorStore>()(
             caso_clinico_id: casoId,
             ajustes_json: JSON.stringify(blueprint),
           });
-          console.log("✅ Diseño guardado en DB");
+          console.log('✅ Diseño guardado en DB, vistas con fotos:', 
+            blueprint.vistas.filter(v => v.fotoUrl && !v.fotoUrl.startsWith('/static/')).length
+          );
         } catch (error) {
-          console.error("❌ Error al guardar diseño:", error);
+          console.error('❌ Error al guardar diseño:', error);
         }
       },
 
@@ -609,11 +611,20 @@ export const useEditorStore = create<EditorStore>()(
           const diseno = await servicioDisenos.obtenerDisenoPorCaso(casoId);
           if (diseno && diseno.ajustes_json) {
             const blueprint = JSON.parse(diseno.ajustes_json) as Blueprint;
+            const fotosConUrl = blueprint.vistas?.filter(
+              v => v.fotoUrl && !v.fotoUrl.startsWith('/static/')
+            ).length ?? 0;
+            console.log(`📂 Blueprint cargado. Vistas con fotos: ${fotosConUrl}`);
             set({ blueprint });
-            get().engine?.actualizarYRenderizar(blueprint);
+            // Renderizar después de que el engine esté listo
+            const engine = get().engine;
+            if (engine) engine.actualizarYRenderizar(blueprint);
+          } else {
+            console.log('📂 No hay diseño guardado para este caso');
           }
         } catch (error) {
-          console.error("❌ Error al cargar diseño:", error);
+          console.error('❌ Error al cargar diseño:', error);
+          throw error; // Re-lanzar para que el useEffect pueda hacer fallback
         }
       },
 

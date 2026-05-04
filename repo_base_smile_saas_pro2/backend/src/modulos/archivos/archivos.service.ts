@@ -1,22 +1,18 @@
 /**
- * ARCHIVOS SERVICE — Stub Fase D
+ * ARCHIVOS SERVICE
  *
- * Gestión de archivos pesados (imágenes 4K, renders, archivos .smile).
- * Stub preparado para Object Storage (S3/GCS) con CDN.
+ * Estrategia dual:
+ *   - LOCAL (dev): guarda en disco en /uploads, sirve como estático desde el backend.
+ *   - PRODUCCIÓN: si AWS_S3_BUCKET está configurado, sube a S3 y devuelve URL de CloudFront.
  *
- * Implementación real (Fase D):
- *   - Integrar @aws-sdk/client-s3 o @google-cloud/storage
- *   - Configurar bucket con CDN (CloudFront / Cloud CDN)
- *   - Generar presigned URLs para upload directo desde el cliente
- *   - Almacenar metadata en DB (tabla archivos_diseno)
- *
- * Estado actual: stub que simula URLs y retorna respuestas válidas.
+ * El frontend siempre recibe una URL absoluta lista para usar en <img src>.
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { SubirArchivoDto, TipoArchivo } from './dto/subir_archivo.dto';
-import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { TipoArchivo } from './dto/subir_archivo.dto';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface ArchivoSubido {
   id: string;
@@ -31,105 +27,144 @@ export interface ArchivoSubido {
 @Injectable()
 export class ArchivosService {
   private readonly logger = new Logger(ArchivosService.name);
-  private s3Client: S3Client;
-  private readonly bucketName = process.env.AWS_S3_BUCKET || 'smile-saas-images';
+  private readonly usarS3: boolean;
+  private s3Client: S3Client | null = null;
+  private readonly bucketName: string;
+  private readonly uploadsDir: string;
 
   constructor() {
-    this.s3Client = new S3Client({
-      region: process.env.AWS_REGION || 'sa-east-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'dummy',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'dummy',
-      },
-    });
+    this.bucketName = process.env.AWS_S3_BUCKET || '';
+    this.usarS3 = !!(
+      this.bucketName &&
+      process.env.AWS_ACCESS_KEY_ID &&
+      process.env.AWS_SECRET_ACCESS_KEY
+    );
+
+    if (this.usarS3) {
+      this.s3Client = new S3Client({
+        region: process.env.AWS_REGION || 'sa-east-1',
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      });
+      this.logger.log('📦 Modo almacenamiento: S3');
+    } else {
+      this.logger.log('💾 Modo almacenamiento: Local (disco)');
+    }
+
+    // Carpeta uploads relativa al proceso (raíz del backend)
+    this.uploadsDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(this.uploadsDir)) {
+      fs.mkdirSync(this.uploadsDir, { recursive: true });
+    }
   }
 
   /**
-   * Genera una URL firmada para que el cliente suba el archivo directamente a S3.
-   * Esto evita que el archivo pesado pase por el servidor de NestJS.
+   * Recibe el buffer del archivo y lo persiste (local o S3).
+   * Devuelve la URL pública lista para usar.
    */
-  async generarUrlSubida(dto: SubirArchivoDto): Promise<{ url_subida: string; archivo_id: string; key: string }> {
-    const key = `casos/${Date.now()}-${dto.nombre_original}`;
+  async subirArchivo(
+    buffer: Buffer,
+    nombreOriginal: string,
+    tipo: TipoArchivo,
+    mimeType: string,
+  ): Promise<ArchivoSubido> {
+    const timestamp = Date.now();
+    // Sanitizar nombre para evitar path traversal
+    const nombreSanitizado = nombreOriginal.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const nombreFinal = `${timestamp}-${nombreSanitizado}`;
+
+    if (this.usarS3) {
+      return this.subirAws(buffer, nombreFinal, tipo, mimeType, nombreOriginal);
+    } else {
+      return this.guardarLocal(buffer, nombreFinal, tipo, nombreOriginal);
+    }
+  }
+
+  private async guardarLocal(
+    buffer: Buffer,
+    nombreFinal: string,
+    tipo: TipoArchivo,
+    nombreOriginal: string,
+  ): Promise<ArchivoSubido> {
+    const filePath = path.join(this.uploadsDir, nombreFinal);
+    fs.writeFileSync(filePath, buffer);
+
+    // Si BACKEND_URL está configurado, usar URL absoluta (prod/staging)
+    // Si no, usar ruta relativa — el proxy de Vite la resuelve en dev
+    const backendUrl = process.env.BACKEND_URL;
+    const url = backendUrl
+      ? `${backendUrl}/uploads/${nombreFinal}`
+      : `/uploads/${nombreFinal}`;
+
+    this.logger.log(`✅ Archivo guardado localmente: ${filePath} → ${url}`);
+
+    return {
+      id: nombreFinal,
+      url,
+      url_cdn: url, // En local, url y url_cdn son iguales
+      nombre: nombreOriginal,
+      tipo,
+      tamano_bytes: buffer.length,
+      fecha: new Date().toISOString(),
+    };
+  }
+
+  private async subirAws(
+    buffer: Buffer,
+    nombreFinal: string,
+    tipo: TipoArchivo,
+    mimeType: string,
+    nombreOriginal: string,
+  ): Promise<ArchivoSubido> {
+    const key = `uploads/${nombreFinal}`;
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key,
-      ContentType: this.getMimeType(dto.tipo),
+      Body: buffer,
+      ContentType: mimeType,
     });
 
-    try {
-      const url_subida = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
-      return {
-        url_subida,
-        archivo_id: key, // Usamos la Key como ID para simplificar
-        key,
-      };
-    } catch (error) {
-      this.logger.error(`Error generando pre-signed URL: ${error.message}`);
-      throw error;
-    }
-  }
+    await this.s3Client!.send(command);
 
-  /**
-   * Confirma la existencia del archivo en S3 y retorna la metadata.
-   */
-  async confirmarSubida(archivoId: string, dto: SubirArchivoDto): Promise<ArchivoSubido> {
-    const command = new HeadObjectCommand({
-      Bucket: this.bucketName,
-      Key: archivoId,
-    });
+    const cloudfrontUrl = process.env.CLOUDFRONT_URL;
+    const url = `https://${this.bucketName}.s3.amazonaws.com/${key}`;
+    const url_cdn = cloudfrontUrl ? `${cloudfrontUrl}/${key}` : url;
 
-    try {
-      const metadata = await this.s3Client.send(command);
-      const url_cdn = `${process.env.CLOUDFRONT_URL || 'https://cdn.smile-saas.com'}/${archivoId}`;
+    this.logger.log(`✅ Archivo subido a S3: ${key}`);
 
-      return {
-        id: archivoId,
-        url: `https://${this.bucketName}.s3.amazonaws.com/${archivoId}`,
-        url_cdn: url_cdn,
-        nombre: dto.nombre_original,
-        tipo: dto.tipo,
-        tamano_bytes: metadata.ContentLength || 0,
-        fecha: new Date().toISOString(),
-      };
-    } catch (error) {
-      this.logger.error(`Error verificando archivo en S3: ${error.message}`);
-      throw error;
-    }
-  }
-
-  async obtenerUrl(archivoId: string): Promise<{ url: string; url_cdn: string }> {
-    const url_cdn = `${process.env.CLOUDFRONT_URL || 'https://cdn.smile-saas.com'}/${archivoId}`;
     return {
-      url: `https://${this.bucketName}.s3.amazonaws.com/${archivoId}`,
-      url_cdn: url_cdn,
+      id: key,
+      url,
+      url_cdn,
+      nombre: nombreOriginal,
+      tipo,
+      tamano_bytes: buffer.length,
+      fecha: new Date().toISOString(),
     };
   }
 
   async eliminar(archivoId: string): Promise<{ eliminado: boolean }> {
-    const command = new DeleteObjectCommand({
-      Bucket: this.bucketName,
-      Key: archivoId,
-    });
-
     try {
-      await this.s3Client.send(command);
+      if (this.usarS3) {
+        const command = new DeleteObjectCommand({
+          Bucket: this.bucketName,
+          Key: archivoId,
+        });
+        await this.s3Client!.send(command);
+      } else {
+        // archivoId es el nombre del archivo en local
+        const nombreArchivo = path.basename(archivoId);
+        const filePath = path.join(this.uploadsDir, nombreArchivo);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
       return { eliminado: true };
     } catch (error) {
-      this.logger.error(`Error eliminando de S3: ${error.message}`);
+      this.logger.error(`Error eliminando archivo: ${error.message}`);
       return { eliminado: false };
-    }
-  }
-
-  private getMimeType(tipo: TipoArchivo): string {
-    switch (tipo) {
-      case TipoArchivo.FOTO_CLINICA:
-        return 'image/jpeg';
-      case TipoArchivo.IMAGEN_DISENO:
-        return 'image/png';
-      case TipoArchivo.ARCHIVO_SMILE:
-        return 'application/json';
-      default:
-        return 'application/octet-stream';
     }
   }
 }

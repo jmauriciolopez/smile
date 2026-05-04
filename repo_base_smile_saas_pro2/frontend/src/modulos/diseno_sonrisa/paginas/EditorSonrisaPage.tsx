@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEditorStore } from "../../../store/editor-sonrisa.store";
+import * as servicioDisenos from "../../../servicios/servicioDisenos";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Tooth,
@@ -60,7 +61,7 @@ const itemVariants = {
 };
 
 export const EditorSonrisaPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { casoId: id } = useParams<{ casoId: string }>();
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -126,26 +127,44 @@ export const EditorSonrisaPage: React.FC = () => {
       inicializarEngine(containerRef.current);
       engineInitialized.current = true;
 
+      const datosFacialesDefault = {
+        puntos: [],
+        anchoCara: 1000,
+        altoCara: 1000,
+        lineaMediaX: 500,
+        lineaBipupilarY: 400,
+        contornoLabios: [],
+        labiosExterior: [],
+        labiosInterior: [],
+      };
+
       if (id) {
+        // Siempre cargar desde la DB cuando hay casoId — garantiza fotos actualizadas
         console.log("📂 Cargando diseño para:", id);
-        await cargarDisenoPersistente(id);
+        try {
+          await cargarDisenoPersistente(id);
+          const { blueprint } = useEditorStore.getState();
+          if (!blueprint || !blueprint.vistas?.length) {
+            console.log("⚠️ Sin diseño en DB, generando nuevo");
+            generarDiseno(datosFacialesDefault);
+          }
+        } catch {
+          console.log("⚠️ Error al cargar, generando diseño nuevo");
+          generarDiseno(datosFacialesDefault);
+        }
       } else {
         console.log("🆕 Generando diseño nuevo");
-        generarDiseno({
-          puntos: [],
-          anchoCara: 1000,
-          altoCara: 1000,
-          lineaMediaX: 500,
-          lineaBipupilarY: 400,
-          contornoLabios: [],
-          labiosExterior: [],
-          labiosInterior: [],
-        });
+        generarDiseno(datosFacialesDefault);
       }
     };
 
     init();
-  }, [id, inicializarEngine, cargarDisenoPersistente, generarDiseno]);
+
+    return () => {
+      engineInitialized.current = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -222,24 +241,46 @@ export const EditorSonrisaPage: React.FC = () => {
               { id: "vista-sonrisa", label: "Sonrisa" },
               { id: "vista-reposo", label: "Reposo" },
               { id: "vista-lateral", label: "Lateral" },
-            ].map((vista) => (
-              <button
-                key={vista.id}
-                onClick={() => {
-                  setVistaParaCapturar(vista.id);
-                  setModalCapturaAbierto(true);
-                }}
-                className="flex items-center gap-2 px-2.5 py-2 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all group"
-              >
-                <Camera
-                  size={14}
-                  className="text-slate-400 group-hover:text-white"
-                />
-                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter group-hover:text-white">
-                  {vista.label}
-                </span>
-              </button>
-            ))}
+            ].map((vista) => {
+              const fotoVista = blueprint?.vistas.find(
+                (v) => v.id === vista.id,
+              )?.fotoUrl;
+              const tieneFoto =
+                fotoVista &&
+                !fotoVista.startsWith("/static/img/") &&
+                !fotoVista.startsWith("/seed/");
+              return (
+                <button
+                  key={vista.id}
+                  onClick={() => {
+                    setVistaParaCapturar(vista.id);
+                    setModalCapturaAbierto(true);
+                  }}
+                  className={`relative flex items-center gap-2 px-2.5 py-2 border rounded-xl hover:bg-white/10 transition-all group ${
+                    tieneFoto
+                      ? "bg-emerald-500/10 border-emerald-500/30"
+                      : "bg-white/5 border-white/5"
+                  }`}
+                >
+                  {tieneFoto && (
+                    <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  )}
+                  <Camera
+                    size={14}
+                    className={
+                      tieneFoto
+                        ? "text-emerald-400"
+                        : "text-slate-400 group-hover:text-white"
+                    }
+                  />
+                  <span
+                    className={`text-[8px] font-bold uppercase tracking-tighter group-hover:text-white ${tieneFoto ? "text-emerald-300" : "text-slate-400"}`}
+                  >
+                    {vista.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
           <button
             onClick={alternarComparativa}
@@ -600,12 +641,41 @@ export const EditorSonrisaPage: React.FC = () => {
         )}
         <div
           className="flex-1 relative overflow-hidden"
-          ref={containerRef}
           onClick={() => {
-            // Deseleccionar al hacer click en área vacía del canvas
             if (seleccionadoId) seleccionarDiente(null);
           }}
         >
+          {/* 📸 IMAGEN DE FONDO — Vista activa del paciente */}
+          {(() => {
+            const vistaActiva = blueprint?.vistas.find(
+              (v) => v.id === blueprint.vistaActivaId,
+            );
+            const fotoUrl = vistaActiva?.fotoUrl;
+            const esFotoReal =
+              fotoUrl &&
+              !fotoUrl.startsWith("/static/img/") &&
+              !fotoUrl.startsWith("/seed/");
+            return esFotoReal ? (
+              <img
+                key={blueprint?.vistaActivaId}
+                src={fotoUrl}
+                alt="Vista clínica"
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                style={{
+                  zIndex: 1,
+                  opacity: blueprint?.configuracion.opacidadLabios ?? 0.8,
+                }}
+              />
+            ) : null;
+          })()}
+
+          {/* 🎨 CANVAS 3D — Three.js se monta aquí, encima de la foto */}
+          <div
+            className="absolute inset-0"
+            style={{ zIndex: 2 }}
+            ref={containerRef}
+          />
+
           {/* 🏝️ Dynamic Island Mode */}
           <motion.div
             layout
@@ -1449,35 +1519,63 @@ export const EditorSonrisaPage: React.FC = () => {
       <CapturaFotoModal
         abierto={modalCapturaAbierto}
         alCerrar={() => setModalCapturaAbierto(false)}
-        alCapturar={(url) => {
-          if (vistaParaCapturar) {
-            const guardarFoto = () => {
-              actualizarFotoVista(vistaParaCapturar, url);
-              const labels: Record<string, string> = {
-                "vista-frontal": "Frontal",
-                "vista-sonrisa": "Sonrisa",
-                "vista-reposo": "Reposo",
-                "vista-lateral": "Lateral",
-              };
-              setFotoGuardada(labels[vistaParaCapturar] ?? vistaParaCapturar);
-              setTimeout(() => setFotoGuardada(null), 3000);
-            };
+        alCapturar={async (url) => {
+          if (!vistaParaCapturar) return;
 
-            if (!useEditorStore.getState().blueprint) {
-              generarDiseno({
-                puntos: [],
-                anchoCara: 1000,
-                altoCara: 1000,
-                lineaMediaX: 500,
-                lineaBipupilarY: 400,
-                contornoLabios: [],
-                labiosExterior: [],
-                labiosInterior: [],
-              });
-              setTimeout(guardarFoto, 50);
-            } else {
-              guardarFoto();
+          const ejecutar = async () => {
+            // 1. Actualizar la foto en el store
+            actualizarFotoVista(vistaParaCapturar, url);
+            // 2. Cambiar a la vista recién fotografiada
+            cambiarVista(vistaParaCapturar);
+
+            // 3. Leer el blueprint DESPUÉS de las actualizaciones síncronas
+            //    y guardarlo explícitamente en la DB
+            if (id) {
+              const blueprintActualizado = useEditorStore.getState().blueprint;
+              console.log(
+                "💾 Guardando blueprint. Foto en vista:",
+                blueprintActualizado?.vistas?.find(
+                  (v) => v.id === vistaParaCapturar,
+                )?.fotoUrl,
+              );
+              if (blueprintActualizado) {
+                try {
+                  await servicioDisenos.guardarDiseno({
+                    caso_clinico_id: id,
+                    ajustes_json: JSON.stringify(blueprintActualizado),
+                  });
+                  console.log("✅ Blueprint guardado con foto");
+                } catch (e) {
+                  console.error("❌ Error guardando blueprint:", e);
+                }
+              }
             }
+
+            const labels: Record<string, string> = {
+              "vista-frontal": "Frontal",
+              "vista-sonrisa": "Sonrisa",
+              "vista-reposo": "Reposo",
+              "vista-lateral": "Lateral",
+            };
+            setFotoGuardada(labels[vistaParaCapturar] ?? vistaParaCapturar);
+            setTimeout(() => setFotoGuardada(null), 3000);
+          };
+
+          if (!useEditorStore.getState().blueprint) {
+            generarDiseno({
+              puntos: [],
+              anchoCara: 1000,
+              altoCara: 1000,
+              lineaMediaX: 500,
+              lineaBipupilarY: 400,
+              contornoLabios: [],
+              labiosExterior: [],
+              labiosInterior: [],
+            });
+            // Esperar a que generarDiseno actualice el store
+            setTimeout(ejecutar, 100);
+          } else {
+            await ejecutar();
           }
         }}
         titulo="Capturar Fotografía Clínica"

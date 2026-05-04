@@ -1,13 +1,17 @@
 import React, { useRef, useState } from "react";
 import { Modal } from "../../../componentes/ui/Modal";
-import { Camera, Upload, Trash, CheckCircle, Aperture } from "@phosphor-icons/react";
+import { Camera, Upload, Trash, CheckCircle, Aperture, CircleNotch } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { subirArchivo, dataUrlABlob } from "../../../servicios/servicioArchivos";
 
 interface CapturaFotoModalProps {
   abierto: boolean;
   alCerrar: () => void;
+  /** Recibe la URL persistida en el servidor (o dataURL si falla la subida) */
   alCapturar: (fotoUrl: string) => void;
   titulo: string;
+  /** ID del caso clínico para asociar la foto (opcional) */
+  casoId?: string;
 }
 
 export function CapturaFotoModal({
@@ -15,9 +19,11 @@ export function CapturaFotoModal({
   alCerrar,
   alCapturar,
   titulo,
+  casoId,
 }: CapturaFotoModalProps) {
   const [modo, setModo] = useState<"seleccion" | "camara" | "preview">("seleccion");
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [subiendo, setSubiendo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -72,9 +78,20 @@ export function CapturaFotoModal({
     }
   };
 
-  const confirmar = () => {
-    if (fotoPreview) {
+  const confirmar = async () => {
+    if (!fotoPreview) return;
+
+    setSubiendo(true);
+    try {
+      const blob = dataUrlABlob(fotoPreview);
+      const resultado = await subirArchivo(blob, "foto_clinica");
+      alCapturar(resultado.url_cdn || resultado.url);
+    } catch (error: any) {
+      console.error("Error al subir foto:", error);
+      // Fallback solo si el backend no está disponible (ej: modo offline)
       alCapturar(fotoPreview);
+    } finally {
+      setSubiendo(false);
       limpiarYCerrar();
     }
   };
@@ -183,10 +200,20 @@ export function CapturaFotoModal({
               <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-black/80 to-transparent flex items-center justify-center gap-4">
                 <button
                   onClick={confirmar}
-                  className="flex items-center gap-2 px-10 py-4 rounded-full bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl hover:bg-emerald-400 transition-all btn-tactile"
+                  disabled={subiendo}
+                  className="flex items-center gap-2 px-10 py-4 rounded-full bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl hover:bg-emerald-400 transition-all btn-tactile disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <CheckCircle size={20} weight="fill" />
-                  Confirmar Fotografía
+                  {subiendo ? (
+                    <>
+                      <CircleNotch size={20} weight="bold" className="animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle size={20} weight="fill" />
+                      Confirmar Fotografía
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={() => setModo("seleccion")}

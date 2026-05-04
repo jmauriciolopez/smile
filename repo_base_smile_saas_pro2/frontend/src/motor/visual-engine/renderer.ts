@@ -41,11 +41,13 @@ export class VisualRenderer {
       antialias: true,
       alpha: true,
       stencil: true, // Requerido para la máscara de labios
+      premultipliedAlpha: false,
     });
 
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.localClippingEnabled = true;
+    this.renderer.setClearColor(0x000000, 0); // Fondo completamente transparente
 
     // 📸 COLOR GRADING Y TONE MAPPING (Fotorealismo)
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -56,7 +58,7 @@ export class VisualRenderer {
     pmremGenerator.compileEquirectangularShader();
     const environment = new RoomEnvironment();
     this.scene.environment = pmremGenerator.fromScene(environment).texture;
-    this.scene.background = new THREE.Color(0x1a1a1a); // Dark mode para contraste clínico
+    this.scene.background = new THREE.Color(0x1a1a1a); // Fallback inicial, se actualiza en updateFromBlueprint
 
     container.appendChild(this.renderer.domElement);
 
@@ -73,7 +75,12 @@ export class VisualRenderer {
   }
 
   private initPostProcessing(width: number, height: number) {
-    this.composer = new EffectComposer(this.renderer);
+    // RenderTarget con alpha para preservar transparencia cuando hay foto de fondo
+    const renderTarget = new THREE.WebGLRenderTarget(width, height, {
+      format: THREE.RGBAFormat,
+      type: THREE.UnsignedByteType,
+    });
+    this.composer = new EffectComposer(this.renderer, renderTarget);
 
     // 1. Render Base
     const renderPass = new RenderPass(this.scene, this.camera);
@@ -127,6 +134,20 @@ export class VisualRenderer {
     this.camera.position.set(centroX, centroY, 15);
     this.camera.lookAt(centroX, centroY, 0);
 
+    // Vista activa — usada para fondo y LipRenderer
+    const vistaActiva = blueprint.vistas.find(
+      (v) => v.id === blueprint.vistaActivaId,
+    );
+    const fotoUrl = vistaActiva?.fotoUrl;
+    const tieneFotoReal =
+      fotoUrl &&
+      !fotoUrl.startsWith("/static/img/") &&
+      !fotoUrl.startsWith("/seed/");
+
+    // Fondo transparente si hay foto real (la imagen se muestra como HTML detrás del canvas)
+    this.scene.background = tieneFotoReal ? null : new THREE.Color(0x1a1a1a);
+    this.tieneFotoFondo = !!tieneFotoReal;
+
     blueprint.dientes.forEach((diente: Diente) => {
       let mesh = this.toothMeshes.get(diente.id);
 
@@ -138,12 +159,11 @@ export class VisualRenderer {
 
       this.updateMeshTransform(mesh, diente);
 
-      // OPTIMIZACIÓN: Solo actualizar material si el estado visual o las propiedades cambiaron
       const isWet = blueprint.configuracion.modoVisual === "humedo";
       const materialJson = JSON.stringify(diente.material);
       const needsMaterialUpdate =
         isWet || materialJson !== mesh.userData.lastMaterial;
-      
+
       if (needsMaterialUpdate) {
         this.updateMeshMaterial(mesh, diente, isWet, blueprint);
         mesh.userData.lastMaterial = materialJson;
@@ -162,13 +182,8 @@ export class VisualRenderer {
     // Actualizar Guías
     this.guideRenderer.update(blueprint);
 
-    // Actualizar Labios (Segmentation & Blending)
-    const vistaActiva = blueprint.vistas.find(
-      (v) => v.id === blueprint.vistaActivaId,
-    );
-    if (vistaActiva?.fotoUrl) {
-      this.lipRenderer.update(this.scene, blueprint, vistaActiva.fotoUrl);
-    }
+    // LipRenderer: solo con fotos reales (evita error con placeholders)
+    this.lipRenderer.update(this.scene, blueprint, fotoUrl ?? "");
 
     DepthEngine.aplicarOcclusion(this.scene, blueprint);
 
@@ -255,12 +270,15 @@ export class VisualRenderer {
   }
 
   renderFrame() {
-    if (this.composer) {
+    if (this.composer && !this.tieneFotoFondo) {
       this.composer.render();
     } else {
       this.renderer.render(this.scene, this.camera);
     }
   }
+
+  /** Indica si hay foto de fondo activa (para usar renderer directo con alpha) */
+  private tieneFotoFondo = false;
 
   dispose() {
     this.renderer.dispose();

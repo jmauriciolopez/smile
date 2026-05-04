@@ -32,7 +32,22 @@ export class LipRenderer {
    * para calar los labios con precisión de píxel, aplicando Edge Feathering.
    */
   update(scene: THREE.Scene, blueprint: Blueprint, fotoUrl: string) {
-    if (!fotoUrl || !this.ctx) return;
+    // No procesar URLs placeholder — solo fotos reales subidas por el usuario
+    const esPlaceholder =
+      !fotoUrl ||
+      fotoUrl.startsWith("/static/img/") ||
+      fotoUrl.startsWith("/seed/");
+
+    if (esPlaceholder) {
+      // Si hay un mesh previo, ocultarlo
+      if (this.mesh) this.mesh.visible = false;
+      return;
+    }
+
+    // Mostrar el mesh si estaba oculto
+    if (this.mesh) this.mesh.visible = true;
+
+    if (!this.ctx) return;
 
     const img = new Image();
     if (fotoUrl.startsWith("http")) {

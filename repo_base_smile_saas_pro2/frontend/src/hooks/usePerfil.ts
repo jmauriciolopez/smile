@@ -10,7 +10,9 @@ export function usePerfil() {
 
   useEffect(() => {
     async function cargarPerfil() {
-      if (!token) {
+      // Verificar tanto el store como localStorage para evitar inconsistencias
+      const tokenReal = token || localStorage.getItem("token");
+      if (!tokenReal) {
         setCargando(false);
         return;
       }
@@ -18,9 +20,13 @@ export function usePerfil() {
       try {
         const datos = await obtenerPerfil();
         setPerfil(datos);
-      } catch (err) {
-        setError("No se pudo cargar el perfil");
-        console.error(err);
+      } catch (err: any) {
+        // 401 ya es manejado por clienteApi (redirige al login)
+        // Solo loguear otros errores
+        if (!err?.message?.includes("token")) {
+          setError("No se pudo cargar el perfil");
+          console.error(err);
+        }
       } finally {
         setCargando(false);
       }
