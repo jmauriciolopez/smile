@@ -47,4 +47,27 @@ export class PresupuestosService {
       data: dto,
     });
   }
+
+  async agregarOpcion(presupuestoId: string, opcion: { titulo: string; descripcion?: string; monto: number; recomendada?: boolean }) {
+    await this.obtenerPorId(presupuestoId);
+    return this.prisma.opcionTratamiento.create({
+      data: {
+        ...opcion,
+        presupuesto_id: presupuestoId,
+      },
+    });
+  }
+
+  async actualizarOpcion(opcionId: string, opcion: Partial<{ titulo: string; descripcion?: string; monto: number; recomendada?: boolean }>) {
+    return this.prisma.opcionTratamiento.update({
+      where: { id: opcionId },
+      data: opcion,
+    });
+  }
+
+  async eliminarOpcion(opcionId: string) {
+    return this.prisma.opcionTratamiento.delete({
+      where: { id: opcionId },
+    });
+  }
 }

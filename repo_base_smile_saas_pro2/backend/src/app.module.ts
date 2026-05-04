@@ -11,6 +11,7 @@ import { NotasModule } from './modulos/notas/notas.module';
 import { TareasModule } from './modulos/tareas/tareas.module';
 import { FotosModule } from './modulos/fotos/fotos.module';
 import { UsuariosModule } from './modulos/usuarios/usuarios.module';
+import { CatalogoPlanesModule } from './modulos/catalogo-planes/catalogo-planes.module';
 // ── Fase D ────────────────────────────────────────────────────────────────────
 import { ArchivosModule } from './modulos/archivos/archivos.module';
 import { VisagismoModule } from './modulos/visagismo/visagismo.module';
@@ -45,6 +46,7 @@ import { AuditModule } from './modulos/audit/audit.module';
     // Fase F — Legal y Compliance (AuditModule es @Global)
     AuditModule,
     FirmasModule,
+    CatalogoPlanesModule,
   ],
 })
 export class AppModule {}

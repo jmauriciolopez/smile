@@ -127,11 +127,10 @@ export class SmileEngineCore {
   }
 
   /**
-   * Exporta parámetros a Exocad/3Shape.
+   * Adapta el renderizado a un nuevo tamaño de contenedor.
    */
-  exportarExocad() {
-    if (this.currentBlueprint) {
-      CadExporter.exportarParametrosLaboratorio(this.currentBlueprint);
-    }
+  resize(width: number, height: number) {
+    this.renderer?.onResize(width, height);
+    this.renderizar();
   }
 }

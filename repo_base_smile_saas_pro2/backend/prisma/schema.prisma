@@ -88,6 +88,8 @@ model CasoClinico {
   disenos                 DisenoSonrisa[]
   fotos                   FotoClinica[]
   notas                   NotaClinica[]
+  signature_design        SignatureDesign?
+  cbct_studies            CBCTStudy[]
 }
 
 model Presupuesto {
@@ -209,3 +211,15 @@ model PlantillaSonrisa {
   parametros      Json     // Almacena proporciones, forma, color, etc.
   fecha_creacion  DateTime @default(now())
 }
+
+model CatalogoPlanTratamiento {
+  id               String       @id @default(uuid())
+  titulo           String
+  descripcion      String?
+  monto_base       Float
+  recomendada      Boolean      @default(false)
+  activo           Boolean      @default(true)
+  fecha_creacion   DateTime     @default(now())
+  fecha_actualizacion DateTime  @updatedAt
+}
+

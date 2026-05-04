@@ -13,6 +13,7 @@ import { LoginPage } from "../modulos/autenticacion/paginas/LoginPage";
 import { VistaPacientePage } from "../modulos/diseno_sonrisa/paginas/VistaPacientePage";
 import SignatureDesignPage from "../modulos/signature_design/paginas/SignatureDesignPage";
 import CBCTViewerPage from "../modulos/cbct_viewer/paginas/CBCTViewerPage";
+import { CatalogoPlanesPage } from "../modulos/configuracion/paginas/CatalogoPlanesPage";
 import { useAutenticacionStore } from "../store/autenticacion.store";
 
 function RutaPrivada() {
@@ -33,10 +34,6 @@ export function AppRoutes() {
           <Route path="/pacientes/:id" element={<DetallePacientePage />} />
           <Route path="/casos" element={<CasosPage />} />
           <Route path="/casos/:id" element={<DetalleCasoClinicoPage />} />
-          <Route
-            path="/disenos/editor/:casoId"
-            element={<EditorSonrisaPage />}
-          />
           <Route path="/lab" element={<SignatureDesignPage />} />
           <Route path="/radiologia" element={<CBCTViewerPage />} />
           <Route path="/presupuestos" element={<PresupuestosPage />} />
@@ -45,7 +42,14 @@ export function AppRoutes() {
             element={<DetallePresupuestoPage />}
           />
           <Route path="/seguimientos" element={<SeguimientosPage />} />
+          <Route path="/configuracion/planes" element={<CatalogoPlanesPage />} />
         </Route>
+
+        {/* 🎬 EXPERIENCIAS FULLSCREEN (FUERA DEL SHELL) */}
+        <Route
+          path="/disenos/editor/:casoId"
+          element={<EditorSonrisaPage />}
+        />
       </Route>
     </Routes>
   );

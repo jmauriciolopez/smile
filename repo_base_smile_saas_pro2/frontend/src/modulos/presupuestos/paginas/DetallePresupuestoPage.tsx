@@ -3,15 +3,18 @@ import { Card } from "../../../componentes/ui/Card";
 import { BadgeEstado } from "../../../componentes/ui/BadgeEstado";
 import { usePresupuestoDetalle } from "../../../hooks/usePresupuestoDetalle";
 import { useOpciones } from "../../../hooks/useOpciones";
+import { useCatalogoPlanes } from "../../../hooks/useCatalogoPlanes";
 import { TimelineSeguimiento } from "../componentes/TimelineSeguimiento";
 import { Modal } from "../../../componentes/ui/Modal";
 import { useState } from "react";
+import { PencilSimple, Trash, Plus } from "@phosphor-icons/react";
 
 export function DetallePresupuestoPage() {
   const { id } = useParams();
   const { presupuesto, cargando, error, refrescar, actualizar } =
     usePresupuestoDetalle(id);
-  const { seleccionarPlan, procesando } = useOpciones(id, refrescar);
+  const { seleccionarPlan, agregarPlan, editarPlan, eliminarPlan, procesando } = useOpciones(id, refrescar);
+  const { planes: catalogoPlanes } = useCatalogoPlanes();
 
   const [modalEditAbierto, setModalEditAbierto] = useState(false);
   const [formEdit, setFormEdit] = useState({
@@ -20,6 +23,15 @@ export function DetallePresupuestoPage() {
     estado_presupuesto: "",
   });
   const [enviando, setEnviando] = useState(false);
+
+  const [modalPlanAbierto, setModalPlanAbierto] = useState(false);
+  const [planEditandoId, setPlanEditandoId] = useState<string | null>(null);
+  const [formPlan, setFormPlan] = useState({
+    titulo: "",
+    descripcion: "",
+    monto: 0,
+    recomendada: false,
+  });
 
   const abrirEdicion = () => {
     if (presupuesto) {
@@ -42,6 +54,53 @@ export function DetallePresupuestoPage() {
       alert("Error al actualizar el presupuesto.");
     } finally {
       setEnviando(false);
+    }
+  };
+
+  const abrirModalPlan = (opcion?: any) => {
+    if (opcion) {
+      setPlanEditandoId(opcion.id);
+      setFormPlan({
+        titulo: opcion.titulo,
+        descripcion: opcion.descripcion || "",
+        monto: opcion.monto,
+        recomendada: opcion.recomendada,
+      });
+    } else {
+      setPlanEditandoId(null);
+      setFormPlan({
+        titulo: "",
+        descripcion: "",
+        monto: 0,
+        recomendada: false,
+      });
+    }
+    setModalPlanAbierto(true);
+  };
+
+  const handleGuardarPlan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEnviando(true);
+    try {
+      if (planEditandoId) {
+        await editarPlan(planEditandoId, formPlan);
+      } else {
+        await agregarPlan(formPlan);
+      }
+      setModalPlanAbierto(false);
+    } catch (err) {
+      alert("Error al guardar el plan.");
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const handleEliminarPlan = async (idPlan: string) => {
+    if (!confirm("¿Eliminar este plan de tratamiento?")) return;
+    try {
+      await eliminarPlan(idPlan);
+    } catch (err) {
+      alert("Error al eliminar.");
     }
   };
 
@@ -163,7 +222,17 @@ export function DetallePresupuestoPage() {
             </Card>
           </div>
 
-          <Card titulo="Planes de Tratamiento">
+          <Card 
+            titulo="Planes de Tratamiento"
+            accion={
+              <button
+                onClick={() => abrirModalPlan()}
+                className="flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-primario hover:bg-slate-200 transition-colors"
+              >
+                <Plus weight="bold" /> Nuevo Plan
+              </button>
+            }
+          >
             {opciones.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2">
                 {opciones.map((opcion) => (
@@ -180,8 +249,18 @@ export function DetallePresupuestoPage() {
                         RECOMENDADA
                       </div>
                     )}
-                    <div className="font-bold text-slate-400 uppercase text-[10px] tracking-widest">
-                      {opcion.titulo}
+                    <div className="flex justify-between items-start">
+                      <div className="font-bold text-slate-400 uppercase text-[10px] tracking-widest">
+                        {opcion.titulo}
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <button onClick={() => abrirModalPlan(opcion)} className="hover:text-primario transition-colors">
+                          <PencilSimple size={16} />
+                        </button>
+                        <button onClick={() => handleEliminarPlan(opcion.id)} className="hover:text-red-500 transition-colors">
+                          <Trash size={16} />
+                        </button>
+                      </div>
                     </div>
                     <div className="mt-2 text-3xl font-black text-slate-900">
                       USD {opcion.monto}
@@ -229,7 +308,10 @@ export function DetallePresupuestoPage() {
                   No se han definido opciones de tratamiento para este
                   presupuesto.
                 </p>
-                <button className="mt-4 text-xs font-bold text-primario hover:underline">
+                <button 
+                  onClick={() => abrirModalPlan()}
+                  className="mt-4 text-xs font-bold text-primario hover:underline"
+                >
                   + Configurar alternativas
                 </button>
               </div>
@@ -317,6 +399,96 @@ export function DetallePresupuestoPage() {
               className="rounded-xl bg-primario px-6 py-2 text-sm font-bold text-white shadow-lg shadow-primario/20 disabled:opacity-50"
             >
               {enviando ? "Guardando..." : "Guardar Cambios"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        abierto={modalPlanAbierto}
+        alCerrar={() => setModalPlanAbierto(false)}
+        titulo={planEditandoId ? "Editar Plan" : "Nuevo Plan de Tratamiento"}
+      >
+        <form onSubmit={handleGuardarPlan} className="space-y-4">
+          {!planEditandoId && catalogoPlanes.length > 0 && (
+            <div className="mb-4 pb-4 border-b border-slate-100">
+              <label className="block text-sm font-medium text-slate-700">Seleccionar desde Catálogo Global</label>
+              <select
+                className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+                onChange={(e) => {
+                  const planGlobal = catalogoPlanes.find(p => p.id === e.target.value);
+                  if (planGlobal) {
+                    setFormPlan({
+                      titulo: planGlobal.titulo,
+                      descripcion: planGlobal.descripcion || "",
+                      monto: planGlobal.monto_base,
+                      recomendada: planGlobal.recomendada,
+                    });
+                  }
+                }}
+                defaultValue=""
+              >
+                <option value="" disabled>-- Elige un plan base --</option>
+                {catalogoPlanes.map(p => (
+                  <option key={p.id} value={p.id}>{p.titulo} (USD {p.monto_base})</option>
+                ))}
+              </select>
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Título</label>
+            <input
+              required
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formPlan.titulo}
+              onChange={(e) => setFormPlan({ ...formPlan, titulo: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Descripción</label>
+            <textarea
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formPlan.descripcion}
+              onChange={(e) => setFormPlan({ ...formPlan, descripcion: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Monto (USD)</label>
+            <input
+              required
+              type="number"
+              className="mt-1 block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 focus:border-primario focus:bg-white focus:outline-none focus:ring-2 focus:ring-primario/20 transition-all"
+              value={formPlan.monto}
+              onChange={(e) => setFormPlan({ ...formPlan, monto: Number(e.target.value) })}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              id="recomendada"
+              checked={formPlan.recomendada}
+              onChange={(e) => setFormPlan({ ...formPlan, recomendada: e.target.checked })}
+              className="rounded text-primario focus:ring-primario"
+            />
+            <label htmlFor="recomendada" className="text-sm font-medium text-slate-700">
+              Marcar como plan recomendado
+            </label>
+          </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setModalPlanAbierto(false)}
+              className="rounded-xl px-4 py-2 text-sm text-slate-500 hover:bg-slate-100"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={enviando}
+              className="rounded-xl bg-primario px-6 py-2 text-sm font-bold text-white shadow-lg shadow-primario/20 disabled:opacity-50"
+            >
+              {enviando ? "Guardando..." : "Guardar Plan"}
             </button>
           </div>
         </form>

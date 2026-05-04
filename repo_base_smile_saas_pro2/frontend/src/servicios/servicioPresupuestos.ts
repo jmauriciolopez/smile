@@ -59,3 +59,30 @@ export async function actualizarPresupuesto(
     body: JSON.stringify(data),
   });
 }
+
+export type OpcionTratamientoData = {
+  titulo: string;
+  descripcion?: string;
+  monto: number;
+  recomendada?: boolean;
+};
+
+export async function crearOpcionTratamiento(presupuestoId: string, data: OpcionTratamientoData) {
+  return clienteApi(`/presupuestos/${presupuestoId}/opciones`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function actualizarOpcionTratamiento(opcionId: string, data: Partial<OpcionTratamientoData>) {
+  return clienteApi(`/presupuestos/opciones/${opcionId}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function eliminarOpcionTratamiento(opcionId: string) {
+  return clienteApi(`/presupuestos/opciones/${opcionId}`, {
+    method: "DELETE",
+  });
+}

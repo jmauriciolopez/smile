@@ -65,8 +65,9 @@ export class VisualRenderer {
 
     this.lipRenderer = new LipRenderer();
 
+    this.camera.position.set(5, -5, 15);
+    this.camera.lookAt(5, -5, 0);
     this.initLights();
-    this.camera.position.z = 10;
 
     this.initPostProcessing(container.clientWidth, container.clientHeight);
   }
@@ -120,6 +121,12 @@ export class VisualRenderer {
    * Sincroniza la escena 3D con el estado actual del Blueprint.
    */
   updateFromBlueprint(blueprint: Blueprint) {
+    // 📸 CENTRAR CÁMARA EN EL DISEÑO
+    const centroX = blueprint.canvas.ancho / 200;
+    const centroY = -blueprint.canvas.alto / 200;
+    this.camera.position.set(centroX, centroY, 15);
+    this.camera.lookAt(centroX, centroY, 0);
+
     blueprint.dientes.forEach((diente: Diente) => {
       let mesh = this.toothMeshes.get(diente.id);
 
@@ -131,13 +138,15 @@ export class VisualRenderer {
 
       this.updateMeshTransform(mesh, diente);
 
-      // OPTIMIZACIÓN: Solo actualizar material si el estado visual cambió (Caching)
+      // OPTIMIZACIÓN: Solo actualizar material si el estado visual o las propiedades cambiaron
       const isWet = blueprint.configuracion.modoVisual === "humedo";
+      const materialJson = JSON.stringify(diente.material);
       const needsMaterialUpdate =
-        isWet || diente.material.colorBase !== mesh.userData.lastColor;
+        isWet || materialJson !== mesh.userData.lastMaterial;
+      
       if (needsMaterialUpdate) {
         this.updateMeshMaterial(mesh, diente, isWet, blueprint);
-        mesh.userData.lastColor = diente.material.colorBase;
+        mesh.userData.lastMaterial = materialJson;
       }
     });
 
@@ -234,6 +243,15 @@ export class VisualRenderer {
 
     // OCLUSIÓN DINÁMICA: Clipping según posición de labios
     DepthEngine.configurarClippingGingival(mat, blueprint);
+  }
+
+  onResize(width: number, height: number) {
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
+    if (this.composer) {
+      this.composer.setSize(width, height);
+    }
   }
 
   renderFrame() {

@@ -232,5 +232,32 @@ Transforma el diseño digital en una hoja de ruta técnica para el laboratorio d
 
 ---
 
+## 🎨 Premium Design Engineering (Design Taste)
+
+El sistema de interfaz de **Smile Pro** sigue estándares de diseño de alta gama para asegurar una experiencia clínica premium:
+
+- **Liquid Glass System**: Uso de superficies translúcidas con `backdrop-blur-xl` y bordes de refracción interna (`border-white/20`). Esto reduce la carga cognitiva mientras mantiene una estética de boutique digital.
+- **Motion Orchestration**: Todas las entradas de datos y paneles laterales están orquestados con **Framer Motion**, utilizando transiciones de tipo `spring` (física de resortes) para una respuesta táctil natural.
+- **Zero-Emoji Policy**: Se prohíbe el uso de emojis en la interfaz clínica. Se emplea exclusivamente la librería **Phosphor Icons** en pesos `duotone` y `fill` para mantener la sobriedad técnica.
+- **High-Fidelity Typography**:
+  - **Outfit**: Tipografía principal para lectura clara y moderna.
+  - **JetBrains Mono**: Utilizada exclusivamente para métricas, coordenadas 3D y scores clínicos, reforzando la precisión del motor.
+- **Asymmetric Layout (Variance 8)**: El editor evita la simetría perfecta, utilizando paneles flotantes asimétricos para crear una sensación de "Laboratorio de Diseño" en lugar de un software administrativo genérico.
+
+---
+
+## 🎭 Premium Whimsy & Delight (Whimsy Injector)
+
+El diseño se eleva mediante momentos de "deleite con propósito" que humanizan la tecnología clínica:
+
+- **Strategic Personality**: Inyección de micro-interacciones sutiles que reducen la ansiedad del flujo clínico (ej: destellos premium en botones de alta importancia).
+- **Playful Microcopy**: Uso de términos evocadores como "Obra Maestra" (Save), "Armonizar" (Align) o "STL Maestro" (Export), reforzando la identidad de "Artesano Digital" del clínico.
+- **Micro-Celebrations**: Uso de la **Dynamic Island** para feedback de éxito no intrusivo con efectos de brillo (`shimmer-premium`).
+- **Aura Áurea**: Herramienta de superposición de la Proporción Áurea accesible desde la sección de Guías Clínicas para validación estética instantánea.
+- **Inclusive Whimsy**: Todas las animaciones respetan las preferencias de reducción de movimiento del sistema operativo.
+
+---
+
 > [!IMPORTANT]
 > El motor Smile Engine PRO está diseñado para ser agnóstico al framework, pero se recomienda su uso con **Zustand** para la gestión del estado de alta frecuencia requerida por los controles 3D.
+

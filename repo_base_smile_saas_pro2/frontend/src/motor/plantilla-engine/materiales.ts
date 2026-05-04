@@ -7,6 +7,7 @@ export const PRESETS_MATERIALES: Record<
   Partial<MaterialDental>
 > = {
   "E-MAX": {
+    colorBase: "#fcfaf2",
     translucidez: 0.6,
     reflectividad: 0.8,
     opalescencia: 0.7,
@@ -18,6 +19,7 @@ export const PRESETS_MATERIALES: Record<
     capaDentina: 0.8,
   },
   ZIRCONIA: {
+    colorBase: "#ffffff",
     translucidez: 0.3,
     reflectividad: 0.9,
     opalescencia: 0.2,
@@ -29,6 +31,7 @@ export const PRESETS_MATERIALES: Record<
     capaDentina: 1.0,
   },
   FELDESPATICA: {
+    colorBase: "#fff9e6",
     translucidez: 0.8,
     reflectividad: 0.7,
     opalescencia: 0.9,
@@ -40,6 +43,7 @@ export const PRESETS_MATERIALES: Record<
     capaDentina: 0.6,
   },
   COMPOSITE: {
+    colorBase: "#f2f2f2",
     translucidez: 0.4,
     reflectividad: 0.5,
     opalescencia: 0.3,

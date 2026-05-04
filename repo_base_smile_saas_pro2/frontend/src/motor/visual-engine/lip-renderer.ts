@@ -35,8 +35,11 @@ export class LipRenderer {
     if (!fotoUrl || !this.ctx) return;
 
     const img = new Image();
-    img.crossOrigin = "Anonymous";
+    if (fotoUrl.startsWith("http")) {
+      img.crossOrigin = "Anonymous";
+    }
     img.onload = () => {
+      console.log("📸 LipRenderer: Imagen cargada con éxito:", fotoUrl);
       this.canvas.width = blueprint.canvas.ancho;
       this.canvas.height = blueprint.canvas.alto;
 
@@ -47,6 +50,7 @@ export class LipRenderer {
 
       // 2. Perforar el hueco de la boca usando la Máscara Binaria (CNN Mask)
       if (blueprint.cara.mascaraLabiosUrl) {
+        console.log("👄 LipRenderer: Usando máscara CNN:", blueprint.cara.mascaraLabiosUrl);
         const maskImg = new Image();
         maskImg.crossOrigin = "Anonymous";
         maskImg.onload = () => {
@@ -54,13 +58,16 @@ export class LipRenderer {
         };
         maskImg.src = blueprint.cara.mascaraLabiosUrl;
       } else {
-        // Fallback al sistema de landmarks si no hay modelo CNN disponible
+        console.log("👄 LipRenderer: Usando fallback de landmarks");
         this.aplicarFallbackLandmarks(
           blueprint.cara.labiosInterior,
           scene,
           blueprint,
         );
       }
+    };
+    img.onerror = (e) => {
+      console.error("❌ LipRenderer: Error cargando imagen:", fotoUrl, e);
     };
     img.src = fotoUrl;
   }
@@ -85,17 +92,18 @@ export class LipRenderer {
     scene: THREE.Scene,
     blueprint: Blueprint,
   ) {
-    if (!contornoInt || contornoInt.length === 0) return;
-    this.ctx!.globalCompositeOperation = "destination-out";
-    this.ctx!.filter = "blur(4px)";
-    this.ctx!.beginPath();
-    contornoInt.forEach((p, i) => {
-      if (i === 0) this.ctx!.moveTo(p.x, p.y);
-      else this.ctx!.lineTo(p.x, p.y);
-    });
-    this.ctx!.closePath();
-    this.ctx!.fillStyle = "black";
-    this.ctx!.fill();
+    if (contornoInt && contornoInt.length > 0) {
+      this.ctx!.globalCompositeOperation = "destination-out";
+      this.ctx!.filter = "blur(4px)";
+      this.ctx!.beginPath();
+      contornoInt.forEach((p, i) => {
+        if (i === 0) this.ctx!.moveTo(p.x, p.y);
+        else this.ctx!.lineTo(p.x, p.y);
+      });
+      this.ctx!.closePath();
+      this.ctx!.fillStyle = "black";
+      this.ctx!.fill();
+    }
 
     this.finalizarRenderizado(scene, blueprint);
   }
@@ -109,23 +117,28 @@ export class LipRenderer {
 
     // 3. Crear/Actualizar el Plano Full-Screen
     if (!this.mesh) {
-      // Un plano que cubra el espacio exacto del canvas base
-      // (Las coordenadas X,Y en Smile Engine van de 0 a Ancho/Alto)
       const geometry = new THREE.PlaneGeometry(
         blueprint.canvas.ancho / 100,
         blueprint.canvas.alto / 100,
       );
       this.mesh = new THREE.Mesh(geometry, this.material);
-
-      // Centrar el plano asumiendo origen en 0,0 y coordenadas positivas en X, negativas en Y
-      this.mesh.position.set(
-        blueprint.canvas.ancho / 200,
-        -blueprint.canvas.alto / 200,
-        0,
-      );
-      this.mesh.renderOrder = 200; // Siempre encima de los dientes
+      this.mesh.renderOrder = 200;
       scene.add(this.mesh);
+    } else {
+      // Actualizar dimensiones si cambiaron
+      this.mesh.geometry.dispose();
+      this.mesh.geometry = new THREE.PlaneGeometry(
+        blueprint.canvas.ancho / 100,
+        blueprint.canvas.alto / 100,
+      );
     }
+
+    // Asegurar posición centrada
+    this.mesh.position.set(
+      blueprint.canvas.ancho / 200,
+      -blueprint.canvas.alto / 200,
+      0,
+    );
 
     this.material.opacity = blueprint.configuracion.opacidadLabios ?? 1.0;
   }

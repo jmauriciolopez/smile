@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.35",
+    "@phosphor-icons/react": "^2.1.10",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
     "cornerstone-core": "^2.6.1",
     "cornerstone-wado-image-loader": "^4.13.2",
     "dicom-parser": "^1.8.21",
+    "framer-motion": "^12.38.0",
     "konva": "^9.3.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

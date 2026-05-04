@@ -8,6 +8,7 @@ import {
   crearSnapshotInterno,
   actualizarFotoVista,
   actualizarGuia,
+  crearBlueprint,
 } from "../motor/blueprint-engine/blueprint";
 import {
   aplicarPlantilla,
@@ -28,11 +29,12 @@ import {
   PlantillaSonrisa,
   Transformacion3D,
 } from "../core/types";
+import { ClinicalAuditEngine, ResultadoAuditoria } from "../motor/clinical-audit-engine";
 import { SmileEngineCore } from "../motor/engine-core";
 import * as servicioDisenos from "../servicios/servicioDisenos";
 
 // Re-exportar tipos para compatibilidad
-export type { Diente, Blueprint, DatosFaciales, PlantillaSonrisa };
+export type { Diente, Blueprint, DatosFaciales, PlantillaSonrisa, ResultadoAuditoria };
 
 interface EditorStore {
   blueprint: Blueprint | null;
@@ -43,10 +45,12 @@ interface EditorStore {
   modoComparativa: boolean;
   loading: boolean;
 
+  // Auditoría Clínica
+  auditoria: ResultadoAuditoria | null;
+
   // Colaboración
   colaboradores: any[];
   dientesBloqueados: Record<string, string>; // { dienteId: colaboradorId }
-
   // ── Getters Proyectados (Compatibilidad Legacy) ─────────────────────────
   dientes: Diente[];
   guias: any[];
@@ -93,6 +97,7 @@ interface EditorStore {
 
   // UI
   alternarComparativa: () => void;
+  resizeEngine: (width: number, height: number) => void;
 
   // Reporting
   generarReporteClinico: () => void;
@@ -101,6 +106,7 @@ interface EditorStore {
   ejecutarOptimizacionIA: () => void;
   ejecutarAutoAlineacion: () => void;
   obtenerDiagnosticoIA: () => void;
+  ejecutarAuditoria: () => void;
 
   // Persistencia
   guardarDisenoPersistente: (casoId: string) => Promise<void>;
@@ -123,6 +129,7 @@ export const useEditorStore = create<EditorStore>()(
       favoritos: [],
       modoComparativa: false,
       loading: false,
+      auditoria: null,
       colaboradores: [],
       dientesBloqueados: {},
 
@@ -147,10 +154,13 @@ export const useEditorStore = create<EditorStore>()(
 
       generarDiseno: (cara) => {
         const { engine } = get();
-        if (!engine) return;
-        const blueprint = engine.generarDisenoCompleto(cara);
+        // Crear el blueprint aunque el engine no esté listo todavía
+        // (necesario para captura de fotos antes de que el canvas monte)
+        const blueprint = engine
+          ? engine.generarDisenoCompleto(cara)
+          : crearBlueprint(cara);
         set({ blueprint });
-        engine.renderizar();
+        if (engine) engine.renderizar();
       },
 
       actualizarDiente: (id, cambios) => {
@@ -245,7 +255,8 @@ export const useEditorStore = create<EditorStore>()(
 
       actualizarFotoVista: (vistaId: string, url: string, puntos?) => {
         const { blueprint, engine } = get();
-        if (!blueprint || !engine) return;
+        // La foto se guarda aunque el engine no esté listo todavía
+        if (!blueprint) return;
         const nuevoBlueprint = actualizarFotoVista(
           blueprint,
           vistaId,
@@ -253,7 +264,8 @@ export const useEditorStore = create<EditorStore>()(
           puntos,
         );
         set({ blueprint: nuevoBlueprint });
-        engine.actualizarYRenderizar(nuevoBlueprint);
+        // Solo renderizar si el engine está disponible
+        if (engine) engine.actualizarYRenderizar(nuevoBlueprint);
       },
 
       cambiarVista: (id: string) => {
@@ -267,7 +279,19 @@ export const useEditorStore = create<EditorStore>()(
       setGuiaValor: (guiaId: string, valor: any) => {
         const { blueprint, engine } = get();
         if (!blueprint || !engine) return;
-        const nuevoBlueprint = actualizarGuia(blueprint, guiaId, { valor });
+        // Merge profundo del campo valor para no perder propiedades no modificadas
+        const guia = blueprint.guias.find((g) => g.id === guiaId);
+        const valorMergeado =
+          valor !== null &&
+          typeof valor === "object" &&
+          !Array.isArray(valor) &&
+          guia?.valor !== null &&
+          typeof guia?.valor === "object"
+            ? { ...guia.valor, ...valor }
+            : valor;
+        const nuevoBlueprint = actualizarGuia(blueprint, guiaId, {
+          valor: valorMergeado,
+        });
         set({ blueprint: nuevoBlueprint });
         engine.actualizarYRenderizar(nuevoBlueprint);
       },
@@ -487,9 +511,6 @@ export const useEditorStore = create<EditorStore>()(
         });
       },
 
-      alternarComparativa: () =>
-        set({ modoComparativa: !get().modoComparativa }),
-
       recomendarPlantillaIA: () => {
         const { blueprint, plantillasPersonalizadas } = get();
         if (!blueprint) return;
@@ -551,6 +572,13 @@ export const useEditorStore = create<EditorStore>()(
         set({ blueprint: nuevoBlueprint });
       },
 
+      ejecutarAuditoria: () => {
+        const { blueprint } = get();
+        if (!blueprint) return;
+        const auditoria = ClinicalAuditEngine.auditar(blueprint);
+        set({ auditoria });
+      },
+
       generarReporteClinico: () => {
         const { blueprint } = get();
         if (!blueprint) return;
@@ -609,6 +637,17 @@ export const useEditorStore = create<EditorStore>()(
       actualizarDesdeColaborador: (nuevoBlueprint) => {
         set({ blueprint: nuevoBlueprint });
         get().engine?.actualizarYRenderizar(nuevoBlueprint);
+      },
+
+      alternarComparativa: () => {
+        set((state) => ({ modoComparativa: !state.modoComparativa }));
+      },
+
+      resizeEngine: (width, height) => {
+        const { engine } = get();
+        if (engine) {
+          engine.resize(width, height);
+        }
       },
     }),
     {
